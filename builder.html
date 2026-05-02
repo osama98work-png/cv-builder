@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +13,8 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; }
         * { box-sizing: border-box; }
         .container { display: flex; flex-direction: column; width: 100%; height: 100vh; }
-      /* الشاشات الصغيرة (الموبايل) - نعطيها ارتفاع الشاشة كامل */
+        
+        /* الشاشات الصغيرة (الموبايل) */
         .form-section { width: 100%; height: 100vh; padding: 20px; padding-bottom: 80px; background: white; overflow-y: auto; z-index: 10; }
         .preview-section { width: 100%; height: 100vh; padding: 20px; padding-bottom: 80px; background: #eaeff1; display: none; justify-content: center; align-items: flex-start; overflow-y: auto; }
         
@@ -22,13 +23,14 @@
         .mobile-nav button { flex: 1; padding: 15px; border: none; background: white; font-size: 15px; font-weight: bold; color: #7f8c8d; cursor: pointer; transition: 0.3s; border-top: 3px solid transparent; }
         .mobile-nav button.active { color: #27ae60; border-top: 3px solid #27ae60; background: #f9fbf9; }
 
-        /* الشاشات الكبيرة (الكمبيوتر) - نعود لتقسيم الشاشة ونخفي الشريط */
+        /* الشاشات الكبيرة (الكمبيوتر) */
         @media (min-width: 768px) {
             .container { flex-direction: row; }
             .form-section { width: 40%; height: 100vh; padding: 30px; display: block !important; }
             .preview-section { width: 60%; height: 100vh; padding: 40px; display: flex !important; }
             .mobile-nav { display: none !important; } 
         }
+
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 13px; }
         input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; transition: border 0.3s; }
@@ -60,7 +62,8 @@
         .cv-section-title { font-size: 18px; color: #2c3e50; border-bottom: 1px solid #bdc3c7; margin-bottom: 10px; padding-bottom: 5px; font-weight: bold; }
         .cv-content { font-size: 14px; color: #444; line-height: 1.6; white-space: pre-wrap; }
         .cv-list { margin: 0; padding: 0 20px; font-size: 14px; color: #444; line-height: 1.6; }
-/* تصميم نافذة الدفع */
+
+        /* تصميم نافذة الدفع */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .modal-content h2 { margin-top: 0; color: #2c3e50; }
@@ -68,11 +71,13 @@
         .btn-pay { background-color: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
         .btn-close { background-color: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
 
-/* =========================================
-           ستايلات القوالب (Templates Themes)
-           ========================================= */
-        
-        /* 1. القالب الداكن الاحترافي (theme-dark) */
+        /* ستايل القائمة المنسدلة (Accordion) لحقول الإدخال */
+        .accordion-btn { background-color: #2c3e50; color: white; cursor: pointer; padding: 15px; width: 100%; text-align: right; border: none; outline: none; font-size: 16px; font-weight: bold; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .accordion-btn:hover { background-color: #34495e; }
+        .accordion-content { padding: 15px; background-color: #f9fbf9; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ستايلات القوالب (Templates Themes) */
         .theme-dark .cv-header { background-color: #2c3e50; color: white; padding: 20px; border-radius: 5px 5px 0 0; border-bottom: none; margin-top: -20mm; margin-left: -20mm; margin-right: -20mm; margin-bottom: 30px; width: calc(100% + 40mm); }
         .theme-dark .cv-name { color: white; }
         .theme-dark .cv-title { color: #f39c12; }
@@ -80,7 +85,6 @@
         .theme-dark .cv-section-title { color: #2c3e50; border-bottom: 2px solid #2c3e50; }
         .theme-dark .cv-photo { border-color: #f39c12; }
 
-        /* 2. القالب الأخضر البسيط (theme-minimal) */
         .theme-minimal .cv-header { border-bottom: 3px dashed #16a085; padding-bottom: 15px; }
         .theme-minimal .cv-name { color: #16a085; text-transform: uppercase; letter-spacing: 1px; }
         .theme-minimal .cv-title { color: #7f8c8d; font-style: italic; }
@@ -89,13 +93,12 @@
         .theme-minimal[dir="ltr"] .cv-section-title { padding-right: 0; padding-left: 15px; }
         .theme-minimal[dir="ltr"] .cv-section-title::before { right: auto; left: 0; }
         .theme-minimal .cv-photo { border-radius: 10px; border-color: #16a085; }
-
     </style>
 </head>
 <body>
 
     <div class="container">
-<!-- نافذة الدفع -->
+        
         <!-- نافذة الدفع -->
         <div class="modal-overlay" id="paymentModal">
             <div class="modal-content">
@@ -106,10 +109,11 @@
                 <button class="btn-close" onclick="document.getElementById('paymentModal').style.display='none'">إلغاء</button>
             </div>
         </div>
+
         <!-- قسم الفورم -->
         <div class="form-section">
             
-            <!-- قسم تسجيل الدخول الجديد -->
+            <!-- قسم تسجيل الدخول -->
             <div id="loginSection" class="auth-box">
                 <h3>مرحباً بك في CV Builder</h3>
                 <p style="font-size: 13px; color: #555;">يرجى تسجيل الدخول بحساب غوغل لحفظ سيرتك الذاتية أو استرجاعها.</p>
@@ -122,13 +126,13 @@
                 </div>
             </div>
 
-            <!-- رسالة الترحيب (تظهر بعد تسجيل الدخول) -->
+            <!-- رسالة الترحيب -->
             <div id="welcomeSection" class="auth-box" style="display: none; background: #eafaf1; border-color: #a3e4d7;">
                 <h3 id="welcomeMsg" style="color: #27ae60; margin: 0;"></h3>
                 <p id="accountStatusMsg" style="font-size: 12px; font-weight:bold; color: #333; margin-top: 5px;"></p>
             </div>
 
-<!-- قسم اختيار القوالب -->
+            <!-- قسم اختيار القوالب -->
             <div style="margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 <label style="margin-bottom: 10px; font-size: 14px;">🎨 اختر قالب السيرة الذاتية:</label>
                 <div style="display: flex; gap: 10px;">
@@ -147,16 +151,25 @@
 
             <p id="systemMsg" style="color: blue; font-size: 13px; font-weight: bold;"></p>
 
-            <div class="form-group"><label>الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
-            <div class="form-group"><label id="lblName">الاسم الكامل</label><input type="text" id="inputName" oninput="updateCV()"></div>
-            <div class="form-group"><label id="lblTitle">المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="updateCV()"></div>
-            <!-- حقل الإيميل أصبح مغلقاً -->
-            <div class="form-group"><label id="lblEmail">البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: #eee;"></div>
-            <div class="form-group"><label id="lblPhone">رقم الهاتف</label><input type="text" id="inputPhone" oninput="updateCV()"></div>
-            <div class="form-group"><label id="lblBio">الملخص المهني</label><textarea id="inputBio" rows="3" oninput="updateCV()"></textarea></div>
-            <div class="form-group"><label id="lblEdu">التعليم والشهادات</label><textarea id="inputEdu" rows="4" oninput="updateList('inputEdu', 'cvEdu')"></textarea></div>
-            <div class="form-group"><label id="lblSkills">المهارات</label><textarea id="inputSkills" rows="4" oninput="updateList('inputSkills', 'cvSkills')"></textarea></div>
-            <div class="form-group"><label id="lblLangs">اللغات</label><textarea id="inputLangs" rows="3" oninput="updateList('inputLangs', 'cvLangs')"></textarea></div>
+            <!-- زر القائمة المنسدلة -->
+            <button class="accordion-btn" onclick="toggleInputs()" id="toggleInputsBtn">
+                <span>📝 تعبئة بيانات السيرة الذاتية</span>
+                <span id="accordionArrow">▲</span>
+            </button>
+
+            <!-- صندوق الحقول (المنسدل) -->
+            <div id="inputsContainer" class="accordion-content">
+                <div class="form-group"><label>الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
+                <div class="form-group"><label id="lblName">الاسم الكامل</label><input type="text" id="inputName" oninput="updateCV()"></div>
+                <div class="form-group"><label id="lblTitle">المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="updateCV()"></div>
+                <div class="form-group"><label id="lblEmail">البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: #eee;"></div>
+                <div class="form-group"><label id="lblPhone">رقم الهاتف</label><input type="text" id="inputPhone" oninput="updateCV()"></div>
+                <div class="form-group"><label id="lblBio">الملخص المهني</label><textarea id="inputBio" rows="3" oninput="updateCV()"></textarea></div>
+                <div class="form-group"><label id="lblEdu">التعليم والشهادات</label><textarea id="inputEdu" rows="4" oninput="updateList('inputEdu', 'cvEdu')"></textarea></div>
+                <div class="form-group"><label id="lblSkills">المهارات</label><textarea id="inputSkills" rows="4" oninput="updateList('inputSkills', 'cvSkills')"></textarea></div>
+                <div class="form-group"><label id="lblLangs">اللغات</label><textarea id="inputLangs" rows="3" oninput="updateList('inputLangs', 'cvLangs')"></textarea></div>
+            </div>
+
         </div>
 
         <!-- قسم المعاينة -->
@@ -190,6 +203,13 @@
                 </div>
             </div>
         </div>
+
+        <!-- شريط التنقل السفلي للموبايل -->
+        <div class="mobile-nav">
+            <button id="tabForm" class="active" onclick="switchMobileTab('form')">📝 تعديل البيانات</button>
+            <button id="tabPreview" onclick="switchMobileTab('preview')">📄 معاينة السيرة</button>
+        </div>
+
     </div>
 
 <script>
@@ -208,29 +228,24 @@
     // 1. دوال تسجيل الدخول واسترجاع البيانات
     // =====================================
     async function handleGoogleLogin(response) {
-        // فك تشفير التوكن للحصول على بيانات حساب غوغل
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
         const userEmail = payload.email;
         const userName = payload.name;
 
-        // إخفاء صندوق الدخول وإظهار الترحيب
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('welcomeSection').style.display = 'block';
         document.getElementById('welcomeMsg').innerText = `أهلاً بك، ${userName} 👋`;
         document.getElementById('systemMsg').innerText = "جاري التحقق من بياناتك المحفوظة... ⏳";
         
-        // قفل وتعبئة الإيميل والاسم
         document.getElementById('inputEmail').value = userEmail;
         document.getElementById('inputName').value = userName;
         updateCV();
 
-        // تفعيل الأزرار
         document.getElementById('btnLang').disabled = false;
         document.getElementById('translateBtn').disabled = false;
         document.getElementById('saveBtn').disabled = false;
         document.getElementById('pdfBtn').disabled = false;
 
-        // جلب البيانات من السيرفر
         try {
             const res = await fetch(WEB_APP_URL, {
                 method: 'POST',
@@ -240,29 +255,24 @@
             const data = await res.json();
             
             if(data.status === "success") {
-                // المستخدم موجود، نملأ الذاكرة والحقول ببياناته
                 savedData = JSON.parse(data.cvData);
-if(savedData.selectedTheme) {
-    changeTheme(savedData.selectedTheme);
-}
-                currentUserStatus = data.userStatus; 
                 
-                // تحديث حالة الحساب في الواجهة
+                if(savedData.selectedTheme) {
+                    changeTheme(savedData.selectedTheme);
+                }
+                
+                currentUserStatus = data.userStatus; 
                 let statusText = currentUserStatus === "Active" ? "🟢 حساب مفعل (يمكنك تحميل PDF)" : "🔴 حساب مجاني (يلزم الدفع للتحميل)";
                 document.getElementById('accountStatusMsg').innerText = "حالة الحساب: " + statusText;
 
-                // إذا كان مفعل، نزيل العلامة المائية
                 if(currentUserStatus === "Active") document.getElementById('watermark').style.display = "none";
 
-                // --- استرجاع الصورة من الذاكرة ---
                 if(savedData.userImageBase64) {
                     const imgElement = document.getElementById('cvPhoto');
                     imgElement.src = "data:image/jpeg;base64," + savedData.userImageBase64;
                     imgElement.style.display = 'block';
                 }
-                // ------------------------------
 
-                // وضع بياناته العربية في الحقول (افتراضياً)
                 document.getElementById('inputName').value = savedData.ar.name || userName;
                 document.getElementById('inputTitle').value = savedData.ar.title || '';
                 document.getElementById('inputBio').value = savedData.ar.bio || '';
@@ -336,7 +346,39 @@ if(savedData.selectedTheme) {
         updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
     }
 
-    // عرض الصورة وتصغير حجمها (ضغطها) لتجاوز قيود قاعدة البيانات
+    // فتح وإغلاق القائمة المنسدلة للحقول
+    function toggleInputs() {
+        const container = document.getElementById('inputsContainer');
+        const arrow = document.getElementById('accordionArrow');
+        if (container.style.display === 'none') {
+            container.style.display = 'block';
+            arrow.innerText = '▲';
+        } else {
+            container.style.display = 'none';
+            arrow.innerText = '▼';
+        }
+    }
+
+    // التبديل بين الفورم والمعاينة في الموبايل
+    function switchMobileTab(tab) {
+        const form = document.querySelector('.form-section');
+        const preview = document.querySelector('.preview-section');
+        const tabF = document.getElementById('tabForm');
+        const tabP = document.getElementById('tabPreview');
+
+        if (tab === 'form') {
+            form.style.display = 'block';
+            preview.style.display = 'none';
+            tabF.classList.add('active');
+            tabP.classList.remove('active');
+        } else {
+            form.style.display = 'none';
+            preview.style.display = 'flex';
+            tabF.classList.remove('active');
+            tabP.classList.add('active');
+        }
+    }
+
     function previewPhoto(event) {
         const file = event.target.files[0];
         if(!file) return;
@@ -345,14 +387,11 @@ if(savedData.selectedTheme) {
         reader.onload = function(e) {
             const img = new Image();
             img.onload = function() {
-                // إنشاء لوحة رسم مخفية (Canvas) لتصغير الصورة
                 const canvas = document.createElement('canvas');
-                // تحديد أقصى أبعاد للصورة (250 بكسل ممتازة جداً ودقتها عالية للـ CV)
                 const MAX_SIZE = 250;
                 let width = img.width;
                 let height = img.height;
 
-                // حساب الأبعاد الجديدة مع الحفاظ على التناسب
                 if (width > height) {
                     if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
                 } else {
@@ -364,10 +403,7 @@ if(savedData.selectedTheme) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // استخراج الصورة الجديدة بحجم صغير جداً (صيغة JPEG بجودة 80%)
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                
-                // عرض الصورة في الموقع وتجهيزها للحفظ
                 const cvPhoto = document.getElementById('cvPhoto');
                 cvPhoto.src = compressedBase64;
                 cvPhoto.style.display = 'block';
@@ -375,6 +411,15 @@ if(savedData.selectedTheme) {
             img.src = e.target.result;
         };
         reader.readAsDataURL(file);
+    }
+
+    function changeTheme(themeName) {
+        const paper = document.getElementById('cvTemplate');
+        paper.classList.remove('theme-default', 'theme-dark', 'theme-minimal');
+        if (themeName !== 'theme-default') {
+            paper.classList.add(themeName);
+        }
+        savedData.selectedTheme = themeName;
     }
 
     // =====================================
@@ -434,7 +479,6 @@ if(savedData.selectedTheme) {
         const msg = document.getElementById('systemMsg');
         const email = document.getElementById('inputEmail').value;
 
-        // 1. تحديث الذاكرة بالبيانات الحالية قبل الحفظ
         const currentLang = isEnglish ? 'en' : 'ar';
         savedData[currentLang].name = document.getElementById('inputName').value;
         savedData[currentLang].title = document.getElementById('inputTitle').value;
@@ -447,7 +491,6 @@ if(savedData.selectedTheme) {
         btn.innerText = "⏳ جاري الحفظ..."; 
         msg.innerText = "";
 
-        // 2. معالجة الصورة وحقنها داخل الذاكرة
         let base64Image = ""; 
         const cvPhoto = document.getElementById('cvPhoto');
         
@@ -456,7 +499,6 @@ if(savedData.selectedTheme) {
             savedData.userImageBase64 = base64Image; 
         }
 
-        // 3. تجهيز الحمولة للإرسال
         const payloadData = { 
             action: "save", 
             email: email, 
@@ -489,31 +531,12 @@ if(savedData.selectedTheme) {
         btn.innerText = "💾 حفظ البيانات";
     }
 
-// دالة تغيير القالب
-    function changeTheme(themeName) {
-        const paper = document.getElementById('cvTemplate');
-        
-        // إزالة كل القوالب السابقة
-        paper.classList.remove('theme-default', 'theme-dark', 'theme-minimal');
-        
-        // إضافة القالب الجديد
-        if (themeName !== 'theme-default') {
-            paper.classList.add(themeName);
-        }
-        
-        // حفظ القالب المختار في الذاكرة (لكي نرسله لاحقاً للسيرفر إذا أردنا)
-        savedData.selectedTheme = themeName;
-    }
-
-    // تعديل زر التحميل ليفتح نافذة الدفع إذا لم يكن مفعلاً
     function downloadPDF() {
         if (currentUserStatus !== "Active") {
-            // إذا لم يكن مفعلاً، افتح نافذة الدفع
             document.getElementById('paymentModal').style.display = 'flex';
             return;
         }
 
-        // إذا كان مفعلاً، حمل الـ PDF فوراً
         const element = document.getElementById('cvTemplate');
         const userName = document.getElementById('inputName').value || 'CV';
         const opt = { margin: 0, filename: userName + '_Resume.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
@@ -522,7 +545,6 @@ if(savedData.selectedTheme) {
         html2pdf().set(opt).from(element).save().then(() => { btn.innerText = originalText; btn.disabled = false; });
     }
 
-    // دالة إرسال الإشعار
     async function submitReceipt() {
         const receiptNum = document.getElementById('receiptInput').value;
         if (!receiptNum) { alert("يرجى إدخال رقم الإشعار أولاً!"); return; }
@@ -537,7 +559,7 @@ if(savedData.selectedTheme) {
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") { 
-                currentUserStatus = result.newStatus; // ستصبح Pending
+                currentUserStatus = result.newStatus;
                 document.getElementById('paymentModal').style.display = 'none';
                 document.getElementById('accountStatusMsg').innerText = "حالة الحساب: 🟡 قيد المراجعة (بانتظار التأكيد)";
                 alert("تم إرسال إشعار الدفع بنجاح! سيتم تفعيل حسابك قريباً.");
