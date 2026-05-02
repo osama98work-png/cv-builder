@@ -100,11 +100,25 @@
     <div class="container">
         
         <!-- نافذة الدفع -->
+        <!-- نافذة الدفع -->
         <div class="modal-overlay" id="paymentModal">
             <div class="modal-content">
                 <h2>ترقية الحساب 🚀</h2>
-                <p>لتحميل السيرة الذاتية بصيغة PDF احترافية وإزالة العلامة المائية، يرجى تحويل مبلغ <strong style="color: #e74c3c; font-size: 20px;">250 ل.س</strong> عبر <b>شام كاش</b> وإدخال رقم الإشعار أدناه.</p>
-                <input type="text" id="receiptInput" placeholder="أدخل رقم إشعار شام كاش هنا...">
+                <p>لتحميل السيرة الذاتية بصيغة PDF احترافية وإزالة العلامة المائية، يرجى تحويل مبلغ <strong style="color: #e74c3c; font-size: 20px;">250 ل.س</strong> عبر <b>شام كاش</b>.</p>
+                
+                <!-- صندوق نسخ كود شام كاش الجديد -->
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #bdc3c7; text-align: right;">
+                    <label style="font-size: 13px; color: #555; margin-bottom: 8px; display: block;">1. انسخ كود الدفع الخاص بنا:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="shamCashCode" value="89dec5c74b1215b7e00cbbad7b53d370" readonly style="margin: 0; padding: 10px; font-size: 13px; flex: 1; background: #fff; text-align: left; direction: ltr; border: 1px solid #ddd; border-radius: 5px;">
+                        <button onclick="copyShamCash()" id="copyBtn" style="background: #3498db; color: white; border: none; border-radius: 5px; padding: 0 15px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap;">📋 نسخ</button>
+                    </div>
+                    <p id="copyMsg" style="color: #27ae60; font-size: 12px; font-weight: bold; margin: 5px 0 0 0; display: none;">✅ تم النسخ! اذهب لتطبيق شام كاش وقم بالتحويل.</p>
+                </div>
+
+                <label style="font-size: 13px; color: #555; text-align: right; display: block;">2. أدخل رقم إشعار التحويل هنا:</label>
+                <input type="text" id="receiptInput" placeholder="رقم الإشعار..." style="margin-top: 5px;">
+                
                 <button class="btn-pay" id="submitPaymentBtn" onclick="submitReceipt()">إرسال الإشعار والتفعيل</button>
                 <button class="btn-close" onclick="document.getElementById('paymentModal').style.display='none'">إلغاء</button>
             </div>
