@@ -558,7 +558,32 @@
         const originalText = btn.innerText; btn.innerText = "⏳ جاري التجهيز..."; btn.disabled = true;
         html2pdf().set(opt).from(element).save().then(() => { btn.innerText = originalText; btn.disabled = false; });
     }
+    // دالة نسخ كود شام كاش
+    function copyShamCash() {
+        const codeInput = document.getElementById('shamCashCode');
+        const copyBtn = document.getElementById('copyBtn');
+        const msg = document.getElementById('copyMsg');
 
+        // تحديد النص ونسخه
+        codeInput.select();
+        codeInput.setSelectionRange(0, 99999); // لدعم الموبايلات
+
+        navigator.clipboard.writeText(codeInput.value).then(() => {
+            // تأثير بصري للنجاح
+            copyBtn.innerText = "✔ تم النسخ";
+            copyBtn.style.background = "#27ae60";
+            msg.style.display = "block";
+
+            // إرجاع الزر لشكله الطبيعي بعد 3 ثواني
+            setTimeout(() => {
+                copyBtn.innerText = "📋 نسخ";
+                copyBtn.style.background = "#3498db";
+                msg.style.display = "none";
+            }, 3000);
+        }).catch(err => {
+            alert("فشل النسخ التلقائي، يرجى تحديده ونسخه يدوياً.");
+        });
+    }
     async function submitReceipt() {
         const receiptNum = document.getElementById('receiptInput').value;
         if (!receiptNum) { alert("يرجى إدخال رقم الإشعار أولاً!"); return; }
