@@ -643,14 +643,37 @@
         }
 
         const element = document.getElementById('cvTemplate');
+        
+        // --- 1. الإصلاح السحري لمشكلة اختفاء المسافات بالموبايل ---
+        const textElements = element.querySelectorAll('.cv-name, .cv-title, .cv-content, .cv-list li, .cv-section-title, #cvEmail, #cvPhone');
+        const originalTexts = [];
+        textElements.forEach((el, index) => {
+            originalTexts[index] = el.innerHTML; // حفظ النص الأصلي
+            // استبدال المسافات العادية بمسافة إجبارية لا تختفي
+            el.innerHTML = el.innerHTML.replace(/ /g, '&nbsp;'); 
+        });
+        // -----------------------------------------------------------
+
         const userName = document.getElementById('inputName').value || 'CV';
-        const opt = { margin: 0, filename: userName + '_Resume.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+        const opt = { 
+            margin: 0, 
+            filename: userName + '_Resume.pdf', 
+            image: { type: 'jpeg', quality: 0.98 }, 
+            html2canvas: { scale: 2, useCORS: true }, 
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+        };
         
         const btn = document.getElementById('pdfBtn');
-        const originalText = btn.innerText; btn.innerText = "⏳ جاري..."; btn.disabled = true;
+        const originalText = btn.innerText; btn.innerText = "⏳ جاري التجهيز..."; btn.disabled = true;
         
         html2pdf().set(opt).from(element).save().then(() => { 
             btn.innerText = originalText; btn.disabled = false; 
+            
+            // --- 2. إعادة النصوص لشكلها الطبيعي بعد تحميل الـ PDF ---
+            textElements.forEach((el, index) => {
+                el.innerHTML = originalTexts[index];
+            });
+            // ---------------------------------------------------------
             
             // إرسال إشعار للسيرفر لزيادة عداد التحميل
             fetch(WEB_APP_URL, { 
@@ -659,7 +682,7 @@
             });
         });
     }
-
+   
     // =====================================
     // 5. دوال شام كاش
     // =====================================
