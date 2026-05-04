@@ -57,13 +57,14 @@
         .theme-selector-container { position: absolute; top: 10px; right: 10px; z-index: 100; background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 5px; backdrop-filter: blur(5px); }
         .theme-selector-container select { padding: 8px; border-radius: 5px; border: 1px solid #3498db; font-weight: bold; color: #2c3e50; outline: none; font-family: inherit;}
 
-        /* --- 1. إصلاح الهيكل (Box-Model) لمنع الهيدر الداكن من التكسر --- */
+        /* --- الهيكل الصارم للورقة --- */
         .cv-paper { background: white; width: 210mm; min-height: 297mm; padding: 0; padding-bottom: 20mm; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 5px; position: relative; overflow: hidden; transition: 0.3s; margin-top: 60px; transform-origin: top center; }
         @media (max-width: 767px) { .cv-paper { transform: scale(0.85); margin-top: 70px; margin-bottom: -50px;} } 
         
         .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 50px; color: rgba(0, 0, 0, 0.08); font-weight: bold; transform: rotate(-45deg); pointer-events: none; z-index: 100; text-transform: uppercase; letter-spacing: 5px; }
         
-        .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+        /* إجبار الهيدر على عرض الورقة بالضبط 210mm */
+        .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 210mm; max-width: 210mm; box-sizing: border-box; }
         .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none; }
         .cv-paper[dir="ltr"] .cv-photo { margin-left: 0; margin-right: 20px; } 
         
@@ -72,13 +73,13 @@
         .cv-title { font-size: 16px; color: #3498db; margin-top: 5px; font-weight: 600; }
         .cv-contact { font-size: 13px; color: #7f8c8d; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
         
-        .cv-section { margin-bottom: 20px; padding: 0 20mm; width: 100%; box-sizing: border-box; }
+        .cv-section { margin-bottom: 20px; padding: 0 20mm; width: 210mm; max-width: 210mm; box-sizing: border-box; }
         .cv-section-title { font-size: 18px; color: #2c3e50; border-bottom: 1px solid #bdc3c7; margin-bottom: 10px; padding-bottom: 5px; font-weight: bold; }
         .cv-content { font-size: 14px; color: #444; line-height: 1.6; white-space: pre-wrap; }
         
         .cv-paper[dir="rtl"] { text-align: right; }
         .cv-paper[dir="ltr"] { text-align: left; }
-        .cv-list { list-style: none !important; padding: 0 !important; margin: 0; }
+        .cv-list { margin: 0; padding: 0; width: 100%; } /* تم التعديل لأننا نستخدم جداول الآن */
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
@@ -95,7 +96,7 @@
         .btn-about { background: #34495e; }
         .btn-comment { background: #e67e22; width: 100%; margin-top: 5px;}
 
-        /* --- 2. ستايلات القوالب (تم إصلاح الهيدر الداكن) --- */
+        /* --- ستايلات القوالب --- */
         .theme-dark .cv-header { background-color: #2c3e50 !important; color: white; border-bottom: none; }
         .theme-dark .cv-name { color: white; }
         .theme-dark .cv-title { color: #f39c12; }
@@ -230,15 +231,15 @@
                 </div>
                 <div class="cv-section">
                     <div class="cv-section-title" id="cvLblEdu">التعليم والشهادات</div>
-                    <ul class="cv-list" id="cvEdu"><li>أدخل مؤهلاتك...</li></ul>
+                    <div class="cv-list" id="cvEdu"></div>
                 </div>
                 <div class="cv-section">
                     <div class="cv-section-title" id="cvLblSkills">المهارات</div>
-                    <ul class="cv-list" id="cvSkills"><li>أدخل مهاراتك...</li></ul>
+                    <div class="cv-list" id="cvSkills"></div>
                 </div>
                 <div class="cv-section">
                     <div class="cv-section-title" id="cvLblLangs">اللغات</div>
-                    <ul class="cv-list" id="cvLangs"><li>أدخل اللغات...</li></ul>
+                    <div class="cv-list" id="cvLangs"></div>
                 </div>
             </div>
         </div>
@@ -378,22 +379,31 @@
         document.getElementById('cvBio').innerText = document.getElementById('inputBio').value || (isEnglish ? 'Professional Summary...' : 'الملخص المهني...');
     }
 
-    // --- 3. إصلاح النقاط (Bullets) جذرياً بوضعها داخل الـ HTML مباشرة ---
+    /* --- الحل النووي لمشكلة القوائم: بناء جداول مخفية برمجياً --- */
     function updateList(inputId, cvId) {
         const lines = document.getElementById(inputId).value.split('\n').filter(line => line.trim() !== '');
-        const ul = document.getElementById(cvId);
-        
-        // لون النقطة حسب القالب
+        const container = document.getElementById(cvId);
         const bulletColor = document.getElementById('themeDropdown').value === 'theme-minimal' ? '#16a085' : '#3498db';
-        const bulletHtml = `<span style="color: ${bulletColor}; margin: 0 8px; font-size: 14px;">■</span>`;
+        const align = isEnglish ? 'left' : 'right';
+        const dir = isEnglish ? 'ltr' : 'rtl';
+        
+        let html = `<table width="100%" dir="${dir}" style="border-collapse: collapse; margin: 0; padding: 0; font-size: 14px; color: #444; line-height: 1.6;">`;
         
         if (lines.length === 0) { 
-            ul.innerHTML = `<li style="display: flex; align-items: flex-start;">${bulletHtml}<span>${isEnglish ? 'Enter details...' : 'أدخل بياناتك...'}</span></li>`; 
-            return; 
+            html += `<tr>
+                <td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td>
+                <td style="vertical-align: top; text-align: ${align};">${isEnglish ? 'Enter details...' : 'أدخل بياناتك...'}</td>
+            </tr>`;
+        } else {
+            lines.forEach(line => {
+                html += `<tr>
+                    <td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td>
+                    <td style="vertical-align: top; text-align: ${align};">${line}</td>
+                </tr>`;
+            });
         }
-        
-        // الـ flex بيخلي الكلمة والنقطة ما يفارقوا بعض أبداً
-        ul.innerHTML = lines.map(line => `<li style="display: flex; align-items: flex-start; margin-bottom: 5px;">${bulletHtml}<span style="flex: 1;">${line}</span></li>`).join('');
+        html += '</table>';
+        container.innerHTML = html;
     }
 
     function toggleLayout() {
@@ -475,7 +485,6 @@
         if (themeName !== 'theme-default') paper.classList.add(themeName);
         savedData.selectedTheme = themeName;
         localStorage.setItem('cv_theme', themeName); 
-        // تحديث ألوان النقاط (Bullets) حسب القالب الجديد
         updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
     }
 
@@ -556,6 +565,7 @@
         btn.disabled = false; btn.innerText = "💾 حفظ البيانات ومعاينة السيرة";
     }
 
+    /* --- التحديث الآمن لتحميل الـ PDF بدون تخريب الأكواد --- */
     function downloadPDF() {
         if (currentUserStatus !== "Active") {
             document.getElementById('paymentModal').style.display = 'flex';
@@ -564,15 +574,14 @@
 
         const element = document.getElementById('cvTemplate');
         
-        // --- 3. الإصلاح الآمن جداً لمشكلة المسافات المفقودة ---
-        // (نبحث فقط عن "النصوص الصافية" بدون ما نخرب أكواد الـ HTML أبداً)
-        const textElements = element.querySelectorAll('.cv-name, .cv-title, .cv-content, .cv-list li span, .cv-section-title, #cvEmail, #cvPhone');
+        // استبدال المسافات العادية بالنصوص فقط (بدون تخريب الجداول)
+        const textElements = element.querySelectorAll('.cv-name, .cv-title, .cv-content, .cv-list td, .cv-section-title, #cvEmail, #cvPhone');
         const originalHTMLs = [];
         
         textElements.forEach((el, index) => {
             originalHTMLs[index] = el.innerHTML;
             el.childNodes.forEach(child => {
-                if (child.nodeType === 3) { // إذا كان نوعه نص صافي
+                if (child.nodeType === 3) { // إذا كان نص صافي فقط
                     child.nodeValue = child.nodeValue.replace(/ /g, '\u00A0'); 
                 }
             });
