@@ -12,23 +12,37 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; }
         * { box-sizing: border-box; }
-        .container { display: flex; flex-direction: column; width: 100%; height: 100vh; }
+        .container { display: flex; flex-direction: column; width: 100%; height: 100vh; overflow: hidden; }
         
-        /* الشاشات الصغيرة (الموبايل) */
-        .form-section { width: 100%; height: 100vh; padding: 20px; padding-bottom: 80px; background: white; overflow-y: auto; z-index: 10; }
-        .preview-section { width: 100%; height: 100vh; padding: 20px; padding-bottom: 80px; background: #eaeff1; display: none; justify-content: center; align-items: flex-start; overflow-y: auto; }
+        /* === تصميم الأقسام (شاشات التطبيق) === */
+        .app-screen { width: 100%; height: 100vh; overflow-y: auto; padding: 20px; padding-bottom: 80px; display: none; background: white; }
+        
+        /* 1. الشاشة الرئيسية (Home) */
+        #homeSection { display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
+        
+        /* 2. شاشة الفورم (تعبئة البيانات) */
+        #formSection { background: white; z-index: 10; }
+        
+        /* 3. شاشة المعاينة */
+        #previewSection { background: #eaeff1; justify-content: center; align-items: flex-start; position: relative; }
         
         /* شريط التنقل السفلي للموبايل */
-        .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; }
         .mobile-nav button { flex: 1; padding: 15px; border: none; background: white; font-size: 15px; font-weight: bold; color: #7f8c8d; cursor: pointer; transition: 0.3s; border-top: 3px solid transparent; }
         .mobile-nav button.active { color: #27ae60; border-top: 3px solid #27ae60; background: #f9fbf9; }
 
         /* الشاشات الكبيرة (الكمبيوتر) */
         @media (min-width: 768px) {
             .container { flex-direction: row; }
-            .form-section { width: 40%; height: 100vh; padding: 30px; display: block !important; }
-            .preview-section { width: 60%; height: 100vh; padding: 40px; display: flex !important; }
+            #homeSection { width: 100%; display: flex !important; }
+            #formSection { width: 40%; display: none !important; border-left: 1px solid #ddd; }
+            #previewSection { width: 60%; display: none !important; }
             .mobile-nav { display: none !important; } 
+            
+            /* تعديل حالة الكمبيوتر عند الدخول */
+            body.logged-in #homeSection { display: none !important; }
+            body.logged-in #formSection { display: block !important; }
+            body.logged-in #previewSection { display: flex !important; }
         }
 
         .form-group { margin-bottom: 15px; }
@@ -36,8 +50,8 @@
         input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; transition: border 0.3s; }
         input:focus, textarea:focus { border-color: #3498db; outline: none; }
         
-        /* قسم تسجيل الدخول */
-        .auth-box { text-align: center; margin-bottom: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px; border: 1px solid #bde0eb; }
+        /* قسم تسجيل الدخول (في الشاشة الرئيسية) */
+        .auth-box { text-align: center; margin-bottom: 20px; padding: 20px; background: #e8f4f8; border-radius: 8px; border: 1px solid #bde0eb; width: 100%; max-width: 400px;}
         .auth-box h3 { margin-top: 0; color: #2c3e50; font-size: 18px;}
         
         .controls { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; flex-wrap: wrap; }
@@ -47,7 +61,20 @@
         .btn:hover { opacity: 0.9; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .cv-paper { background: white; width: 210mm; min-height: 297mm; padding: 20mm; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 5px; position: relative; overflow: hidden; transition: 0.3s; }
+        /* ستايل القائمة المنسدلة (Accordion) لحقول الإدخال */
+        .accordion-btn { background-color: #2c3e50; color: white; cursor: pointer; padding: 15px; width: 100%; text-align: right; border: none; outline: none; font-size: 16px; font-weight: bold; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .accordion-btn:hover { background-color: #34495e; }
+        .accordion-content { padding: 15px; background-color: #f9fbf9; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* القائمة المنسدلة للقوالب (في صفحة المعاينة) */
+        .theme-selector-container { position: absolute; top: 10px; right: 10px; z-index: 100; background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 5px; backdrop-filter: blur(5px); }
+        .theme-selector-container select { padding: 8px; border-radius: 5px; border: 1px solid #3498db; font-weight: bold; color: #2c3e50; outline: none; font-family: inherit;}
+
+        /* تصميم الورقة */
+        .cv-paper { background: white; width: 210mm; min-height: 297mm; padding: 20mm; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 5px; position: relative; overflow: hidden; transition: 0.3s; margin-top: 60px; /* لإبعادها عن قائمة القوالب */ transform-origin: top center; }
+        @media (max-width: 767px) { .cv-paper { transform: scale(0.85); margin-top: 70px; margin-bottom: -50px;} } /* تصغير الورقة قليلاً لتناسب الموبايل */
+        
         .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 50px; color: rgba(0, 0, 0, 0.08); font-weight: bold; transform: rotate(-45deg); pointer-events: none; z-index: 100; text-transform: uppercase; letter-spacing: 5px; }
         
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding-bottom: 20px; margin-bottom: 20px; }
@@ -64,18 +91,21 @@
         .cv-list { margin: 0; padding: 0 20px; font-size: 14px; color: #444; line-height: 1.6; }
 
         /* تصميم نافذة الدفع */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .modal-content h2 { margin-top: 0; color: #2c3e50; }
         .modal-content input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #bdc3c7; border-radius: 5px; text-align: center; font-size: 16px; font-weight: bold; }
         .btn-pay { background-color: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
         .btn-close { background-color: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
 
-        /* ستايل القائمة المنسدلة (Accordion) لحقول الإدخال */
-        .accordion-btn { background-color: #2c3e50; color: white; cursor: pointer; padding: 15px; width: 100%; text-align: right; border: none; outline: none; font-size: 16px; font-weight: bold; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .accordion-btn:hover { background-color: #34495e; }
-        .accordion-content { padding: 15px; background-color: #f9fbf9; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; display: block; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        /* الأزرار الاجتماعية (الشاشة الرئيسية) */
+        .social-bar { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 400px;}
+        .social-btn { flex: 1; padding: 12px; border-radius: 6px; text-decoration: none; color: white; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s;}
+        .social-btn:hover { transform: translateY(-2px); }
+        .btn-whatsapp { background: #25D366; }
+        .btn-facebook { background: #1877F2; }
+        .btn-about { background: #34495e; }
+        .btn-comment { background: #e67e22; width: 100%; margin-top: 5px;}
 
         /* ستايلات القوالب (Templates Themes) */
         .theme-dark .cv-header { background-color: #2c3e50; color: white; padding: 20px; border-radius: 5px 5px 0 0; border-bottom: none; margin-top: -20mm; margin-left: -20mm; margin-right: -20mm; margin-bottom: 30px; width: calc(100% + 40mm); }
@@ -100,13 +130,11 @@
     <div class="container">
         
         <!-- نافذة الدفع -->
-        <!-- نافذة الدفع -->
         <div class="modal-overlay" id="paymentModal">
             <div class="modal-content">
                 <h2>ترقية الحساب 🚀</h2>
-                <p>لتحميل السيرة الذاتية بصيغة PDF احترافية وإزالة العلامة المائية، يرجى تحويل مبلغ <strong style="color: #e74c3c; font-size: 20px;">250 ل.س </strong> عبر <b>شام كاش</b>.<b>25000 ل.س </b></p>
+                <p>لتحميل السيرة الذاتية بصيغة PDF احترافية وإزالة العلامة المائية، يرجى تحويل مبلغ <strong style="color: #e74c3c; font-size: 20px;">25000 ل.س </strong> عبر <b>شام كاش</b>.</p>
                 
-                <!-- صندوق نسخ كود شام كاش الجديد -->
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #bdc3c7; text-align: right;">
                     <label style="font-size: 13px; color: #555; margin-bottom: 8px; display: block;">1. انسخ كود الدفع الخاص بنا:</label>
                     <div style="display: flex; gap: 8px;">
@@ -124,13 +152,12 @@
             </div>
         </div>
 
-        <!-- قسم الفورم -->
-        <div class="form-section">
-            
-            <!-- قسم تسجيل الدخول -->
-            <div id="loginSection" class="auth-box">
-                <h3>مرحباً بك في CV Builder</h3>
-                <p style="font-size: 13px; color: #555;">يرجى تسجيل الدخول بحساب غوغل لحفظ سيرتك الذاتية أو استرجاعها.</p>
+        <!-- === 1. الشاشة الرئيسية (Home) === -->
+        <div id="homeSection" class="app-screen">
+            <div class="auth-box">
+                <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 5px;">مرحباً بك في CV Builder</h3>
+                <p style="font-size: 13px; color: #555; margin-bottom: 15px;">أداة إنشاء السير الذاتية الاحترافية والذكية.</p>
+                
                 <div style="display: flex; justify-content: center;">
                     <div id="g_id_onload"
                          data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com"
@@ -138,40 +165,45 @@
                     </div>
                     <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
                 </div>
+                
+                <p id="systemMsg" style="color: #3498db; font-size: 13px; font-weight: bold; margin-top: 15px;"></p>
+                
+                <!-- زر استئناف الجلسة (يظهر فقط إذا كان هناك إيميل محفوظ) -->
+                <button id="resumeSessionBtn" onclick="resumeSession()" style="display: none; background: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">🔄 استئناف الجلسة السابقة</button>
             </div>
 
-            <!-- رسالة الترحيب -->
-            <div id="welcomeSection" class="auth-box" style="display: none; background: #eafaf1; border-color: #a3e4d7;">
-                <h3 id="welcomeMsg" style="color: #27ae60; margin: 0;"></h3>
-                <p id="accountStatusMsg" style="font-size: 12px; font-weight:bold; color: #333; margin-top: 5px;"></p>
+            <!-- الروابط الاجتماعية -->
+            <div class="social-bar">
+                <a href="https://wa.me/رقم_الواتساب" target="_blank" class="social-btn btn-whatsapp">💬 تواصل واتساب</a>
+                <a href="https://facebook.com/صفحة_الفيسبوك" target="_blank" class="social-btn btn-facebook">📘 صفحة فيسبوك</a>
+                <a href="#about" class="social-btn btn-about">ℹ️ من نحن</a>
+                <!-- زر التعليقات (يفتح قسم التعليقات في بلوغر) -->
+                <a href="javascript:void(0)" onclick="window.parent.location.href = window.parent.location.href.split('#')[0] + '#comments'" class="social-btn btn-comment">✍️ اترك تعليقاً حول تجربتك</a>
             </div>
+        </div>
 
-            <!-- قسم اختيار القوالب -->
-            <div style="margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
-                <label style="margin-bottom: 10px; font-size: 14px;">🎨 اختر قالب السيرة الذاتية:</label>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn" style="background: #3498db; color: white;" onclick="changeTheme('theme-default')">الأزرق الكلاسيكي</button>
-                    <button class="btn" style="background: #2c3e50; color: white;" onclick="changeTheme('theme-dark')">الداكن الاحترافي</button>
-                    <button class="btn" style="background: #16a085; color: white;" onclick="changeTheme('theme-minimal')">الأخضر البسيط</button>
+        <!-- === 2. شاشة الفورم (Form) === -->
+        <div id="formSection" class="app-screen">
+            
+            <div style="background: #eafaf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid #a3e4d7; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 id="welcomeMsg" style="color: #27ae60; margin: 0; text-align: right;"></h4>
+                    <p id="accountStatusMsg" style="font-size: 12px; font-weight:bold; color: #333; margin: 5px 0 0 0; text-align: right;"></p>
                 </div>
+                <button onclick="logout()" style="background: #e74c3c; border: none; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold;">تسجيل خروج</button>
             </div>
 
             <div class="controls">
-                <button class="btn btn-lang" id="btnLang" onclick="toggleLayout()" disabled>عربي/English</button>
-                <button class="btn btn-translate" id="translateBtn" onclick="autoTranslate()" disabled>ترجمة (غوغل)</button>
-                <button class="btn" style="background-color: #27ae60; color: white;" id="saveBtn" onclick="saveDataToServer()" disabled>💾 حفظ البيانات</button>
-                <button class="btn" style="background-color: #8e44ad; color: white;" id="pdfBtn" onclick="downloadPDF()" disabled>⬇️ تحميل PDF</button>
+                <button class="btn btn-lang" id="btnLang" onclick="toggleLayout()">عربي/English</button>
+                <button class="btn btn-translate" id="translateBtn" onclick="autoTranslate()">ترجمة (غوغل)</button>
+                <button class="btn" style="background-color: #27ae60; color: white; width: 100%; margin-top: 5px; font-size: 15px;" id="saveBtn" onclick="saveDataToServer()">💾 حفظ البيانات ومعاينة السيرة</button>
             </div>
 
-            <p id="systemMsg" style="color: blue; font-size: 13px; font-weight: bold;"></p>
-
-            <!-- زر القائمة المنسدلة -->
             <button class="accordion-btn" onclick="toggleInputs()" id="toggleInputsBtn">
                 <span>📝 تعبئة بيانات السيرة الذاتية</span>
                 <span id="accordionArrow">▲</span>
             </button>
 
-            <!-- صندوق الحقول (المنسدل) -->
             <div id="inputsContainer" class="accordion-content">
                 <div class="form-group"><label>الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
                 <div class="form-group"><label id="lblName">الاسم الكامل</label><input type="text" id="inputName" oninput="updateCV()"></div>
@@ -186,8 +218,20 @@
 
         </div>
 
-        <!-- قسم المعاينة -->
-        <div class="preview-section">
+        <!-- === 3. شاشة المعاينة (Preview) === -->
+        <div id="previewSection" class="app-screen">
+            
+            <!-- القائمة العائمة للقوالب والتحميل -->
+            <div class="theme-selector-container">
+                <label style="font-size: 12px; margin-bottom: 2px; color: #2c3e50; font-weight: bold;">🎨 القالب:</label>
+                <select id="themeDropdown" onchange="changeTheme(this.value)">
+                    <option value="theme-default">الأزرق الكلاسيكي</option>
+                    <option value="theme-dark">الداكن الاحترافي</option>
+                    <option value="theme-minimal">الأخضر البسيط</option>
+                </select>
+                <button class="btn" style="background-color: #8e44ad; color: white; padding: 10px; margin-top: 5px; font-size: 14px;" id="pdfBtn" onclick="downloadPDF()">⬇️ تحميل PDF</button>
+            </div>
+
             <div class="cv-paper" id="cvTemplate" dir="rtl">
                 <div class="watermark" id="watermark">CV Builder</div>
                 <div class="cv-header">
@@ -219,9 +263,9 @@
         </div>
 
         <!-- شريط التنقل السفلي للموبايل -->
-        <div class="mobile-nav">
-            <button id="tabForm" class="active" onclick="switchMobileTab('form')">📝 تعديل البيانات</button>
-            <button id="tabPreview" onclick="switchMobileTab('preview')">📄 معاينة السيرة</button>
+        <div class="mobile-nav" id="mobileNav">
+            <button id="tabForm" onclick="navigateTo('form')">📝 تعديل البيانات</button>
+            <button id="tabPreview" onclick="navigateTo('preview')">📄 معاينة السيرة</button>
         </div>
 
     </div>
@@ -232,33 +276,110 @@
 
     let isEnglish = false;
     let currentUserStatus = "Not Active"; 
-
-    let savedData = {
-        ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' },
-        en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }
-    };
+    let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
     // =====================================
-    // 1. دوال تسجيل الدخول واسترجاع البيانات
+    // 1. نظام التصفح، History API، والذاكرة المؤقتة
+    // =====================================
+    window.onload = function() {
+        // التحقق من وجود جلسة محفوظة
+        const cachedEmail = localStorage.getItem('cv_email');
+        if (cachedEmail) {
+            document.getElementById('resumeSessionBtn').style.display = 'block';
+        }
+        
+        // تسجيل حالة البداية في سجل المتصفح
+        history.replaceState({ page: 'home' }, '', '#home');
+        showScreen('home');
+    };
+
+    // التفاعل مع زر الرجوع في الجوال/المتصفح
+    window.onpopstate = function(event) {
+        if (event.state && event.state.page) {
+            showScreen(event.state.page);
+        } else {
+            showScreen('home');
+        }
+    };
+
+    function navigateTo(page) {
+        // إذا كنا على الكمبيوتر، لا نستخدم نظام الشاشات المنفصلة
+        if (window.innerWidth >= 768 && (page === 'form' || page === 'preview')) return;
+        
+        history.pushState({ page: page }, '', '#' + page);
+        showScreen(page);
+    }
+
+    function showScreen(page) {
+        const home = document.getElementById('homeSection');
+        const form = document.getElementById('formSection');
+        const preview = document.getElementById('previewSection');
+        const nav = document.getElementById('mobileNav');
+
+        // إعادة تعيين الشاشات
+        home.style.display = 'none'; form.style.display = 'none'; preview.style.display = 'none';
+        document.getElementById('tabForm').classList.remove('active');
+        document.getElementById('tabPreview').classList.remove('active');
+        
+        // الكمبيوتر له قواعده الخاصة (معتمدة على CSS)
+        if (window.innerWidth >= 768) {
+            if(page === 'home') {
+                document.body.classList.remove('logged-in');
+            } else {
+                document.body.classList.add('logged-in');
+            }
+            return;
+        }
+
+        // قواعد الموبايل
+        if (page === 'home') {
+            home.style.display = 'flex';
+            nav.style.display = 'none';
+        } else if (page === 'form') {
+            form.style.display = 'block';
+            nav.style.display = 'flex';
+            document.getElementById('tabForm').classList.add('active');
+        } else if (page === 'preview') {
+            preview.style.display = 'flex';
+            nav.style.display = 'flex';
+            document.getElementById('tabPreview').classList.add('active');
+        }
+    }
+
+    function logout() {
+        // مسح الذاكرة المؤقتة والعودة للرئيسية
+        localStorage.removeItem('cv_email');
+        localStorage.removeItem('cv_name');
+        document.getElementById('resumeSessionBtn').style.display = 'none';
+        document.getElementById('systemMsg').innerText = "تم تسجيل الخروج.";
+        document.body.classList.remove('logged-in'); // للكمبيوتر
+        navigateTo('home');
+    }
+
+    // =====================================
+    // 2. تسجيل الدخول واسترجاع البيانات
     // =====================================
     async function handleGoogleLogin(response) {
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
-        const userEmail = payload.email;
-        const userName = payload.name;
+        loginProcess(payload.email, payload.name);
+    }
 
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('welcomeSection').style.display = 'block';
-        document.getElementById('welcomeMsg').innerText = `أهلاً بك، ${userName} 👋`;
-        document.getElementById('systemMsg').innerText = "جاري التحقق من بياناتك المحفوظة... ⏳";
-        
+    function resumeSession() {
+        const email = localStorage.getItem('cv_email');
+        const name = localStorage.getItem('cv_name') || "عزيزي المستخدم";
+        if(email) loginProcess(email, name);
+    }
+
+    async function loginProcess(userEmail, userName) {
+        // حفظ الجلسة في الذاكرة
+        localStorage.setItem('cv_email', userEmail);
+        localStorage.setItem('cv_name', userName);
+
+        document.getElementById('systemMsg').innerText = "جاري جلب بياناتك... ⏳";
+        document.getElementById('welcomeMsg').innerText = `أهلاً، ${userName}`;
         document.getElementById('inputEmail').value = userEmail;
         document.getElementById('inputName').value = userName;
         updateCV();
-
-        document.getElementById('btnLang').disabled = false;
-        document.getElementById('translateBtn').disabled = false;
-        document.getElementById('saveBtn').disabled = false;
-        document.getElementById('pdfBtn').disabled = false;
 
         try {
             const res = await fetch(WEB_APP_URL, {
@@ -271,13 +392,14 @@
             if(data.status === "success") {
                 savedData = JSON.parse(data.cvData);
                 
-                if(savedData.selectedTheme) {
-                    changeTheme(savedData.selectedTheme);
-                }
+                // استعادة القالب من الذاكرة أو البيانات المحفوظة
+                const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
+                document.getElementById('themeDropdown').value = cachedTheme;
+                changeTheme(cachedTheme);
                 
                 currentUserStatus = data.userStatus; 
-                let statusText = currentUserStatus === "Active" ? "🟢 حساب مفعل (يمكنك تحميل PDF)" : "🔴 حساب مجاني (يلزم الدفع للتحميل)";
-                document.getElementById('accountStatusMsg').innerText = "حالة الحساب: " + statusText;
+                let statusText = currentUserStatus === "Active" ? "🟢 حساب مفعل" : "🔴 حساب مجاني";
+                document.getElementById('accountStatusMsg').innerText = statusText;
 
                 if(currentUserStatus === "Active") document.getElementById('watermark').style.display = "none";
 
@@ -295,18 +417,21 @@
                 document.getElementById('inputLangs').value = savedData.ar.langs || '';
                 
                 updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
-                document.getElementById('systemMsg').innerText = "✅ تم استرجاع بياناتك السابقة بنجاح!";
             } else {
-                document.getElementById('systemMsg').innerText = "✨ حساب جديد! يمكنك البدء بكتابة سيرتك الذاتية.";
-                document.getElementById('accountStatusMsg').innerText = "حالة الحساب: 🔴 حساب مجاني (يلزم الدفع للتحميل)";
+                document.getElementById('accountStatusMsg').innerText = "🔴 حساب مجاني (جديد)";
             }
+            
+            // التوجيه التلقائي للفورم بعد نجاح تسجيل الدخول
+            document.getElementById('systemMsg').innerText = "";
+            navigateTo('form');
+
         } catch (e) {
-            document.getElementById('systemMsg').innerText = "❌ حدث خطأ في استرجاع البيانات.";
+            document.getElementById('systemMsg').innerText = "❌ حدث خطأ في الشبكة.";
         }
     }
 
     // =====================================
-    // 2. دوال التحديث والواجهة
+    // 3. دوال التحديث والواجهة
     // =====================================
     function updateCV() {
         document.getElementById('cvName').innerText = document.getElementById('inputName').value || (isEnglish ? 'Full Name' : 'الاسم الكامل');
@@ -360,36 +485,13 @@
         updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
     }
 
-    // فتح وإغلاق القائمة المنسدلة للحقول
     function toggleInputs() {
         const container = document.getElementById('inputsContainer');
         const arrow = document.getElementById('accordionArrow');
         if (container.style.display === 'none') {
-            container.style.display = 'block';
-            arrow.innerText = '▲';
+            container.style.display = 'block'; arrow.innerText = '▲';
         } else {
-            container.style.display = 'none';
-            arrow.innerText = '▼';
-        }
-    }
-
-    // التبديل بين الفورم والمعاينة في الموبايل
-    function switchMobileTab(tab) {
-        const form = document.querySelector('.form-section');
-        const preview = document.querySelector('.preview-section');
-        const tabF = document.getElementById('tabForm');
-        const tabP = document.getElementById('tabPreview');
-
-        if (tab === 'form') {
-            form.style.display = 'block';
-            preview.style.display = 'none';
-            tabF.classList.add('active');
-            tabP.classList.remove('active');
-        } else {
-            form.style.display = 'none';
-            preview.style.display = 'flex';
-            tabF.classList.remove('active');
-            tabP.classList.add('active');
+            container.style.display = 'none'; arrow.innerText = '▼';
         }
     }
 
@@ -403,17 +505,12 @@
             img.onload = function() {
                 const canvas = document.createElement('canvas');
                 const MAX_SIZE = 250;
-                let width = img.width;
-                let height = img.height;
+                let width = img.width; let height = img.height;
 
-                if (width > height) {
-                    if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-                } else {
-                    if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-                }
+                if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
 
-                canvas.width = width;
-                canvas.height = height;
+                canvas.width = width; canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
@@ -434,15 +531,15 @@
             paper.classList.add(themeName);
         }
         savedData.selectedTheme = themeName;
+        // حفظ القالب في الذاكرة ليتذكره الموقع في الزيارة القادمة
+        localStorage.setItem('cv_theme', themeName); 
     }
 
     // =====================================
-    // 3. دوال الاتصال بالسيرفر (ترجمة، حفظ)
+    // 4. الاتصال بالسيرفر (ترجمة، حفظ، تحميل)
     // =====================================
     async function autoTranslate() {
         const btn = document.getElementById('translateBtn');
-        const msg = document.getElementById('systemMsg');
-        
         const payloadData = {
             action: "translate",
             texts: {
@@ -455,11 +552,11 @@
             }
         };
 
-        if(!payloadData.texts.title && !payloadData.texts.bio && !payloadData.texts.edu && !payloadData.texts.skills && !payloadData.texts.langs) {
-            msg.innerText = "يرجى كتابة البيانات أولاً لترجمتها."; return;
+        if(!payloadData.texts.title && !payloadData.texts.bio && !payloadData.texts.edu) {
+            alert("يرجى كتابة البيانات أولاً لترجمتها."); return;
         }
 
-        btn.disabled = true; btn.innerText = "⏳ ترجمة..."; msg.innerText = "";
+        btn.disabled = true; btn.innerText = "⏳ ترجمة..."; 
 
         try {
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
@@ -482,15 +579,13 @@
                     document.getElementById('inputLangs').value = savedData.en.langs;
                     updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
                 }
-                msg.innerText = "✅ تمت الترجمة بنجاح!"; msg.style.color = "green";
             }
-        } catch (e) { msg.innerText = "❌ خطأ في الاتصال."; msg.style.color = "red"; }
+        } catch (e) { alert("❌ خطأ في الاتصال أثناء الترجمة."); }
         btn.disabled = false; btn.innerText = "ترجمة (غوغل)";
     }
 
     async function saveDataToServer() {
         const btn = document.getElementById('saveBtn');
-        const msg = document.getElementById('systemMsg');
         const email = document.getElementById('inputEmail').value;
 
         const currentLang = isEnglish ? 'en' : 'ar';
@@ -501,13 +596,10 @@
         savedData[currentLang].skills = document.getElementById('inputSkills').value;
         savedData[currentLang].langs = document.getElementById('inputLangs').value;
 
-        btn.disabled = true; 
-        btn.innerText = "⏳ جاري الحفظ..."; 
-        msg.innerText = "";
+        btn.disabled = true; btn.innerText = "⏳ جاري الحفظ..."; 
 
         let base64Image = ""; 
         const cvPhoto = document.getElementById('cvPhoto');
-        
         if (cvPhoto.src && cvPhoto.src.startsWith('data:image')) {
             base64Image = cvPhoto.src.split(',')[1];
             savedData.userImageBase64 = base64Image; 
@@ -524,25 +616,20 @@
 
         try {
             const response = await fetch(WEB_APP_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                body: JSON.stringify(payloadData) 
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) 
             });
             const result = await response.json();
             if(result.status === "success") { 
-                msg.innerText = "✅ تم حفظ بياناتك وصورتك في الذاكرة السحابية!"; 
-                msg.style.color = "green"; 
+                // التوجيه لمعاينة السيرة فوراً بعد نجاح الحفظ
+                navigateTo('preview');
             } else {
-                msg.innerText = "❌ حدث خطأ أثناء الحفظ."; 
-                msg.style.color = "red";
+                alert("❌ حدث خطأ أثناء الحفظ."); 
             }
         } catch (e) { 
-            msg.innerText = "❌ فشل الاتصال بالسيرفر."; 
-            msg.style.color = "red"; 
+            alert("❌ فشل الاتصال بالسيرفر."); 
         }
         
-        btn.disabled = false; 
-        btn.innerText = "💾 حفظ البيانات";
+        btn.disabled = false; btn.innerText = "💾 حفظ البيانات ومعاينة السيرة";
     }
 
     function downloadPDF() {
@@ -554,36 +641,38 @@
         const element = document.getElementById('cvTemplate');
         const userName = document.getElementById('inputName').value || 'CV';
         const opt = { margin: 0, filename: userName + '_Resume.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-        const btn = document.querySelector('button[onclick="downloadPDF()"]');
-        const originalText = btn.innerText; btn.innerText = "⏳ جاري التجهيز..."; btn.disabled = true;
-        html2pdf().set(opt).from(element).save().then(() => { btn.innerText = originalText; btn.disabled = false; });
+        
+        const btn = document.getElementById('pdfBtn');
+        const originalText = btn.innerText; btn.innerText = "⏳ جاري..."; btn.disabled = true;
+        
+        html2pdf().set(opt).from(element).save().then(() => { 
+            btn.innerText = originalText; btn.disabled = false; 
+            
+            // إرسال إشعار للسيرفر لزيادة عداد التحميل
+            fetch(WEB_APP_URL, { 
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                body: JSON.stringify({ action: "log_download", email: document.getElementById('inputEmail').value }) 
+            });
+        });
     }
-    // دالة نسخ كود شام كاش
+
+    // =====================================
+    // 5. دوال شام كاش
+    // =====================================
     function copyShamCash() {
         const codeInput = document.getElementById('shamCashCode');
         const copyBtn = document.getElementById('copyBtn');
         const msg = document.getElementById('copyMsg');
 
-        // تحديد النص ونسخه
-        codeInput.select();
-        codeInput.setSelectionRange(0, 99999); // لدعم الموبايلات
-
+        codeInput.select(); codeInput.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(codeInput.value).then(() => {
-            // تأثير بصري للنجاح
-            copyBtn.innerText = "✔ تم النسخ";
-            copyBtn.style.background = "#27ae60";
-            msg.style.display = "block";
-
-            // إرجاع الزر لشكله الطبيعي بعد 3 ثواني
+            copyBtn.innerText = "✔ تم النسخ"; copyBtn.style.background = "#27ae60"; msg.style.display = "block";
             setTimeout(() => {
-                copyBtn.innerText = "📋 نسخ";
-                copyBtn.style.background = "#3498db";
-                msg.style.display = "none";
+                copyBtn.innerText = "📋 نسخ"; copyBtn.style.background = "#3498db"; msg.style.display = "none";
             }, 3000);
-        }).catch(err => {
-            alert("فشل النسخ التلقائي، يرجى تحديده ونسخه يدوياً.");
-        });
+        }).catch(err => { alert("فشل النسخ التلقائي."); });
     }
+
     async function submitReceipt() {
         const receiptNum = document.getElementById('receiptInput').value;
         if (!receiptNum) { alert("يرجى إدخال رقم الإشعار أولاً!"); return; }
@@ -600,7 +689,7 @@
             if(result.status === "success") { 
                 currentUserStatus = result.newStatus;
                 document.getElementById('paymentModal').style.display = 'none';
-                document.getElementById('accountStatusMsg').innerText = "حالة الحساب: 🟡 قيد المراجعة (بانتظار التأكيد)";
+                document.getElementById('accountStatusMsg').innerText = "🟡 حساب قيد المراجعة";
                 alert("تم إرسال إشعار الدفع بنجاح! سيتم تفعيل حسابك قريباً.");
             }
         } catch (e) { alert("فشل الاتصال بالسيرفر."); }
