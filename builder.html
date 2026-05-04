@@ -84,7 +84,7 @@
         .cv-header-info { flex: 1; }
         .cv-name { font-size: 28px; font-weight: bold; color: #2c3e50; margin: 0; }
         .cv-title { font-size: 16px; color: #3498db; margin-top: 5px; font-weight: 600; }
-        .cv-contact { font-size: 13px; color: #7f8c8d; margin-top: 8px; }
+        .cv-contact { font-size: 13px; color: #7f8c8d; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
         .cv-section { margin-bottom: 20px; }
         .cv-section-title { font-size: 18px; color: #2c3e50; border-bottom: 1px solid #bdc3c7; margin-bottom: 10px; padding-bottom: 5px; font-weight: bold; }
         .cv-content { font-size: 14px; color: #444; line-height: 1.6; white-space: pre-wrap; }
@@ -239,7 +239,11 @@
                     <div class="cv-header-info">
                         <h1 class="cv-name" id="cvName">الاسم الكامل</h1>
                         <div class="cv-title" id="cvTitle">المسمى الوظيفي</div>
-                        <div class="cv-contact"><span id="cvEmail">البريد الإلكتروني</span> | <span id="cvPhone">رقم الهاتف</span></div>
+                       <div class="cv-contact">
+    <span id="cvEmail" dir="ltr">البريد الإلكتروني</span> 
+    <span style="color: #bdc3c7; margin: 0 5px;">|</span> 
+    <span id="cvPhone" dir="ltr">رقم الهاتف</span>
+</div>
                     </div>
                 </div>
                 
