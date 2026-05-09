@@ -6,6 +6,9 @@
     <title>CV Builder - الواجهة المتكاملة</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
+    <!-- ⚠️ ربطنا ملف الثيمات الخارجي هون -->
+    <link rel="stylesheet" href="themes.css">
+    
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; }
         * { box-sizing: border-box; }
@@ -89,19 +92,8 @@
         .btn-facebook { background: #1877F2; }
         .btn-about { background: #34495e; }
         .btn-comment { background: #e67e22; width: 100%; margin-top: 5px;}
-
-        .theme-dark .cv-header { background-color: #2c3e50 !important; color: white; border-bottom: none; }
-        .theme-dark .cv-name { color: white; }
-        .theme-dark .cv-title { color: #f39c12; }
-        .theme-dark .cv-contact { color: #bdc3c7; }
-        .theme-dark .cv-section-title { color: #2c3e50; border-bottom: 2px solid #2c3e50; }
-        .theme-dark .cv-photo { border-color: #f39c12; }
-
-        .theme-minimal .cv-header { border-bottom: 3px dashed #16a085; padding-bottom: 15px; }
-        .theme-minimal .cv-name { color: #16a085; text-transform: uppercase; letter-spacing: 1px; }
-        .theme-minimal .cv-title { color: #7f8c8d; font-style: italic; }
-        .theme-minimal .cv-section-title { color: #16a085; border-bottom: none; }
-        .theme-minimal .cv-photo { border-radius: 10px; border-color: #16a085; }
+        
+        /* ⚠️ تم حذف تنسيقات الثيمات من هنا لتعتمد على ملف themes.css بالكامل */
     </style>
 </head>
 <body>
@@ -197,12 +189,10 @@
         <div id="previewSection" class="app-screen">
             <div class="theme-selector-container">
                 <label style="font-size: 12px; margin-bottom: 2px; color: #2c3e50; font-weight: bold;">🎨 القالب:</label>
+                <!-- ⚠️ تم تفريغ القائمة ليتم تعبئتها تلقائياً عبر الجافاسكريبت -->
                 <select id="themeDropdown" onchange="changeTheme(this.value)">
-                    <option value="theme-default">الأزرق الكلاسيكي</option>
-                    <option value="theme-dark">الداكن الاحترافي</option>
-                    <option value="theme-minimal">الأخضر البسيط</option>
+                    <option value="theme-default">جاري تحميل القوالب...</option>
                 </select>
-                <!-- الزر الجديد بدل الـ PDF -->
                 <button class="btn" style="background-color: #2980b9; color: white; padding: 10px; margin-top: 5px; font-size: 14px;" id="linkBtn" onclick="generateCVLink()">🔗 الحصول على الرابط</button>
             </div>
 
@@ -247,16 +237,60 @@
 
 <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSEEpu5FyJggjZHV33y9Ja-KaAQYRTi_k3gR92ghlAoD_m_dFv8JLTbFtwh6sZBwo/exec';
-    
-    // ⚠️ رابط صفحة بلوغر اللي نسختها بالخطوة السابقة
     const BLOGGER_PAGE_URL = "https://osama98work-png.github.io/cv-builder/cv.html";
+    
+    // ⚠️ اسم ملف الثيمات الخارجي الخاص بك
+    const THEMES_CSS_FILE = "themes.css";
 
     let isEnglish = false;
     let currentUserStatus = "Not Active"; 
-    let currentUserUID = ""; // لتخزين الكود السري
+    let currentUserUID = ""; 
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
-    window.onload = function() {
+    // ⚠️ دالة الجلب التلقائي للثيمات من ملف الـ CSS
+    async function loadThemesDynamically() {
+        try {
+            const res = await fetch(THEMES_CSS_FILE);
+            if (!res.ok) throw new Error("ملف الثيمات غير موجود");
+            const cssText = await res.text();
+            
+            const dropdown = document.getElementById('themeDropdown');
+            dropdown.innerHTML = ''; // مسح القائمة الحالية
+            
+            // البحث عن التعليقات الخاصة بالثيمات
+            const regex = /\/\*!Theme:\s*(theme-[\w-]+)\s*\|\s*(.*?)\s*\*\//g;
+            let match;
+            let hasThemes = false;
+            
+            while ((match = regex.exec(cssText)) !== null) {
+                let opt = document.createElement('option');
+                opt.value = match[1].trim(); 
+                opt.text = match[2].trim();  
+                dropdown.add(opt);
+                hasThemes = true;
+            }
+
+            // خيار افتراضي في حال لم يجد تعليقات
+            if(!hasThemes){
+                dropdown.innerHTML = '<option value="theme-default">الأزرق الكلاسيكي</option>';
+            }
+            
+            // استعادة الثيم المختار سابقاً
+            const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
+            if(dropdown.querySelector(`option[value="${cachedTheme}"]`)) {
+                dropdown.value = cachedTheme;
+            }
+            
+        } catch (e) {
+            console.error("❌ فشل جلب الثيمات التلقائي", e);
+            document.getElementById('themeDropdown').innerHTML = '<option value="theme-default">الأزرق الكلاسيكي (افتراضي)</option>';
+        }
+    }
+
+    // ⚠️ تم تعديل دالة التشغيل لتنتظر جلب الثيمات أولاً
+    window.onload = async function() {
+        await loadThemesDynamically(); // جلب الثيمات
+        
         const cachedEmail = localStorage.getItem('cv_email');
         if (cachedEmail) { document.getElementById('resumeSessionBtn').style.display = 'block'; }
         history.replaceState({ page: 'home' }, '', '#home');
@@ -340,8 +374,8 @@
                 changeTheme(cachedTheme);
                 
                 currentUserStatus = data.userStatus; 
-                currentUserUID = data.uid || ""; // حفظ الكود السري للرابط
-if(savedData.phone) document.getElementById('inputPhone').value = savedData.phone;
+                currentUserUID = data.uid || ""; 
+                if(savedData.phone) document.getElementById('inputPhone').value = savedData.phone;
                 let statusText = currentUserStatus === "Active" ? "🟢 حساب مفعل" : "🔴 حساب مجاني";
                 document.getElementById('accountStatusMsg').innerText = statusText;
 
@@ -379,13 +413,12 @@ if(savedData.phone) document.getElementById('inputPhone').value = savedData.phon
         let actualEmail = document.getElementById('inputEmail').value || 'Email';
         let actualPhone = document.getElementById('inputPhone').value || 'Phone';
 
-        // --- نظام الحماية الذكي في المعاينة ---
         if (currentUserStatus !== "Active") {
             emailEl.innerText = actualEmail.substring(0, 3) + '*****@***.com';
             phoneEl.innerText = actualPhone.substring(0, 4) + '******';
             emailEl.style.filter = "blur(3px)";
             phoneEl.style.filter = "blur(3px)";
-            document.getElementById('watermark').style.display = "block"; // إظهار العلامة المائية
+            document.getElementById('watermark').style.display = "block"; 
         } else {
             emailEl.innerText = actualEmail;
             phoneEl.innerText = actualPhone;
@@ -489,7 +522,8 @@ if(savedData.phone) document.getElementById('inputPhone').value = savedData.phon
 
     function changeTheme(themeName) {
         const paper = document.getElementById('cvTemplate');
-        paper.classList.remove('theme-default', 'theme-dark', 'theme-minimal');
+        // إزالة أي ثيم سابق ديناميكياً
+        paper.className = 'cv-paper';
         if (themeName !== 'theme-default') paper.classList.add(themeName);
         savedData.selectedTheme = themeName;
         localStorage.setItem('cv_theme', themeName); 
@@ -526,8 +560,8 @@ if(savedData.phone) document.getElementById('inputPhone').value = savedData.phon
         const email = document.getElementById('inputEmail').value;
         const currentLang = isEnglish ? 'en' : 'ar';
         savedData[currentLang].name = document.getElementById('inputName').value; savedData[currentLang].title = document.getElementById('inputTitle').value; savedData[currentLang].bio = document.getElementById('inputBio').value; savedData[currentLang].edu = document.getElementById('inputEdu').value; savedData[currentLang].skills = document.getElementById('inputSkills').value; savedData[currentLang].langs = document.getElementById('inputLangs').value;
-savedData.email = document.getElementById('inputEmail').value;
-savedData.phone = document.getElementById('inputPhone').value;
+        savedData.email = document.getElementById('inputEmail').value;
+        savedData.phone = document.getElementById('inputPhone').value;
         savedData.activeLang = currentLang;
         btn.disabled = true; btn.innerText = "⏳ جاري الحفظ..."; 
         let base64Image = ""; 
@@ -540,7 +574,7 @@ savedData.phone = document.getElementById('inputPhone').value;
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") { 
-                currentUserUID = result.uid; // حفظ الكود السري
+                currentUserUID = result.uid;
                 navigateTo('preview'); 
             } else alert("❌ حدث خطأ أثناء الحفظ."); 
         } catch (e) { alert("❌ فشل الاتصال بالسيرفر."); }
@@ -548,7 +582,6 @@ savedData.phone = document.getElementById('inputPhone').value;
         btn.disabled = false; btn.innerText = "💾 حفظ البيانات والمعاينة";
     }
 
-    // --- نظام توليد الرابط بدل الـ PDF ---
     function generateCVLink() {
         if (currentUserStatus !== "Active") {
             document.getElementById('paymentModal').style.display = 'flex';
