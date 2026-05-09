@@ -529,6 +529,7 @@
         savedData.selectedTheme = themeName;
         localStorage.setItem('cv_theme', themeName); 
         updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
+        document.getElementById('saveThemeBtn').style.display = 'block';
     }
 
     async function autoTranslate() {
