@@ -146,8 +146,9 @@
 
         function renderCV(userData) {
             const cvData = JSON.parse(userData.cvData);
-            const isEnglish = (cvData.en && cvData.en.name !== "") ? true : false;
-            const langData = isEnglish ? cvData.en : cvData.ar;
+            const activeLang = cvData.activeLang || 'ar'; // قراءة اللغة اللي العميل ضغط حفظ وهو عليها
+const isEnglish = (activeLang === 'en');
+const langData = isEnglish ? cvData.en : cvData.ar;
             const theme = cvData.selectedTheme || 'theme-default';
             const paper = document.getElementById('cvTemplate');
 
