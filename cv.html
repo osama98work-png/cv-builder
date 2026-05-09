@@ -163,8 +163,8 @@
             document.getElementById('cvTitle').innerText = langData.title;
             document.getElementById('cvBio').innerText = langData.bio;
             
-            document.getElementById('cvEmail').innerText = "تم التحقق ✔️"; 
-            document.getElementById('cvPhone').innerText = "بيانات الاتصال متوفرة"; 
+            document.getElementById('cvEmail').innerText = cvData.email || "البريد الإلكتروني"; 
+document.getElementById('cvPhone').innerText = cvData.phone || "رقم الهاتف";
             
             if(userData.image) {
                 const imgEl = document.getElementById('cvPhoto');
