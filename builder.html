@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV Builder - الواجهة المتكاملة</title>
-    <!-- مكتبة تحويل PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- مكتبة تسجيل الدخول من غوغل -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <style>
@@ -57,13 +54,11 @@
         .theme-selector-container { position: absolute; top: 10px; right: 10px; z-index: 100; background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 5px; backdrop-filter: blur(5px); }
         .theme-selector-container select { padding: 8px; border-radius: 5px; border: 1px solid #3498db; font-weight: bold; color: #2c3e50; outline: none; font-family: inherit;}
 
-        /* --- الهيكل الصارم للورقة --- */
         .cv-paper { background: white; width: 210mm; min-height: 297mm; padding: 0; padding-bottom: 20mm; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 5px; position: relative; overflow: hidden; transition: 0.3s; margin-top: 60px; transform-origin: top center; }
         @media (max-width: 767px) { .cv-paper { transform: scale(0.85); margin-top: 70px; margin-bottom: -50px;} } 
         
-        .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 50px; color: rgba(0, 0, 0, 0.08); font-weight: bold; transform: rotate(-45deg); pointer-events: none; z-index: 100; text-transform: uppercase; letter-spacing: 5px; }
+        .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' transform='rotate(-45)'><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='24' font-family='Arial' font-weight='bold' fill='rgba(0,0,0,0.06)'>نسخة غير مدفوعة</text></svg>"); background-repeat: repeat; display: none; }
         
-        /* إجبار الهيدر على عرض الورقة بالضبط 210mm */
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 210mm; max-width: 210mm; box-sizing: border-box; }
         .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none; }
         .cv-paper[dir="ltr"] .cv-photo { margin-left: 0; margin-right: 20px; } 
@@ -79,7 +74,6 @@
         
         .cv-paper[dir="rtl"] { text-align: right; }
         .cv-paper[dir="ltr"] { text-align: left; }
-        .cv-list { margin: 0; padding: 0; width: 100%; } /* تم التعديل لأننا نستخدم جداول الآن */
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
@@ -96,7 +90,6 @@
         .btn-about { background: #34495e; }
         .btn-comment { background: #e67e22; width: 100%; margin-top: 5px;}
 
-        /* --- ستايلات القوالب --- */
         .theme-dark .cv-header { background-color: #2c3e50 !important; color: white; border-bottom: none; }
         .theme-dark .cv-name { color: white; }
         .theme-dark .cv-title { color: #f39c12; }
@@ -118,8 +111,7 @@
         <div class="modal-overlay" id="paymentModal">
             <div class="modal-content">
                 <h2>ترقية الحساب 🚀</h2>
-                <p>لتحميل السيرة الذاتية بصيغة PDF احترافية وإزالة العلامة المائية، يرجى تحويل مبلغ <strong style="color: #e74c3c; font-size: 20px;">25000 ل.س </strong> عبر <b>شام كاش</b>.</p>
-                
+                <p>للحصول على رابط سيرتك الذاتية وإزالة العلامة المائية، يرجى تحويل مبلغ <strong style="color: #e74c3c; font-size: 20px;">25000 ل.س </strong> عبر <b>شام كاش</b>.</p>
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #bdc3c7; text-align: right;">
                     <label style="font-size: 13px; color: #555; margin-bottom: 8px; display: block;">1. انسخ كود الدفع الخاص بنا:</label>
                     <div style="display: flex; gap: 8px;">
@@ -128,12 +120,21 @@
                     </div>
                     <p id="copyMsg" style="color: #27ae60; font-size: 12px; font-weight: bold; margin: 5px 0 0 0; display: none;">✅ تم النسخ! اذهب لتطبيق شام كاش وقم بالتحويل.</p>
                 </div>
-
                 <label style="font-size: 13px; color: #555; text-align: right; display: block;">2. أدخل رقم إشعار التحويل هنا:</label>
                 <input type="text" id="receiptInput" placeholder="رقم الإشعار..." style="margin-top: 5px;">
-                
                 <button class="btn-pay" id="submitPaymentBtn" onclick="submitReceipt()">إرسال الإشعار والتفعيل</button>
                 <button class="btn-close" onclick="document.getElementById('paymentModal').style.display='none'">إلغاء</button>
+            </div>
+        </div>
+
+        <!-- نافذة عرض الرابط للعميل -->
+        <div id="linkModal" class="modal-overlay">
+            <div class="modal-content" style="border: 2px solid #3498db;">
+                <h3 style="margin-top:0; color:#2c3e50;">🔗 رابط سيرتك الذاتية</h3>
+                <p style="font-size:13px; color:#7f8c8d;">انسخ هذا الرابط وشاركه مع الشركات (يمكنهم طباعته كـ PDF مباشرة بأعلى جودة).</p>
+                <input type="text" id="finalCvLink" readonly style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px; text-align:left; direction:ltr;">
+                <button onclick="copyMyLink()" id="copyLinkBtn" style="background:#27ae60; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; width:100%; margin-bottom:10px;">📋 نسخ الرابط</button>
+                <button onclick="document.getElementById('linkModal').style.display='none'" style="background:#e74c3c; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; width:100%;">إغلاق</button>
             </div>
         </div>
 
@@ -141,20 +142,13 @@
             <div class="auth-box">
                 <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 5px;">مرحباً بك في CV Builder</h3>
                 <p style="font-size: 13px; color: #555; margin-bottom: 15px;">أداة إنشاء السير الذاتية الاحترافية والذكية.</p>
-                
                 <div style="display: flex; justify-content: center;">
-                    <div id="g_id_onload"
-                         data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com"
-                         data-callback="handleGoogleLogin">
-                    </div>
+                    <div id="g_id_onload" data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com" data-callback="handleGoogleLogin"></div>
                     <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
                 </div>
-                
                 <p id="systemMsg" style="color: #3498db; font-size: 13px; font-weight: bold; margin-top: 15px;"></p>
-                
                 <button id="resumeSessionBtn" onclick="resumeSession()" style="display: none; background: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">🔄 استئناف الجلسة السابقة</button>
             </div>
-
             <div class="social-bar">
                 <a href="https://wa.me/رقم_الواتساب" target="_blank" class="social-btn btn-whatsapp">💬 تواصل واتساب</a>
                 <a href="https://facebook.com/صفحة_الفيسبوك" target="_blank" class="social-btn btn-facebook">📘 صفحة فيسبوك</a>
@@ -164,7 +158,6 @@
         </div>
 
         <div id="formSection" class="app-screen">
-            
             <div style="background: #eafaf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid #a3e4d7; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h4 id="welcomeMsg" style="color: #27ae60; margin: 0; text-align: right;"></h4>
@@ -172,18 +165,15 @@
                 </div>
                 <button onclick="logout()" style="background: #e74c3c; border: none; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold;">تسجيل خروج</button>
             </div>
-
             <div class="controls">
                 <button class="btn btn-lang" id="btnLang" onclick="toggleLayout()">عربي/English</button>
                 <button class="btn btn-translate" id="translateBtn" onclick="autoTranslate()">ترجمة (غوغل)</button>
-                <button class="btn" style="background-color: #27ae60; color: white; width: 100%; margin-top: 5px; font-size: 15px;" id="saveBtn" onclick="saveDataToServer()">💾 حفظ البيانات ومعاينة السيرة</button>
+                <button class="btn" style="background-color: #27ae60; color: white; width: 100%; margin-top: 5px; font-size: 15px;" id="saveBtn" onclick="saveDataToServer()">💾 حفظ البيانات والمعاينة</button>
             </div>
-
             <button class="accordion-btn" onclick="toggleInputs()" id="toggleInputsBtn">
                 <span>📝 تعبئة بيانات السيرة الذاتية</span>
                 <span id="accordionArrow">▲</span>
             </button>
-
             <div id="inputsContainer" class="accordion-content">
                 <div class="form-group"><label>الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
                 <div class="form-group"><label id="lblName">الاسم الكامل</label><input type="text" id="inputName" oninput="updateCV()"></div>
@@ -195,11 +185,9 @@
                 <div class="form-group"><label id="lblSkills">المهارات</label><textarea id="inputSkills" rows="4" oninput="updateList('inputSkills', 'cvSkills')"></textarea></div>
                 <div class="form-group"><label id="lblLangs">اللغات</label><textarea id="inputLangs" rows="3" oninput="updateList('inputLangs', 'cvLangs')"></textarea></div>
             </div>
-
         </div>
 
         <div id="previewSection" class="app-screen">
-            
             <div class="theme-selector-container">
                 <label style="font-size: 12px; margin-bottom: 2px; color: #2c3e50; font-weight: bold;">🎨 القالب:</label>
                 <select id="themeDropdown" onchange="changeTheme(this.value)">
@@ -207,11 +195,12 @@
                     <option value="theme-dark">الداكن الاحترافي</option>
                     <option value="theme-minimal">الأخضر البسيط</option>
                 </select>
-                <button class="btn" style="background-color: #8e44ad; color: white; padding: 10px; margin-top: 5px; font-size: 14px;" id="pdfBtn" onclick="downloadPDF()">⬇️ تحميل PDF</button>
+                <!-- الزر الجديد بدل الـ PDF -->
+                <button class="btn" style="background-color: #2980b9; color: white; padding: 10px; margin-top: 5px; font-size: 14px;" id="linkBtn" onclick="generateCVLink()">🔗 الحصول على الرابط</button>
             </div>
 
             <div class="cv-paper" id="cvTemplate" dir="rtl">
-                <div class="watermark" id="watermark">CV Builder</div>
+                <div class="watermark" id="watermark"></div>
                 <div class="cv-header">
                     <img id="cvPhoto" class="cv-photo" src="">
                     <div class="cv-header-info">
@@ -224,7 +213,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="cv-section">
                     <div class="cv-section-title" id="cvLblBio">الملخص الشخصي</div>
                     <div class="cv-content" id="cvBio">أدخل النبذة الشخصية الخاصة بك...</div>
@@ -248,14 +236,17 @@
             <button id="tabForm" onclick="navigateTo('form')">📝 تعديل البيانات</button>
             <button id="tabPreview" onclick="navigateTo('preview')">📄 معاينة السيرة</button>
         </div>
-
     </div>
 
 <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSEEpu5FyJggjZHV33y9Ja-KaAQYRTi_k3gR92ghlAoD_m_dFv8JLTbFtwh6sZBwo/exec';
+    
+    // ⚠️ رابط صفحة بلوغر اللي نسختها بالخطوة السابقة
+    const BLOGGER_PAGE_URL = "https://cvbuildersy.blogspot.com/p/blog-page.html";
 
     let isEnglish = false;
     let currentUserStatus = "Not Active"; 
+    let currentUserUID = ""; // لتخزين الكود السري
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
     window.onload = function() {
@@ -342,10 +333,10 @@
                 changeTheme(cachedTheme);
                 
                 currentUserStatus = data.userStatus; 
+                currentUserUID = data.uid || ""; // حفظ الكود السري للرابط
+
                 let statusText = currentUserStatus === "Active" ? "🟢 حساب مفعل" : "🔴 حساب مجاني";
                 document.getElementById('accountStatusMsg').innerText = statusText;
-
-                if(currentUserStatus === "Active") document.getElementById('watermark').style.display = "none";
 
                 if(savedData.userImageBase64) {
                     const imgElement = document.getElementById('cvPhoto');
@@ -374,12 +365,29 @@
     function updateCV() {
         document.getElementById('cvName').innerText = document.getElementById('inputName').value || (isEnglish ? 'Full Name' : 'الاسم الكامل');
         document.getElementById('cvTitle').innerText = document.getElementById('inputTitle').value || (isEnglish ? 'Job Title' : 'المسمى الوظيفي');
-        document.getElementById('cvEmail').innerText = document.getElementById('inputEmail').value || 'Email';
-        document.getElementById('cvPhone').innerText = document.getElementById('inputPhone').value || 'Phone';
         document.getElementById('cvBio').innerText = document.getElementById('inputBio').value || (isEnglish ? 'Professional Summary...' : 'الملخص المهني...');
+
+        const emailEl = document.getElementById('cvEmail');
+        const phoneEl = document.getElementById('cvPhone');
+        let actualEmail = document.getElementById('inputEmail').value || 'Email';
+        let actualPhone = document.getElementById('inputPhone').value || 'Phone';
+
+        // --- نظام الحماية الذكي في المعاينة ---
+        if (currentUserStatus !== "Active") {
+            emailEl.innerText = actualEmail.substring(0, 3) + '*****@***.com';
+            phoneEl.innerText = actualPhone.substring(0, 4) + '******';
+            emailEl.style.filter = "blur(3px)";
+            phoneEl.style.filter = "blur(3px)";
+            document.getElementById('watermark').style.display = "block"; // إظهار العلامة المائية
+        } else {
+            emailEl.innerText = actualEmail;
+            phoneEl.innerText = actualPhone;
+            emailEl.style.filter = "none";
+            phoneEl.style.filter = "none";
+            document.getElementById('watermark').style.display = "none";
+        }
     }
 
-    /* --- الحل النووي لمشكلة القوائم: بناء جداول مخفية برمجياً --- */
     function updateList(inputId, cvId) {
         const lines = document.getElementById(inputId).value.split('\n').filter(line => line.trim() !== '');
         const container = document.getElementById(cvId);
@@ -388,18 +396,11 @@
         const dir = isEnglish ? 'ltr' : 'rtl';
         
         let html = `<table width="100%" dir="${dir}" style="border-collapse: collapse; margin: 0; padding: 0; font-size: 14px; color: #444; line-height: 1.6;">`;
-        
         if (lines.length === 0) { 
-            html += `<tr>
-                <td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td>
-                <td style="vertical-align: top; text-align: ${align};">${isEnglish ? 'Enter details...' : 'أدخل بياناتك...'}</td>
-            </tr>`;
+            html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align};">${isEnglish ? 'Enter details...' : 'أدخل بياناتك...'}</td></tr>`;
         } else {
             lines.forEach(line => {
-                html += `<tr>
-                    <td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td>
-                    <td style="vertical-align: top; text-align: ${align};">${line}</td>
-                </tr>`;
+                html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align};">${line}</td></tr>`;
             });
         }
         html += '</table>';
@@ -490,22 +491,9 @@
 
     async function autoTranslate() {
         const btn = document.getElementById('translateBtn');
-        const payloadData = {
-            action: "translate",
-            texts: {
-                name: document.getElementById('inputName').value,
-                title: document.getElementById('inputTitle').value,
-                bio: document.getElementById('inputBio').value,
-                edu: document.getElementById('inputEdu').value,
-                skills: document.getElementById('inputSkills').value,
-                langs: document.getElementById('inputLangs').value
-            }
-        };
-
+        const payloadData = { action: "translate", texts: { name: document.getElementById('inputName').value, title: document.getElementById('inputTitle').value, bio: document.getElementById('inputBio').value, edu: document.getElementById('inputEdu').value, skills: document.getElementById('inputSkills').value, langs: document.getElementById('inputLangs').value } };
         if(!payloadData.texts.title && !payloadData.texts.bio && !payloadData.texts.edu) { alert("يرجى كتابة البيانات أولاً لترجمتها."); return; }
-
         btn.disabled = true; btn.innerText = "⏳ ترجمة..."; 
-
         try {
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
@@ -516,15 +504,9 @@
                 savedData.en.edu = result.translated.edu || '';
                 savedData.en.skills = result.translated.skills || '';
                 savedData.en.langs = result.translated.langs || '';
-                
                 if(!isEnglish) toggleLayout();
                 else {
-                    document.getElementById('inputName').value = savedData.en.name;
-                    document.getElementById('inputTitle').value = savedData.en.title;
-                    document.getElementById('inputBio').value = savedData.en.bio;
-                    document.getElementById('inputEdu').value = savedData.en.edu;
-                    document.getElementById('inputSkills').value = savedData.en.skills;
-                    document.getElementById('inputLangs').value = savedData.en.langs;
+                    document.getElementById('inputName').value = savedData.en.name; document.getElementById('inputTitle').value = savedData.en.title; document.getElementById('inputBio').value = savedData.en.bio; document.getElementById('inputEdu').value = savedData.en.edu; document.getElementById('inputSkills').value = savedData.en.skills; document.getElementById('inputLangs').value = savedData.en.langs;
                     updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
                 }
             }
@@ -535,90 +517,58 @@
     async function saveDataToServer() {
         const btn = document.getElementById('saveBtn');
         const email = document.getElementById('inputEmail').value;
-
         const currentLang = isEnglish ? 'en' : 'ar';
-        savedData[currentLang].name = document.getElementById('inputName').value;
-        savedData[currentLang].title = document.getElementById('inputTitle').value;
-        savedData[currentLang].bio = document.getElementById('inputBio').value;
-        savedData[currentLang].edu = document.getElementById('inputEdu').value;
-        savedData[currentLang].skills = document.getElementById('inputSkills').value;
-        savedData[currentLang].langs = document.getElementById('inputLangs').value;
+        savedData[currentLang].name = document.getElementById('inputName').value; savedData[currentLang].title = document.getElementById('inputTitle').value; savedData[currentLang].bio = document.getElementById('inputBio').value; savedData[currentLang].edu = document.getElementById('inputEdu').value; savedData[currentLang].skills = document.getElementById('inputSkills').value; savedData[currentLang].langs = document.getElementById('inputLangs').value;
 
         btn.disabled = true; btn.innerText = "⏳ جاري الحفظ..."; 
-
         let base64Image = ""; 
         const cvPhoto = document.getElementById('cvPhoto');
-        if (cvPhoto.src && cvPhoto.src.startsWith('data:image')) {
-            base64Image = cvPhoto.src.split(',')[1];
-            savedData.userImageBase64 = base64Image; 
-        }
+        if (cvPhoto.src && cvPhoto.src.startsWith('data:image')) { base64Image = cvPhoto.src.split(',')[1]; savedData.userImageBase64 = base64Image; }
 
         const payloadData = { action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: base64Image, receipt: "" };
 
         try {
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
-            if(result.status === "success") navigateTo('preview');
-            else alert("❌ حدث خطأ أثناء الحفظ."); 
+            if(result.status === "success") { 
+                currentUserUID = result.uid; // حفظ الكود السري
+                navigateTo('preview'); 
+            } else alert("❌ حدث خطأ أثناء الحفظ."); 
         } catch (e) { alert("❌ فشل الاتصال بالسيرفر."); }
         
-        btn.disabled = false; btn.innerText = "💾 حفظ البيانات ومعاينة السيرة";
+        btn.disabled = false; btn.innerText = "💾 حفظ البيانات والمعاينة";
     }
 
-    /* --- التحديث الآمن لتحميل الـ PDF بدون تخريب الأكواد --- */
-    function downloadPDF() {
+    // --- نظام توليد الرابط بدل الـ PDF ---
+    function generateCVLink() {
         if (currentUserStatus !== "Active") {
             document.getElementById('paymentModal').style.display = 'flex';
             return;
         }
+        if (!currentUserUID) {
+            alert("يرجى الضغط على زر 'حفظ البيانات' أولاً لتوليد الرابط الخاص بك!");
+            return;
+        }
 
-        const element = document.getElementById('cvTemplate');
-        
-        // استبدال المسافات العادية بالنصوص فقط (بدون تخريب الجداول)
-        const textElements = element.querySelectorAll('.cv-name, .cv-title, .cv-content, .cv-list td, .cv-section-title, #cvEmail, #cvPhone');
-        const originalHTMLs = [];
-        
-        textElements.forEach((el, index) => {
-            originalHTMLs[index] = el.innerHTML;
-            el.childNodes.forEach(child => {
-                if (child.nodeType === 3) { // إذا كان نص صافي فقط
-                    child.nodeValue = child.nodeValue.replace(/ /g, '\u00A0'); 
-                }
-            });
-        });
+        const linkInput = document.getElementById('finalCvLink');
+        linkInput.value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
+        document.getElementById('linkModal').style.display = 'block';
+        document.getElementById('copyLinkBtn').innerText = "📋 نسخ الرابط";
+        document.getElementById('copyLinkBtn').style.background = "#27ae60";
+    }
 
-        const userName = document.getElementById('inputName').value || 'CV';
-        const opt = { 
-            margin: 0, 
-            filename: userName + '_Resume.pdf', 
-            image: { type: 'jpeg', quality: 0.98 }, 
-            html2canvas: { scale: 2, useCORS: true }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-        };
-        
-        const btn = document.getElementById('pdfBtn');
-        const originalText = btn.innerText; btn.innerText = "⏳ جاري التجهيز..."; btn.disabled = true;
-        
-        html2pdf().set(opt).from(element).save().then(() => { 
-            btn.innerText = originalText; btn.disabled = false; 
-            
-            // إعادة الأمور لطبيعتها بعد التحميل
-            textElements.forEach((el, index) => {
-                el.innerHTML = originalHTMLs[index];
-            });
-            
-            fetch(WEB_APP_URL, { 
-                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                body: JSON.stringify({ action: "log_download", email: document.getElementById('inputEmail').value }) 
-            });
-        });
+    function copyMyLink() {
+        const copyText = document.getElementById("finalCvLink");
+        copyText.select();
+        document.getElementById('copyLinkBtn').innerText = "✔ تم النسخ بنجاح!";
+        document.getElementById('copyLinkBtn').style.background = "#3498db";
+        navigator.clipboard.writeText(copyText.value);
     }
    
     function copyShamCash() {
         const codeInput = document.getElementById('shamCashCode');
         const copyBtn = document.getElementById('copyBtn');
         const msg = document.getElementById('copyMsg');
-
         codeInput.select(); codeInput.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(codeInput.value).then(() => {
             copyBtn.innerText = "✔ تم النسخ"; copyBtn.style.background = "#27ae60"; msg.style.display = "block";
@@ -629,13 +579,11 @@
     async function submitReceipt() {
         const receiptNum = document.getElementById('receiptInput').value;
         if (!receiptNum) { alert("يرجى إدخال رقم الإشعار أولاً!"); return; }
-
         const btn = document.getElementById('submitPaymentBtn');
         const email = document.getElementById('inputEmail').value;
         btn.innerText = "⏳ جاري الإرسال..."; btn.disabled = true;
 
         const payloadData = { action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: "", receipt: receiptNum };
-
         try {
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
@@ -646,7 +594,6 @@
                 alert("تم إرسال إشعار الدفع بنجاح! سيتم تفعيل حسابك قريباً.");
             }
         } catch (e) { alert("فشل الاتصال بالسيرفر."); }
-        
         btn.innerText = "إرسال الإشعار والتفعيل"; btn.disabled = false;
     }
 </script>
