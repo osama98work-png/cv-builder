@@ -528,6 +528,7 @@ if(savedData.phone) document.getElementById('inputPhone').value = savedData.phon
         savedData[currentLang].name = document.getElementById('inputName').value; savedData[currentLang].title = document.getElementById('inputTitle').value; savedData[currentLang].bio = document.getElementById('inputBio').value; savedData[currentLang].edu = document.getElementById('inputEdu').value; savedData[currentLang].skills = document.getElementById('inputSkills').value; savedData[currentLang].langs = document.getElementById('inputLangs').value;
 savedData.email = document.getElementById('inputEmail').value;
 savedData.phone = document.getElementById('inputPhone').value;
+        savedData.activeLang = currentLang;
         btn.disabled = true; btn.innerText = "⏳ جاري الحفظ..."; 
         let base64Image = ""; 
         const cvPhoto = document.getElementById('cvPhoto');
