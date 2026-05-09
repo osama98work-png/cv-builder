@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض السيرة الذاتية</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
+        body { background: #eaeff1; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
+        * { box-sizing: border-box; }
+        
+        #status-msg { text-align:center; padding:50px; }
+        #cv-container { display:none; max-width: 210mm; margin: 0 auto; }
+        
+        .cv-paper { background: white; width: 100%; min-height: 297mm; padding: 0; padding-bottom: 20mm; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 5px; overflow: hidden; }
+        .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 100%; }
+        .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none; }
+        .cv-paper[dir="ltr"] .cv-photo { margin-left: 0; margin-right: 20px; } 
+        .cv-header-info { flex: 1; }
+        .cv-name { font-size: 28px; font-weight: bold; color: #2c3e50; margin: 0; }
+        .cv-title { font-size: 16px; color: #3498db; margin-top: 5px; font-weight: 600; }
+        .cv-contact { font-size: 13px; color: #7f8c8d; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .cv-section { margin-bottom: 20px; padding: 0 20mm; width: 100%; }
+        .cv-section-title { font-size: 18px; color: #2c3e50; border-bottom: 1px solid #bdc3c7; margin-bottom: 10px; padding-bottom: 5px; font-weight: bold; }
+        .cv-content { font-size: 14px; color: #444; line-height: 1.6; white-space: pre-wrap; }
+        .cv-paper[dir="rtl"] { text-align: right; }
+        .cv-paper[dir="ltr"] { text-align: left; }
+
+        .theme-dark .cv-header { background-color: #2c3e50 !important; color: white; border-bottom: none; }
+        .theme-dark .cv-name { color: white; }
+        .theme-dark .cv-title { color: #f39c12; }
+        .theme-dark .cv-contact { color: #bdc3c7; }
+        .theme-dark .cv-section-title { color: #2c3e50; border-bottom: 2px solid #2c3e50; }
+        .theme-dark .cv-photo { border-color: #f39c12; }
+        .theme-minimal .cv-header { border-bottom: 3px dashed #16a085; padding-bottom: 15px; }
+        .theme-minimal .cv-name { color: #16a085; text-transform: uppercase; letter-spacing: 1px; }
+        .theme-minimal .cv-title { color: #7f8c8d; font-style: italic; }
+        .theme-minimal .cv-section-title { color: #16a085; border-bottom: none; }
+        .theme-minimal .cv-photo { border-radius: 10px; border-color: #16a085; }
+
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white !important; margin: 0; padding: 0; }
+            #cv-viewer-app { background: white; padding: 0; }
+            .cv-paper { box-shadow: none; min-height: auto; width: 210mm; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cv-viewer-app">
+        <div id="status-msg">
+            <h2 style="color:#2c3e50;">جاري جلب السيرة الذاتية... ⏳</h2>
+        </div>
+        
+        <div id="cv-container">
+            <div style="text-align:center; margin-bottom:20px;" class="no-print">
+                <button onclick="window.print()" style="background:#27ae60; color:white; padding:12px 25px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; font-size:16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ طباعة أو حفظ PDF</button>
+                <p style="color:#7f8c8d; font-size:12px; margin-top:8px;">(استخدم طابعة المتصفح للحصول على أفضل جودة)</p>
+            </div>
+
+            <div class="cv-paper" id="cvTemplate">
+                <div class="cv-header">
+                    <img id="cvPhoto" class="cv-photo" src="">
+                    <div class="cv-header-info">
+                        <h1 class="cv-name" id="cvName"></h1>
+                        <div class="cv-title" id="cvTitle"></div>
+                        <div class="cv-contact">
+                            <span id="cvEmail" dir="ltr"></span> 
+                            <span style="color: #bdc3c7; margin: 0 5px;">|</span> 
+                            <span id="cvPhone" dir="ltr"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cv-section">
+                    <div class="cv-section-title" id="lblBio">الملخص الشخصي</div>
+                    <div class="cv-content" id="cvBio"></div>
+                </div>
+                <div class="cv-section">
+                    <div class="cv-section-title" id="lblEdu">التعليم والشهادات</div>
+                    <div class="cv-list" id="cvEdu"></div>
+                </div>
+                <div class="cv-section">
+                    <div class="cv-section-title" id="lblSkills">المهارات</div>
+                    <div class="cv-list" id="cvSkills"></div>
+                </div>
+                <div class="cv-section">
+                    <div class="cv-section-title" id="lblLangs">اللغات</div>
+                    <div class="cv-list" id="cvLangs"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ ضع رابط الويب آب تبعك هون 
+        const WEB_APP_URL = 'رابط_الويب_آب_هنا';
+
+        async function loadPublicCV() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const uid = urlParams.get('user');
+            
+            if (!uid) {
+                document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ عذراً، الرابط غير صحيح أو مفقود.</h2>";
+                return;
+            }
+
+            try {
+                const res = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "fetch_public", uid: uid })
+                });
+                const data = await res.json();
+
+                if (data.status === "success") {
+                    renderCV(data);
+                } else if (data.status === "inactive") {
+                    document.getElementById('status-msg').innerHTML = "<h2>🔒 هذه السيرة الذاتية غير متاحة حالياً.</h2><p>يرجى من صاحب السيرة تفعيل حسابه.</p>";
+                } else {
+                    document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ لم يتم العثور على السيرة الذاتية.</h2>";
+                }
+            } catch (e) {
+                document.getElementById('status-msg').innerHTML = "<h2>❌ حدث خطأ أثناء الاتصال بالخوادم.</h2>";
+            }
+        }
+
+        function renderList(linesString, containerId, theme, isEnglish) {
+            if(!linesString) return;
+            const lines = linesString.split('\n').filter(line => line.trim() !== '');
+            const container = document.getElementById(containerId);
+            const bulletColor = theme === 'theme-minimal' ? '#16a085' : '#3498db';
+            const align = isEnglish ? 'left' : 'right';
+            const dir = isEnglish ? 'ltr' : 'rtl';
+            
+            let html = `<table width="100%" dir="${dir}" style="border-collapse: collapse; margin: 0; padding: 0; font-size: 14px; color: #444; line-height: 1.6;">`;
+            lines.forEach(line => {
+                html += `<tr>
+                    <td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td>
+                    <td style="vertical-align: top; text-align: ${align};">${line}</td>
+                </tr>`;
+            });
+            html += '</table>';
+            container.innerHTML = html;
+        }
+
+        function renderCV(userData) {
+            const cvData = JSON.parse(userData.cvData);
+            const isEnglish = (cvData.en && cvData.en.name !== "") ? true : false;
+            const langData = isEnglish ? cvData.en : cvData.ar;
+            const theme = cvData.selectedTheme || 'theme-default';
+            const paper = document.getElementById('cvTemplate');
+
+            paper.classList.add(theme);
+            paper.setAttribute('dir', isEnglish ? 'ltr' : 'rtl');
+            
+            document.getElementById('lblBio').innerText = isEnglish ? 'Professional Summary' : 'الملخص الشخصي';
+            document.getElementById('lblEdu').innerText = isEnglish ? 'Education' : 'التعليم والشهادات';
+            document.getElementById('lblSkills').innerText = isEnglish ? 'Skills' : 'المهارات';
+            document.getElementById('lblLangs').innerText = isEnglish ? 'Languages' : 'اللغات';
+
+            document.getElementById('cvName').innerText = langData.name;
+            document.getElementById('cvTitle').innerText = langData.title;
+            document.getElementById('cvBio').innerText = langData.bio;
+            
+            document.getElementById('cvEmail').innerText = "تم التحقق ✔️"; 
+            document.getElementById('cvPhone').innerText = "بيانات الاتصال متوفرة"; 
+            
+            if(userData.image) {
+                const imgEl = document.getElementById('cvPhoto');
+                imgEl.src = "data:image/jpeg;base64," + userData.image;
+                imgEl.style.display = 'block';
+            }
+
+            renderList(langData.edu, 'cvEdu', theme, isEnglish);
+            renderList(langData.skills, 'cvSkills', theme, isEnglish);
+            renderList(langData.langs, 'cvLangs', theme, isEnglish);
+
+            document.getElementById('status-msg').style.display = 'none';
+            document.getElementById('cv-container').style.display = 'block';
+        }
+
+        window.onload = loadPublicCV;
+    </script>
+</body>
+</html>
