@@ -4,15 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>عرض السيرة الذاتية</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="themes.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
-        body { background: #eaeff1; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
+        body { background: #eaeff1; padding: 20px; font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; }
         * { box-sizing: border-box; }
         
         #status-msg { text-align:center; padding:50px; }
         #cv-container { display:none; max-width: 210mm; margin: 0 auto; }
         
+        /* القالب الأساسي الافتراضي */
         .cv-paper { background: white; width: 100%; min-height: 297mm; padding: 0; padding-bottom: 20mm; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 5px; overflow: hidden; }
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 100%; }
         .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none; }
@@ -26,18 +30,6 @@
         .cv-content { font-size: 14px; color: #444; line-height: 1.6; white-space: pre-wrap; }
         .cv-paper[dir="rtl"] { text-align: right; }
         .cv-paper[dir="ltr"] { text-align: left; }
-
-        .theme-dark .cv-header { background-color: #2c3e50 !important; color: white; border-bottom: none; }
-        .theme-dark .cv-name { color: white; }
-        .theme-dark .cv-title { color: #f39c12; }
-        .theme-dark .cv-contact { color: #bdc3c7; }
-        .theme-dark .cv-section-title { color: #2c3e50; border-bottom: 2px solid #2c3e50; }
-        .theme-dark .cv-photo { border-color: #f39c12; }
-        .theme-minimal .cv-header { border-bottom: 3px dashed #16a085; padding-bottom: 15px; }
-        .theme-minimal .cv-name { color: #16a085; text-transform: uppercase; letter-spacing: 1px; }
-        .theme-minimal .cv-title { color: #7f8c8d; font-style: italic; }
-        .theme-minimal .cv-section-title { color: #16a085; border-bottom: none; }
-        .theme-minimal .cv-photo { border-radius: 10px; border-color: #16a085; }
 
         @media print { 
             .no-print { display: none !important; } 
@@ -61,32 +53,32 @@
             </div>
 
             <div class="cv-paper" id="cvTemplate">
-                <div class="cv-header">
+                <div class="cv-header" id="sec-header">
                     <img id="cvPhoto" class="cv-photo" src="">
                     <div class="cv-header-info">
                         <h1 class="cv-name" id="cvName"></h1>
                         <div class="cv-title" id="cvTitle"></div>
                         <div class="cv-contact">
-                            <span id="cvEmail" dir="ltr"></span> 
-                            <span style="color: #bdc3c7; margin: 0 5px;">|</span> 
-                            <span id="cvPhone" dir="ltr"></span>
+                            <span dir="ltr"><i class="fas fa-envelope" style="color: #3498db; margin: 0 5px;"></i> <span id="cvEmail"></span></span> 
+                            <span class="contact-separator" style="color: #bdc3c7; margin: 0 5px;">|</span> 
+                            <span dir="ltr"><i class="fas fa-phone" style="color: #3498db; margin: 0 5px;"></i> <span id="cvPhone"></span></span>
                         </div>
                     </div>
                 </div>
                 
-                <div class="cv-section">
+                <div class="cv-section" id="sec-bio">
                     <div class="cv-section-title" id="lblBio">الملخص الشخصي</div>
                     <div class="cv-content" id="cvBio"></div>
                 </div>
-                <div class="cv-section">
+                <div class="cv-section" id="sec-edu">
                     <div class="cv-section-title" id="lblEdu">التعليم والشهادات</div>
                     <div class="cv-list" id="cvEdu"></div>
                 </div>
-                <div class="cv-section">
+                <div class="cv-section" id="sec-skills">
                     <div class="cv-section-title" id="lblSkills">المهارات</div>
                     <div class="cv-list" id="cvSkills"></div>
                 </div>
-                <div class="cv-section">
+                <div class="cv-section" id="sec-langs">
                     <div class="cv-section-title" id="lblLangs">اللغات</div>
                     <div class="cv-list" id="cvLangs"></div>
                 </div>
@@ -95,7 +87,6 @@
     </div>
 
     <script>
-        // ⚠️ ضع رابط الويب آب تبعك هون 
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSEEpu5FyJggjZHV33y9Ja-KaAQYRTi_k3gR92ghlAoD_m_dFv8JLTbFtwh6sZBwo/exec';
 
         async function loadPublicCV() {
@@ -147,13 +138,16 @@
 
         function renderCV(userData) {
             const cvData = JSON.parse(userData.cvData);
-            const activeLang = cvData.activeLang || 'ar'; // قراءة اللغة اللي العميل ضغط حفظ وهو عليها
-const isEnglish = (activeLang === 'en');
-const langData = isEnglish ? cvData.en : cvData.ar;
+            const activeLang = cvData.activeLang || 'ar'; 
+            const isEnglish = (activeLang === 'en');
+            const langData = isEnglish ? cvData.en : cvData.ar;
+            
             const theme = cvData.selectedTheme || 'theme-default';
             const paper = document.getElementById('cvTemplate');
 
-            paper.classList.add(theme);
+            paper.className = 'cv-paper';
+            if (theme !== 'theme-default') { paper.classList.add(theme); }
+
             paper.setAttribute('dir', isEnglish ? 'ltr' : 'rtl');
             
             document.getElementById('lblBio').innerText = isEnglish ? 'Professional Summary' : 'الملخص الشخصي';
@@ -166,7 +160,7 @@ const langData = isEnglish ? cvData.en : cvData.ar;
             document.getElementById('cvBio').innerText = langData.bio;
             
             document.getElementById('cvEmail').innerText = cvData.email || "البريد الإلكتروني"; 
-document.getElementById('cvPhone').innerText = cvData.phone || "رقم الهاتف";
+            document.getElementById('cvPhone').innerText = cvData.phone || "رقم الهاتف"; 
             
             if(userData.image) {
                 const imgEl = document.getElementById('cvPhoto');
