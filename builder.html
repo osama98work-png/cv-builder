@@ -6,7 +6,6 @@
     <title>CV Builder - الواجهة المتكاملة</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
-    <!-- ⚠️ ربطنا ملف الثيمات الخارجي هون -->
     <link rel="stylesheet" href="themes.css">
     
     <style>
@@ -92,8 +91,6 @@
         .btn-facebook { background: #1877F2; }
         .btn-about { background: #34495e; }
         .btn-comment { background: #e67e22; width: 100%; margin-top: 5px;}
-        
-        /* ⚠️ تم حذف تنسيقات الثيمات من هنا لتعتمد على ملف themes.css بالكامل */
     </style>
 </head>
 <body>
@@ -119,13 +116,12 @@
             </div>
         </div>
 
-        <!-- نافذة عرض الرابط للعميل -->
         <div id="linkModal" class="modal-overlay">
             <div class="modal-content" style="border: 2px solid #3498db;">
                 <h3 style="margin-top:0; color:#2c3e50;">🔗 رابط سيرتك الذاتية</h3>
-                <p style="font-size:13px; color:#7f8c8d;">انسخ هذا الرابط وشاركه مع الشركات (يمكنهم طباعته كـ PDF مباشرة بأعلى جودة).</p>
+                <p style="font-size:13px; color:#7f8c8d;">هذا هو رابط سيرتك الذاتية الاحترافي، يمكنك فتحه وطباعته أو إرساله للشركات.</p>
                 <input type="text" id="finalCvLink" readonly style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px; text-align:left; direction:ltr;">
-<button onclick="openMyLink()" id="copyLinkBtn" style="background:#27ae60; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; width:100%; margin-bottom:10px;">🌐 فتح وعرض السيرة الذاتية</button>
+                <button onclick="openMyLink()" id="copyLinkBtn" style="background:#27ae60; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; width:100%; margin-bottom:10px;">🌐 فتح وعرض السيرة الذاتية</button>
                 <button onclick="document.getElementById('linkModal').style.display='none'" style="background:#e74c3c; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; width:100%;">إغلاق</button>
             </div>
         </div>
@@ -136,13 +132,13 @@
                 <p style="font-size: 13px; color: #555; margin-bottom: 15px;">أداة إنشاء السير الذاتية الاحترافية والذكية.</p>
                 <div style="display: flex; justify-content: center;">
                     <div id="g_id_onload"
-     data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com"
-     data-context="signin"
-     data-ux_mode="popup"
-     data-callback="handleGoogleLogin"
-     data-auto_prompt="false"
-     data-itp_support="true">
-</div>
+                         data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com"
+                         data-context="signin"
+                         data-ux_mode="popup"
+                         data-callback="handleGoogleLogin"
+                         data-auto_prompt="false"
+                         data-itp_support="true">
+                    </div>
                     <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
                 </div>
                 <p id="systemMsg" style="color: #3498db; font-size: 13px; font-weight: bold; margin-top: 15px;"></p>
@@ -189,7 +185,6 @@
         <div id="previewSection" class="app-screen">
             <div class="theme-selector-container">
                 <label style="font-size: 12px; margin-bottom: 2px; color: #2c3e50; font-weight: bold;">🎨 القالب:</label>
-                <!-- ⚠️ تم تفريغ القائمة ليتم تعبئتها تلقائياً عبر الجافاسكريبت -->
                 <select id="themeDropdown" onchange="changeTheme(this.value)">
                     <option value="theme-default">جاري تحميل القوالب...</option>
                 </select>
@@ -248,7 +243,6 @@
     let currentUserUID = ""; 
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
-    // ⚠️ دالة الجلب التلقائي للثيمات من ملف الـ CSS
     async function loadThemesDynamically() {
         try {
             const res = await fetch(THEMES_CSS_FILE);
@@ -256,9 +250,8 @@
             const cssText = await res.text();
             
             const dropdown = document.getElementById('themeDropdown');
-            dropdown.innerHTML = ''; // مسح القائمة الحالية
+            dropdown.innerHTML = ''; 
             
-            // البحث عن التعليقات الخاصة بالثيمات
             const regex = /\/\*!Theme:\s*(theme-[\w-]+)\s*\|\s*(.*?)\s*\*\//g;
             let match;
             let hasThemes = false;
@@ -271,26 +264,22 @@
                 hasThemes = true;
             }
 
-            // خيار افتراضي في حال لم يجد تعليقات
             if(!hasThemes){
                 dropdown.innerHTML = '<option value="theme-default">الأزرق الكلاسيكي</option>';
             }
             
-            // استعادة الثيم المختار سابقاً
             const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
             if(dropdown.querySelector(`option[value="${cachedTheme}"]`)) {
                 dropdown.value = cachedTheme;
             }
-            
         } catch (e) {
             console.error("❌ فشل جلب الثيمات التلقائي", e);
             document.getElementById('themeDropdown').innerHTML = '<option value="theme-default">الأزرق الكلاسيكي (افتراضي)</option>';
         }
     }
 
-    // ⚠️ تم تعديل دالة التشغيل لتنتظر جلب الثيمات أولاً
     window.onload = async function() {
-        await loadThemesDynamically(); // جلب الثيمات
+        await loadThemesDynamically(); 
         
         const cachedEmail = localStorage.getItem('cv_email');
         if (cachedEmail) { document.getElementById('resumeSessionBtn').style.display = 'block'; }
@@ -373,8 +362,8 @@
                 const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
                 document.getElementById('themeDropdown').value = cachedTheme;
                 
-                changeTheme(cachedTheme); // استدعاء الثيم المحفوظ
-                document.getElementById('saveThemeBtn').style.display = 'none'; // 👈 الحل السحري لإخفاء الزر عند الدخول
+                changeTheme(cachedTheme);
+                document.getElementById('saveThemeBtn').style.display = 'none'; // الإخفاء الأكيد عند الدخول
                 
                 currentUserStatus = data.userStatus; 
                 currentUserUID = data.uid || ""; 
@@ -405,6 +394,7 @@
 
         } catch (e) { document.getElementById('systemMsg').innerText = "❌ حدث خطأ في الشبكة."; }
     }
+
     function updateCV() {
         document.getElementById('cvName').innerText = document.getElementById('inputName').value || (isEnglish ? 'Full Name' : 'الاسم الكامل');
         document.getElementById('cvTitle').innerText = document.getElementById('inputTitle').value || (isEnglish ? 'Job Title' : 'المسمى الوظيفي');
@@ -524,12 +514,13 @@
 
     function changeTheme(themeName) {
         const paper = document.getElementById('cvTemplate');
-        // إزالة أي ثيم سابق ديناميكياً
         paper.className = 'cv-paper';
         if (themeName !== 'theme-default') paper.classList.add(themeName);
         savedData.selectedTheme = themeName;
         localStorage.setItem('cv_theme', themeName); 
         updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
+        
+        // إظهار الزر الأخضر عند التعديل
         document.getElementById('saveThemeBtn').style.display = 'block';
     }
 
@@ -560,7 +551,7 @@
 
     async function saveDataToServer() {
         const btn = document.getElementById('saveBtn');
-        const saveThemeBtn = document.getElementById('saveThemeBtn'); // جلبنا الزر الأخضر تبع الثيم
+        const saveThemeBtn = document.getElementById('saveThemeBtn'); 
         
         const email = document.getElementById('inputEmail').value;
         const currentLang = isEnglish ? 'en' : 'ar';
@@ -575,31 +566,35 @@
         savedData.activeLang = currentLang;
         
         btn.disabled = true; btn.innerText = "⏳ جاري الحفظ..."; 
-        saveThemeBtn.disabled = true; saveThemeBtn.innerText = "⏳ جاري الحفظ..."; // تعطيل الزر الثاني كمان
+        saveThemeBtn.disabled = true; saveThemeBtn.innerText = "⏳ جاري الحفظ..."; 
         
         let base64Image = ""; 
         const cvPhoto = document.getElementById('cvPhoto');
-        if (cvPhoto.src && cvPhoto.src.startsWith('data:image')) { base64Image = cvPhoto.src.split(',')[1]; savedData.userImageBase64 = base64Image; }
+        if (cvPhoto.src && cvPhoto.src.startsWith('data:image')) { 
+            base64Image = cvPhoto.src.split(',')[1]; 
+            savedData.userImageBase64 = base64Image; 
+        }
 
         const payloadData = { action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: base64Image, receipt: "" };
 
         try {
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
+            
             if(result.status === "success") { 
                 currentUserUID = result.uid;
-                saveThemeBtn.style.display = 'none'; // إخفاء الزر الأخضر نهائياً بعد الحفظ الأكيد
+                saveThemeBtn.style.display = 'none'; // الإخفاء الأكيد للزر الأخضر
                 navigateTo('preview'); 
             } else {
                 alert("❌ حدث خطأ أثناء الحفظ."); 
             }
         } catch (e) { alert("❌ فشل الاتصال بالسيرفر."); }
         
-        // إرجاع الأزرار لحالتها الطبيعية
         btn.disabled = false; btn.innerText = "💾 حفظ البيانات والمعاينة";
         saveThemeBtn.disabled = false; saveThemeBtn.innerText = "💾 احفظ الثيم الجديد أولاً!";
     }
-   function generateCVLink() {
+
+    function generateCVLink() {
         if (currentUserStatus !== "Active") {
             document.getElementById('paymentModal').style.display = 'flex';
             return;
@@ -612,16 +607,10 @@
         const linkInput = document.getElementById('finalCvLink');
         linkInput.value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
         document.getElementById('linkModal').style.display = 'block';
-        
-        // تعديل شكل الزر ليتناسب مع وظيفته الجديدة
-        document.getElementById('copyLinkBtn').innerText = "🌐 فتح وعرض السيرة الذاتية";
-        document.getElementById('copyLinkBtn').style.background = "#27ae60";
     }
 
-    // الدالة الجديدة اللي بتعمل إعادة التوجيه
     function openMyLink() {
         const linkUrl = document.getElementById("finalCvLink").value;
-        // نستخدم _blank لفتح الرابط في نافذة/تبويب جديد عشان ما يتسكر البيلدر بوجه العميل
         window.open(linkUrl, '_blank'); 
     }
    
