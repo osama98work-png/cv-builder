@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV Builder - الواجهة المتكاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="themes.css">
     
     <style>
-     body { font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; }
+        body { font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; }
         * { box-sizing: border-box; }
         .container { display: flex; flex-direction: column; width: 100%; height: 100vh; overflow: hidden; }
         
@@ -92,6 +93,7 @@
         .btn-facebook { background: #1877F2; }
         .btn-about { background: #34495e; }
         .btn-comment { background: #e67e22; width: 100%; margin-top: 5px;}
+
         /* --- تنسيقات إشعارات التوست --- */
         #toast {
             visibility: hidden; min-width: 250px; background-color: #27ae60; color: #fff;
@@ -206,31 +208,31 @@
 
             <div class="cv-paper" id="cvTemplate" dir="rtl">
                 <div class="watermark" id="watermark"></div>
-                <div class="cv-header">
+                <div class="cv-header" id="sec-header">
                     <img id="cvPhoto" class="cv-photo" src="">
                     <div class="cv-header-info">
                         <h1 class="cv-name" id="cvName">الاسم الكامل</h1>
                         <div class="cv-title" id="cvTitle">المسمى الوظيفي</div>
                         <div class="cv-contact">
-                            <span id="cvEmail" dir="ltr">البريد الإلكتروني</span> 
-                            <span style="color: #bdc3c7; margin: 0 5px;">|</span> 
-                            <span id="cvPhone" dir="ltr">رقم الهاتف</span>
+                            <span dir="ltr"><i class="fas fa-envelope" style="color: #3498db; margin: 0 5px;"></i> <span id="cvEmail">البريد الإلكتروني</span></span> 
+                            <span class="contact-separator" style="color: #bdc3c7; margin: 0 5px;">|</span> 
+                            <span dir="ltr"><i class="fas fa-phone" style="color: #3498db; margin: 0 5px;"></i> <span id="cvPhone">رقم الهاتف</span></span>
                         </div>
                     </div>
                 </div>
-                <div class="cv-section">
+                <div class="cv-section" id="sec-bio">
                     <div class="cv-section-title" id="cvLblBio">الملخص الشخصي</div>
                     <div class="cv-content" id="cvBio">أدخل النبذة الشخصية الخاصة بك...</div>
                 </div>
-                <div class="cv-section">
+                <div class="cv-section" id="sec-edu">
                     <div class="cv-section-title" id="cvLblEdu">التعليم والشهادات</div>
                     <div class="cv-list" id="cvEdu"></div>
                 </div>
-                <div class="cv-section">
+                <div class="cv-section" id="sec-skills">
                     <div class="cv-section-title" id="cvLblSkills">المهارات</div>
                     <div class="cv-list" id="cvSkills"></div>
                 </div>
-                <div class="cv-section">
+                <div class="cv-section" id="sec-langs">
                     <div class="cv-section-title" id="cvLblLangs">اللغات</div>
                     <div class="cv-list" id="cvLangs"></div>
                 </div>
@@ -246,8 +248,6 @@
 <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSEEpu5FyJggjZHV33y9Ja-KaAQYRTi_k3gR92ghlAoD_m_dFv8JLTbFtwh6sZBwo/exec';
     const BLOGGER_PAGE_URL = "https://osama98work-png.github.io/cv-builder/cv.html";
-    
-    // ⚠️ اسم ملف الثيمات الخارجي الخاص بك
     const THEMES_CSS_FILE = "themes.css";
 
     let isEnglish = false;
@@ -255,7 +255,6 @@
     let currentUserUID = ""; 
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
-    // --- دالة الإشعارات الأنيقة الجديدة ---
     function showToast(message, isError = false) {
         const toast = document.getElementById("toast");
         toast.innerText = message;
