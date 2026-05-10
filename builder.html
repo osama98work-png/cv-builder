@@ -302,28 +302,20 @@
 
     async function loadPublicComments() {
         try {
-            const res = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "get_comments" })
+            const res = await fetch(WEB_APP_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: "get_comments" }) 
             });
             const data = await res.json();
             const listDiv = document.getElementById('publicCommentsList');
             listDiv.innerHTML = '';
             if(data.status === "success" && data.comments.length > 0) {
                 data.comments.forEach(c => {
-                    listDiv.innerHTML += `
-                        <div class="comment-item">
-                            <div class="comment-name"><i class="fas fa-user-circle"></i> ${c.name}</div>
-                            <div class="comment-text">${c.text}</div>
-                        </div>
-                    `;
+                    listDiv.innerHTML += `<div class="comment-item"><div class="comment-name"><i class="fas fa-user-circle"></i> ${c.name}</div><div class="comment-text">${c.text}</div></div>`;
                 });
-            } else {
-                listDiv.innerHTML = '<div style="text-align:center; color:#7f8c8d; font-size:12px;">كن أول من يشاركنا رأيه! 😊</div>';
-            }
-        } catch (e) {
-            document.getElementById('publicCommentsList').innerHTML = '<div style="text-align:center; color:#e74c3c; font-size:12px;">حدث خطأ في تحميل التعليقات.</div>';
-        }
+            } else { listDiv.innerHTML = '<div style="text-align:center; color:#7f8c8d; font-size:12px;">كن أول من يشاركنا رأيه! 😊</div>'; }
+        } catch (e) { document.getElementById('publicCommentsList').innerHTML = '<div style="text-align:center; color:#e74c3c; font-size:12px;">حدث خطأ في تحميل التعليقات.</div>'; }
     }
 
     async function submitPublicComment() {
@@ -334,11 +326,12 @@
         let text = textInput.value.trim();
         if(!text) { showToast("⚠️ يرجى كتابة التعليق أولاً!", true); return; }
         if(!name) { name = "مستخدم للمنصة"; } 
-        btn.disabled = true; btn.innerText = "⏳ جاري النشر...";
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
         try {
-            const res = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "add_comment", name: name, comment: text })
+            const res = await fetch(WEB_APP_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: "add_comment", name: name, comment: text }) 
             });
             const data = await res.json();
             if(data.status === "success") {
@@ -347,7 +340,7 @@
                 loadPublicComments(); 
             }
         } catch(e) { showToast("❌ فشل إرسال التعليق.", true); }
-        btn.disabled = false; btn.innerText = "🚀 نشر التعليق";
+        btn.disabled = false; btn.innerHTML = '🚀 نشر التعليق';
     }
 
     async function loadThemesDynamically() {
@@ -362,36 +355,45 @@
             let hasThemes = false;
             while ((match = regex.exec(cssText)) !== null) {
                 let opt = document.createElement('option');
-                opt.value = match[1].trim(); 
-                opt.text = match[2].trim();  
-                dropdown.add(opt);
-                hasThemes = true;
+                opt.value = match[1].trim(); opt.text = match[2].trim(); dropdown.add(opt); hasThemes = true;
             }
             if(!hasThemes){ dropdown.innerHTML = '<option value="theme-default">الأزرق الكلاسيكي</option>'; }
             const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
             if(dropdown.querySelector(`option[value="${cachedTheme}"]`)) { dropdown.value = cachedTheme; }
-        } catch (e) {
-            document.getElementById('themeDropdown').innerHTML = '<option value="theme-default">الأزرق الكلاسيكي (افتراضي)</option>';
-        }
+        } catch (e) { document.getElementById('themeDropdown').innerHTML = '<option value="theme-default">الأزرق الكلاسيكي (افتراضي)</option>'; }
     }
 
-    // ⚠️ التعديل الجوهري لعمل شاشة التحميل
     window.onload = async function() {
-        // ننتظر تحميل القوالب والتعليقات مع بعض بنفس الوقت
-        await Promise.all([
-            loadThemesDynamically(),
-            loadPublicComments()
-        ]);
-        
-        // إخفاء شاشة التحميل بنعومة بعد ما كلشي يجهز
+        const emergencyExit = setTimeout(() => {
+            const splash = document.getElementById('splashScreen');
+            if(splash) {
+                splash.style.opacity = '0';
+                setTimeout(() => { splash.style.display = 'none'; }, 500);
+            }
+        }, 3500);
+
+        try {
+            await Promise.all([ loadThemesDynamically(), loadPublicComments() ]);
+        } catch (e) { console.log("تم تخطي خطأ في التحميل"); }
+
+        clearTimeout(emergencyExit);
         const splash = document.getElementById('splashScreen');
-        splash.style.opacity = '0';
-        setTimeout(() => { splash.style.display = 'none'; }, 500);
+        if(splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => { splash.style.display = 'none'; }, 500);
+        }
         
+        // ⚠️ التعديل الجوهري: الدخول التلقائي (Auto-Login)
         const cachedEmail = localStorage.getItem('cv_email');
-        if (cachedEmail) { document.getElementById('resumeSessionBtn').style.display = 'block'; }
-        history.replaceState({ page: 'home' }, '', '#home');
-        showScreen('home');
+        if (cachedEmail) {
+            // إذا في إيميل مسجل مسبقاً، نعرضله صفحة البداية شكلياً بس بنفوت فوراً عالبيلدر
+            showScreen('home');
+            resumeSession(); 
+        } else {
+            // إذا مستخدم جديد، بنتركه بالصفحة الرئيسية
+            history.replaceState({ page: 'home' }, '', '#home');
+            showScreen('home');
+        }
     };
 
     window.onpopstate = function(event) {
@@ -450,7 +452,7 @@
         localStorage.setItem('cv_email', userEmail);
         localStorage.setItem('cv_name', userName);
 
-        document.getElementById('systemMsg').innerText = "جاري جلب بياناتك... ⏳";
+        document.getElementById('systemMsg').innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري جلب بياناتك...';
         document.getElementById('welcomeMsg').innerText = `أهلاً، ${userName}`;
         document.getElementById('inputEmail').value = userEmail;
         document.getElementById('inputName').value = userName;
@@ -474,7 +476,6 @@
                 let statusText = "🔴 حساب مجاني";
                 if (currentUserStatus === "Active") statusText = "🟢 حساب مفعل";
                 else if (currentUserStatus === "Pending") statusText = "🟡 حساب قيد المراجعة";
-                
                 document.getElementById('accountStatusMsg').innerText = statusText;
 
                 if(savedData.userImageBase64) {
@@ -491,9 +492,7 @@
                 document.getElementById('inputLangs').value = savedData.ar.langs || '';
                 
                 updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
-            } else {
-                document.getElementById('accountStatusMsg').innerText = "🔴 حساب مجاني (جديد)";
-            }
+            } else { document.getElementById('accountStatusMsg').innerText = "🔴 حساب مجاني (جديد)"; }
             
             document.getElementById('systemMsg').innerText = "";
             navigateTo('form');
@@ -626,7 +625,7 @@
         const btn = document.getElementById('translateBtn');
         const payloadData = { action: "translate", texts: { name: document.getElementById('inputName').value, title: document.getElementById('inputTitle').value, bio: document.getElementById('inputBio').value, edu: document.getElementById('inputEdu').value, skills: document.getElementById('inputSkills').value, langs: document.getElementById('inputLangs').value } };
         if(!payloadData.texts.title && !payloadData.texts.bio && !payloadData.texts.edu) { showToast("⚠️ يرجى كتابة البيانات أولاً لترجمتها.", true); return; }
-        btn.disabled = true; btn.innerText = "⏳ ترجمة..."; 
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ترجمة...'; 
         try {
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
@@ -645,7 +644,7 @@
                 showToast("✅ تمت الترجمة بنجاح!");
             }
         } catch (e) { showToast("❌ خطأ في الاتصال أثناء الترجمة.", true); }
-        btn.disabled = false; btn.innerText = "ترجمة (غوغل)";
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-magic"></i> ترجمة (غوغل)';
     }
 
     async function saveDataToServer() {
@@ -664,8 +663,8 @@
         savedData.phone = document.getElementById('inputPhone').value;
         savedData.activeLang = currentLang;
         
-        btn.disabled = true; btn.innerText = "⏳ جاري الحفظ..."; 
-        saveThemeBtn.disabled = true; saveThemeBtn.innerText = "⏳ جاري الحفظ..."; 
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; 
+        saveThemeBtn.disabled = true; saveThemeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; 
         
         let base64Image = ""; 
         const cvPhoto = document.getElementById('cvPhoto');
@@ -688,8 +687,8 @@
             } else { showToast("❌ حدث خطأ أثناء الحفظ.", true); }
         } catch (e) { showToast("❌ فشل الاتصال بالسيرفر.", true); }
         
-        btn.disabled = false; btn.innerText = "💾 حفظ البيانات والمعاينة";
-        saveThemeBtn.disabled = false; saveThemeBtn.innerText = "💾 احفظ الثيم الجديد أولاً!";
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> حفظ البيانات والمعاينة';
+        saveThemeBtn.disabled = false; saveThemeBtn.innerHTML = '<i class="fas fa-save"></i> احفظ الثيم الجديد!';
     }
 
     function generateCVLink() {
@@ -707,7 +706,7 @@
 
         const linkInput = document.getElementById('finalCvLink');
         linkInput.value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
-        document.getElementById('linkModal').style.display = 'block';
+        document.getElementById('linkModal').style.display = 'flex';
     }
 
     function openMyLink() {
