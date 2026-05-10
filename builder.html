@@ -89,7 +89,6 @@
         .btn-facebook { background: #1877F2; }
         .btn-about { background: #34495e; }
 
-        /* --- قسم التعليقات --- */
         .comments-wrapper { width: 100%; max-width: 400px; margin-top: 30px; background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .comments-list { max-height: 250px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
         .comment-item { background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 10px; border-right: 3px solid #3498db; text-align: right;}
@@ -101,9 +100,28 @@
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* --- شاشة التحميل (Splash Screen) --- */
+        #splashScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f4f7f6; z-index: 9999; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid #bdc3c7;
+            border-top: 5px solid #27ae60; border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="splashScreen">
+        <div class="spinner"></div>
+        <h2 style="color: #2c3e50; margin-top: 20px;">CV Builder</h2>
+        <p style="color: #7f8c8d; font-size: 14px;">جاري إعداد بيئة العمل...</p>
+    </div>
 
     <div class="container">
         <div id="toast">رسالة تجريبية</div>
@@ -277,12 +295,11 @@
         const toast = document.getElementById("toast");
         toast.innerText = message;
         toast.style.backgroundColor = isError ? "#e74c3c" : "#27ae60";
-        if (message.includes("قيد المراجعة")) toast.style.backgroundColor = "#f39c12"; // لون أصفر تنبيهي
+        if (message.includes("قيد المراجعة")) toast.style.backgroundColor = "#f39c12";
         toast.className = "show";
         setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    // --- جلب وعرض التعليقات العامة ---
     async function loadPublicComments() {
         try {
             const res = await fetch(WEB_APP_URL, {
@@ -292,7 +309,6 @@
             const data = await res.json();
             const listDiv = document.getElementById('publicCommentsList');
             listDiv.innerHTML = '';
-            
             if(data.status === "success" && data.comments.length > 0) {
                 data.comments.forEach(c => {
                     listDiv.innerHTML += `
@@ -310,20 +326,15 @@
         }
     }
 
-    // --- إرسال تعليق جديد ---
     async function submitPublicComment() {
         const nameInput = document.getElementById('newCommentName');
         const textInput = document.getElementById('newCommentText');
         const btn = document.getElementById('submitCommentBtn');
-        
         let name = nameInput.value.trim();
         let text = textInput.value.trim();
-        
         if(!text) { showToast("⚠️ يرجى كتابة التعليق أولاً!", true); return; }
         if(!name) { name = "مستخدم للمنصة"; } 
-        
         btn.disabled = true; btn.innerText = "⏳ جاري النشر...";
-        
         try {
             const res = await fetch(WEB_APP_URL, {
                 method: 'POST',
@@ -344,14 +355,11 @@
             const res = await fetch(THEMES_CSS_FILE);
             if (!res.ok) throw new Error("ملف الثيمات غير موجود");
             const cssText = await res.text();
-            
             const dropdown = document.getElementById('themeDropdown');
             dropdown.innerHTML = ''; 
-            
             const regex = /\/\*!Theme:\s*(theme-[\w-]+)\s*\|\s*(.*?)\s*\*\//g;
             let match;
             let hasThemes = false;
-            
             while ((match = regex.exec(cssText)) !== null) {
                 let opt = document.createElement('option');
                 opt.value = match[1].trim(); 
@@ -359,7 +367,6 @@
                 dropdown.add(opt);
                 hasThemes = true;
             }
-
             if(!hasThemes){ dropdown.innerHTML = '<option value="theme-default">الأزرق الكلاسيكي</option>'; }
             const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
             if(dropdown.querySelector(`option[value="${cachedTheme}"]`)) { dropdown.value = cachedTheme; }
@@ -368,9 +375,18 @@
         }
     }
 
+    // ⚠️ التعديل الجوهري لعمل شاشة التحميل
     window.onload = async function() {
-        await loadThemesDynamically(); 
-        loadPublicComments(); 
+        // ننتظر تحميل القوالب والتعليقات مع بعض بنفس الوقت
+        await Promise.all([
+            loadThemesDynamically(),
+            loadPublicComments()
+        ]);
+        
+        // إخفاء شاشة التحميل بنعومة بعد ما كلشي يجهز
+        const splash = document.getElementById('splashScreen');
+        splash.style.opacity = '0';
+        setTimeout(() => { splash.style.display = 'none'; }, 500);
         
         const cachedEmail = localStorage.getItem('cv_email');
         if (cachedEmail) { document.getElementById('resumeSessionBtn').style.display = 'block'; }
@@ -455,7 +471,6 @@
                 currentUserUID = data.uid || ""; 
                 if(savedData.phone) document.getElementById('inputPhone').value = savedData.phone;
                 
-                // ⚠️ التعديل هنا: قراءة حالة "قيد المراجعة" بشكل صحيح
                 let statusText = "🔴 حساب مجاني";
                 if (currentUserStatus === "Active") statusText = "🟢 حساب مفعل";
                 else if (currentUserStatus === "Pending") statusText = "🟡 حساب قيد المراجعة";
@@ -680,7 +695,6 @@
     function generateCVLink() {
         if (!currentUserUID) { showToast("⚠️ يرجى الضغط على زر 'حفظ البيانات' أولاً!", true); return; }
         
-        // ⚠️ التعديل هنا: منع إظهار نافذة الدفع إذا كان الحساب قيد المراجعة
         if (currentUserStatus === "Pending") {
             showToast("⏳ حسابك قيد المراجعة حالياً، يرجى الانتظار لحين التفعيل.", true);
             return;
@@ -723,7 +737,6 @@
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") { 
-                // ⚠️ التعديل هنا: تثبيت الحالة يدوياً بعد الإرسال الناجح
                 currentUserStatus = "Pending";
                 document.getElementById('paymentModal').style.display = 'none';
                 document.getElementById('accountStatusMsg').innerText = "🟡 حساب قيد المراجعة";
