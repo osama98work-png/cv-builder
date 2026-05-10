@@ -277,6 +277,7 @@
         const toast = document.getElementById("toast");
         toast.innerText = message;
         toast.style.backgroundColor = isError ? "#e74c3c" : "#27ae60";
+        if (message.includes("قيد المراجعة")) toast.style.backgroundColor = "#f39c12"; // لون أصفر تنبيهي
         toast.className = "show";
         setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
     }
@@ -319,7 +320,7 @@
         let text = textInput.value.trim();
         
         if(!text) { showToast("⚠️ يرجى كتابة التعليق أولاً!", true); return; }
-        if(!name) { name = "مستخدم للمنصة"; } // اسم افتراضي إذا تركه فارغ
+        if(!name) { name = "مستخدم للمنصة"; } 
         
         btn.disabled = true; btn.innerText = "⏳ جاري النشر...";
         
@@ -332,11 +333,9 @@
             if(data.status === "success") {
                 showToast("✅ تم نشر تعليقك بنجاح، شكراً لك!");
                 textInput.value = '';
-                loadPublicComments(); // إعادة تحميل التعليقات لتظهر فوراً
+                loadPublicComments(); 
             }
-        } catch(e) {
-            showToast("❌ فشل إرسال التعليق.", true);
-        }
+        } catch(e) { showToast("❌ فشل إرسال التعليق.", true); }
         btn.disabled = false; btn.innerText = "🚀 نشر التعليق";
     }
 
@@ -371,7 +370,7 @@
 
     window.onload = async function() {
         await loadThemesDynamically(); 
-        loadPublicComments(); // استدعاء التعليقات عند فتح الموقع
+        loadPublicComments(); 
         
         const cachedEmail = localStorage.getItem('cv_email');
         if (cachedEmail) { document.getElementById('resumeSessionBtn').style.display = 'block'; }
@@ -455,7 +454,12 @@
                 currentUserStatus = data.userStatus; 
                 currentUserUID = data.uid || ""; 
                 if(savedData.phone) document.getElementById('inputPhone').value = savedData.phone;
-                let statusText = currentUserStatus === "Active" ? "🟢 حساب مفعل" : "🔴 حساب مجاني";
+                
+                // ⚠️ التعديل هنا: قراءة حالة "قيد المراجعة" بشكل صحيح
+                let statusText = "🔴 حساب مجاني";
+                if (currentUserStatus === "Active") statusText = "🟢 حساب مفعل";
+                else if (currentUserStatus === "Pending") statusText = "🟡 حساب قيد المراجعة";
+                
                 document.getElementById('accountStatusMsg').innerText = statusText;
 
                 if(savedData.userImageBase64) {
@@ -674,11 +678,19 @@
     }
 
     function generateCVLink() {
+        if (!currentUserUID) { showToast("⚠️ يرجى الضغط على زر 'حفظ البيانات' أولاً!", true); return; }
+        
+        // ⚠️ التعديل هنا: منع إظهار نافذة الدفع إذا كان الحساب قيد المراجعة
+        if (currentUserStatus === "Pending") {
+            showToast("⏳ حسابك قيد المراجعة حالياً، يرجى الانتظار لحين التفعيل.", true);
+            return;
+        }
+        
         if (currentUserStatus !== "Active") {
             document.getElementById('paymentModal').style.display = 'flex';
             return;
         }
-        if (!currentUserUID) { showToast("⚠️ يرجى الضغط على زر 'حفظ البيانات' أولاً!", true); return; }
+
         const linkInput = document.getElementById('finalCvLink');
         linkInput.value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
         document.getElementById('linkModal').style.display = 'block';
@@ -711,7 +723,8 @@
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") { 
-                currentUserStatus = result.newStatus;
+                // ⚠️ التعديل هنا: تثبيت الحالة يدوياً بعد الإرسال الناجح
+                currentUserStatus = "Pending";
                 document.getElementById('paymentModal').style.display = 'none';
                 document.getElementById('accountStatusMsg').innerText = "🟡 حساب قيد المراجعة";
                 showToast("✅ تم إرسال إشعار الدفع بنجاح!");
