@@ -6,7 +6,6 @@
     <title>CV Builder - الواجهة المتكاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="themes.css">
     
@@ -16,7 +15,7 @@
         .container { display: flex; flex-direction: column; width: 100%; height: 100vh; overflow: hidden; }
         
         .app-screen { width: 100%; height: 100vh; overflow-y: auto; padding: 20px; padding-bottom: 80px; display: none; background: white; }
-        #homeSection { display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
+        #homeSection { display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; padding-top: 50px;}
         #formSection { background: white; z-index: 10; }
         #previewSection { background: #eaeff1; justify-content: center; align-items: flex-start; position: relative; }
         
@@ -53,7 +52,6 @@
         .accordion-btn { background-color: #2c3e50; color: white; cursor: pointer; padding: 15px; width: 100%; text-align: right; border: none; outline: none; font-size: 16px; font-weight: bold; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .accordion-btn:hover { background-color: #34495e; }
         .accordion-content { padding: 15px; background-color: #f9fbf9; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; display: block; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         .theme-selector-container { position: absolute; top: 10px; right: 10px; z-index: 100; background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 5px; backdrop-filter: blur(5px); }
         .theme-selector-container select { padding: 8px; border-radius: 5px; border: 1px solid #3498db; font-weight: bold; color: #2c3e50; outline: none; font-family: inherit;}
@@ -66,7 +64,6 @@
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 210mm; max-width: 210mm; box-sizing: border-box; }
         .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none; }
         .cv-paper[dir="ltr"] .cv-photo { margin-left: 0; margin-right: 20px; } 
-        
         .cv-header-info { flex: 1; }
         .cv-name { font-size: 28px; font-weight: bold; color: #2c3e50; margin: 0; }
         .cv-title { font-size: 16px; color: #3498db; margin-top: 5px; font-weight: 600; }
@@ -75,7 +72,6 @@
         .cv-section { margin-bottom: 20px; padding: 0 20mm; width: 210mm; max-width: 210mm; box-sizing: border-box; }
         .cv-section-title { font-size: 18px; color: #2c3e50; border-bottom: 1px solid #bdc3c7; margin-bottom: 10px; padding-bottom: 5px; font-weight: bold; }
         .cv-content { font-size: 14px; color: #444; line-height: 1.6; white-space: pre-wrap; }
-        
         .cv-paper[dir="rtl"] { text-align: right; }
         .cv-paper[dir="ltr"] { text-align: left; }
 
@@ -92,15 +88,16 @@
         .btn-whatsapp { background: #25D366; }
         .btn-facebook { background: #1877F2; }
         .btn-about { background: #34495e; }
-        .btn-comment { background: #e67e22; width: 100%; margin-top: 5px;}
 
-        /* --- تنسيقات إشعارات التوست --- */
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: #27ae60; color: #fff;
-            text-align: center; border-radius: 8px; padding: 15px; position: fixed;
-            z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%);
-            font-size: 16px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
+        /* --- قسم التعليقات --- */
+        .comments-wrapper { width: 100%; max-width: 400px; margin-top: 30px; background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .comments-list { max-height: 250px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
+        .comment-item { background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 10px; border-right: 3px solid #3498db; text-align: right;}
+        .comment-name { font-weight: bold; color: #2c3e50; font-size: 13px; margin-bottom: 5px; }
+        .comment-text { font-size: 13px; color: #555; }
+        .add-comment-box { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #eee; padding-top: 15px; }
+        
+        #toast { visibility: hidden; min-width: 250px; background-color: #27ae60; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 16px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
@@ -111,6 +108,16 @@
     <div class="container">
         <div id="toast">رسالة تجريبية</div>
         
+        <div class="modal-overlay" id="aboutModal">
+            <div class="modal-content">
+                <h2>ℹ️ من نحن</h2>
+                <p style="font-size: 14px; color: #555; line-height: 1.6;">
+                    نحن منصة متخصصة في بناء السير الذاتية الاحترافية. نهدف إلى مساعدة الباحثين عن عمل في إبراز مهاراتهم بأفضل شكل ممكن للشركات من خلال قوالب عصرية وروابط ذكية سهلة المشاركة.
+                </p>
+                <button class="btn-close" onclick="document.getElementById('aboutModal').style.display='none'">إغلاق</button>
+            </div>
+        </div>
+
         <div class="modal-overlay" id="paymentModal">
             <div class="modal-content">
                 <h2>ترقية الحساب 🚀</h2>
@@ -121,7 +128,6 @@
                         <input type="text" id="shamCashCode" value="89dec5c74b1215b7e00cbbad7b53d370" readonly style="margin: 0; padding: 10px; font-size: 13px; flex: 1; background: #fff; text-align: left; direction: ltr; border: 1px solid #ddd; border-radius: 5px;">
                         <button onclick="copyShamCash()" id="copyBtn" style="background: #3498db; color: white; border: none; border-radius: 5px; padding: 0 15px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap;">📋 نسخ</button>
                     </div>
-                    <p id="copyMsg" style="color: #27ae60; font-size: 12px; font-weight: bold; margin: 5px 0 0 0; display: none;">✅ تم النسخ! اذهب لتطبيق شام كاش وقم بالتحويل.</p>
                 </div>
                 <label style="font-size: 13px; color: #555; text-align: right; display: block;">2. أدخل رقم إشعار التحويل هنا:</label>
                 <input type="text" id="receiptInput" placeholder="رقم الإشعار..." style="margin-top: 5px;">
@@ -158,11 +164,23 @@
                 <p id="systemMsg" style="color: #3498db; font-size: 13px; font-weight: bold; margin-top: 15px;"></p>
                 <button id="resumeSessionBtn" onclick="resumeSession()" style="display: none; background: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">🔄 استئناف الجلسة السابقة</button>
             </div>
+            
             <div class="social-bar">
-                <a href="https://wa.me/رقم_الواتساب" target="_blank" class="social-btn btn-whatsapp">💬 تواصل واتساب</a>
-                <a href="https://facebook.com/صفحة_الفيسبوك" target="_blank" class="social-btn btn-facebook">📘 صفحة فيسبوك</a>
-                <a href="#about" class="social-btn btn-about">ℹ️ من نحن</a>
-                <a href="javascript:void(0)" onclick="window.parent.location.href = window.parent.location.href.split('#')[0] + '#comments'" class="social-btn btn-comment">✍️ اترك تعليقاً حول تجربتك</a>
+                <a href="https://wa.me/رقم_الواتساب_هنا" target="_blank" class="social-btn btn-whatsapp"><i class="fab fa-whatsapp"></i> تواصل معنا</a>
+                <a href="https://facebook.com/رابط_فيسبوك_هنا" target="_blank" class="social-btn btn-facebook"><i class="fab fa-facebook"></i> صفحتنا</a>
+                <a href="javascript:void(0)" onclick="document.getElementById('aboutModal').style.display='flex'" class="social-btn btn-about"><i class="fas fa-info-circle"></i> من نحن</a>
+            </div>
+
+            <div class="comments-wrapper">
+                <h4 style="margin-top:0; color:#2c3e50; text-align:center;"><i class="fas fa-comments" style="color:#f39c12;"></i> آراء مستخدمي المنصة</h4>
+                <div class="comments-list" id="publicCommentsList">
+                    <div style="text-align:center; color:#7f8c8d; font-size:12px;">جاري تحميل التعليقات... ⏳</div>
+                </div>
+                <div class="add-comment-box">
+                    <input type="text" id="newCommentName" placeholder="الاسم (اختياري)" style="padding:8px; font-size:13px;">
+                    <textarea id="newCommentText" placeholder="شاركنا رأيك بتجربة إنشاء سيرتك الذاتية..." rows="2" style="padding:8px; font-size:13px;"></textarea>
+                    <button id="submitCommentBtn" onclick="submitPublicComment()" style="background:#34495e; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">🚀 نشر التعليق</button>
+                </div>
             </div>
         </div>
 
@@ -263,6 +281,65 @@
         setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
+    // --- جلب وعرض التعليقات العامة ---
+    async function loadPublicComments() {
+        try {
+            const res = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "get_comments" })
+            });
+            const data = await res.json();
+            const listDiv = document.getElementById('publicCommentsList');
+            listDiv.innerHTML = '';
+            
+            if(data.status === "success" && data.comments.length > 0) {
+                data.comments.forEach(c => {
+                    listDiv.innerHTML += `
+                        <div class="comment-item">
+                            <div class="comment-name"><i class="fas fa-user-circle"></i> ${c.name}</div>
+                            <div class="comment-text">${c.text}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                listDiv.innerHTML = '<div style="text-align:center; color:#7f8c8d; font-size:12px;">كن أول من يشاركنا رأيه! 😊</div>';
+            }
+        } catch (e) {
+            document.getElementById('publicCommentsList').innerHTML = '<div style="text-align:center; color:#e74c3c; font-size:12px;">حدث خطأ في تحميل التعليقات.</div>';
+        }
+    }
+
+    // --- إرسال تعليق جديد ---
+    async function submitPublicComment() {
+        const nameInput = document.getElementById('newCommentName');
+        const textInput = document.getElementById('newCommentText');
+        const btn = document.getElementById('submitCommentBtn');
+        
+        let name = nameInput.value.trim();
+        let text = textInput.value.trim();
+        
+        if(!text) { showToast("⚠️ يرجى كتابة التعليق أولاً!", true); return; }
+        if(!name) { name = "مستخدم للمنصة"; } // اسم افتراضي إذا تركه فارغ
+        
+        btn.disabled = true; btn.innerText = "⏳ جاري النشر...";
+        
+        try {
+            const res = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "add_comment", name: name, comment: text })
+            });
+            const data = await res.json();
+            if(data.status === "success") {
+                showToast("✅ تم نشر تعليقك بنجاح، شكراً لك!");
+                textInput.value = '';
+                loadPublicComments(); // إعادة تحميل التعليقات لتظهر فوراً
+            }
+        } catch(e) {
+            showToast("❌ فشل إرسال التعليق.", true);
+        }
+        btn.disabled = false; btn.innerText = "🚀 نشر التعليق";
+    }
+
     async function loadThemesDynamically() {
         try {
             const res = await fetch(THEMES_CSS_FILE);
@@ -284,22 +361,17 @@
                 hasThemes = true;
             }
 
-            if(!hasThemes){
-                dropdown.innerHTML = '<option value="theme-default">الأزرق الكلاسيكي</option>';
-            }
-            
+            if(!hasThemes){ dropdown.innerHTML = '<option value="theme-default">الأزرق الكلاسيكي</option>'; }
             const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
-            if(dropdown.querySelector(`option[value="${cachedTheme}"]`)) {
-                dropdown.value = cachedTheme;
-            }
+            if(dropdown.querySelector(`option[value="${cachedTheme}"]`)) { dropdown.value = cachedTheme; }
         } catch (e) {
-            console.error("❌ فشل جلب الثيمات التلقائي", e);
             document.getElementById('themeDropdown').innerHTML = '<option value="theme-default">الأزرق الكلاسيكي (افتراضي)</option>';
         }
     }
 
     window.onload = async function() {
         await loadThemesDynamically(); 
+        loadPublicComments(); // استدعاء التعليقات عند فتح الموقع
         
         const cachedEmail = localStorage.getItem('cv_email');
         if (cachedEmail) { document.getElementById('resumeSessionBtn').style.display = 'block'; }
@@ -370,18 +442,13 @@
         updateCV();
 
         try {
-            const res = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: "fetch", email: userEmail })
-            });
+            const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "fetch", email: userEmail }) });
             const data = await res.json();
             
             if(data.status === "success") {
                 savedData = JSON.parse(data.cvData);
                 const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
                 document.getElementById('themeDropdown').value = cachedTheme;
-                
                 changeTheme(cachedTheme);
                 document.getElementById('saveThemeBtn').style.display = 'none'; 
                 
@@ -451,9 +518,7 @@
         if (lines.length === 0) { 
             html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align};">${isEnglish ? 'Enter details...' : 'أدخل بياناتك...'}</td></tr>`;
         } else {
-            lines.forEach(line => {
-                html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align};">${line}</td></tr>`;
-            });
+            lines.forEach(line => { html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align};">${line}</td></tr>`; });
         }
         html += '</table>';
         container.innerHTML = html;
@@ -506,7 +571,6 @@
     function previewPhoto(event) {
         const file = event.target.files[0];
         if(!file) return;
-
         const reader = new FileReader();
         reader.onload = function(e) {
             const img = new Image();
@@ -514,14 +578,11 @@
                 const canvas = document.createElement('canvas');
                 const MAX_SIZE = 250;
                 let width = img.width; let height = img.height;
-
                 if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
                 else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-
                 canvas.width = width; canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
                 const cvPhoto = document.getElementById('cvPhoto');
                 cvPhoto.src = compressedBase64;
@@ -539,7 +600,6 @@
         savedData.selectedTheme = themeName;
         localStorage.setItem('cv_theme', themeName); 
         updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
-        
         document.getElementById('saveThemeBtn').style.display = 'block';
     }
 
@@ -606,9 +666,7 @@
                 saveThemeBtn.style.display = 'none'; 
                 showToast("✅ تم حفظ البيانات بنجاح!");
                 navigateTo('preview'); 
-            } else {
-                showToast("❌ حدث خطأ أثناء الحفظ.", true); 
-            }
+            } else { showToast("❌ حدث خطأ أثناء الحفظ.", true); }
         } catch (e) { showToast("❌ فشل الاتصال بالسيرفر.", true); }
         
         btn.disabled = false; btn.innerText = "💾 حفظ البيانات والمعاينة";
@@ -620,11 +678,7 @@
             document.getElementById('paymentModal').style.display = 'flex';
             return;
         }
-        if (!currentUserUID) {
-            showToast("⚠️ يرجى الضغط على زر 'حفظ البيانات' أولاً!", true);
-            return;
-        }
-
+        if (!currentUserUID) { showToast("⚠️ يرجى الضغط على زر 'حفظ البيانات' أولاً!", true); return; }
         const linkInput = document.getElementById('finalCvLink');
         linkInput.value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
         document.getElementById('linkModal').style.display = 'block';
@@ -638,11 +692,10 @@
     function copyShamCash() {
         const codeInput = document.getElementById('shamCashCode');
         const copyBtn = document.getElementById('copyBtn');
-        const msg = document.getElementById('copyMsg');
         codeInput.select(); codeInput.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(codeInput.value).then(() => {
-            copyBtn.innerText = "✔ تم النسخ"; copyBtn.style.background = "#27ae60"; msg.style.display = "block";
-            setTimeout(() => { copyBtn.innerText = "📋 نسخ"; copyBtn.style.background = "#3498db"; msg.style.display = "none"; }, 3000);
+            copyBtn.innerText = "✔ تم النسخ"; copyBtn.style.background = "#27ae60";
+            setTimeout(() => { copyBtn.innerText = "📋 نسخ"; copyBtn.style.background = "#3498db"; }, 3000);
         }).catch(err => { showToast("❌ فشل النسخ التلقائي.", true); });
     }
 
