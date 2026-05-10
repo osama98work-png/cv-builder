@@ -599,7 +599,7 @@
         btn.disabled = false; btn.innerText = "💾 حفظ البيانات والمعاينة";
         saveThemeBtn.disabled = false; saveThemeBtn.innerText = "💾 احفظ الثيم الجديد أولاً!";
     }
-    function generateCVLink() {
+   function generateCVLink() {
         if (currentUserStatus !== "Active") {
             document.getElementById('paymentModal').style.display = 'flex';
             return;
@@ -612,16 +612,17 @@
         const linkInput = document.getElementById('finalCvLink');
         linkInput.value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
         document.getElementById('linkModal').style.display = 'block';
-        document.getElementById('copyLinkBtn').innerText = "📋 نسخ الرابط";
+        
+        // تعديل شكل الزر ليتناسب مع وظيفته الجديدة
+        document.getElementById('copyLinkBtn').innerText = "🌐 فتح وعرض السيرة الذاتية";
         document.getElementById('copyLinkBtn').style.background = "#27ae60";
     }
 
-    function copyMyLink() {
-        const copyText = document.getElementById("finalCvLink");
-        copyText.select();
-        document.getElementById('copyLinkBtn').innerText = "✔ تم النسخ بنجاح!";
-        document.getElementById('copyLinkBtn').style.background = "#3498db";
-        navigator.clipboard.writeText(copyText.value);
+    // الدالة الجديدة اللي بتعمل إعادة التوجيه
+    function openMyLink() {
+        const linkUrl = document.getElementById("finalCvLink").value;
+        // نستخدم _blank لفتح الرابط في نافذة/تبويب جديد عشان ما يتسكر البيلدر بوجه العميل
+        window.open(linkUrl, '_blank'); 
     }
    
     function copyShamCash() {
