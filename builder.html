@@ -372,7 +372,9 @@
                 savedData = JSON.parse(data.cvData);
                 const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
                 document.getElementById('themeDropdown').value = cachedTheme;
-                changeTheme(cachedTheme);
+                
+                changeTheme(cachedTheme); // استدعاء الثيم المحفوظ
+                document.getElementById('saveThemeBtn').style.display = 'none'; // 👈 الحل السحري لإخفاء الزر عند الدخول
                 
                 currentUserStatus = data.userStatus; 
                 currentUserUID = data.uid || ""; 
@@ -403,7 +405,6 @@
 
         } catch (e) { document.getElementById('systemMsg').innerText = "❌ حدث خطأ في الشبكة."; }
     }
-
     function updateCV() {
         document.getElementById('cvName').innerText = document.getElementById('inputName').value || (isEnglish ? 'Full Name' : 'الاسم الكامل');
         document.getElementById('cvTitle').innerText = document.getElementById('inputTitle').value || (isEnglish ? 'Job Title' : 'المسمى الوظيفي');
@@ -559,13 +560,23 @@
 
     async function saveDataToServer() {
         const btn = document.getElementById('saveBtn');
+        const saveThemeBtn = document.getElementById('saveThemeBtn'); // جلبنا الزر الأخضر تبع الثيم
+        
         const email = document.getElementById('inputEmail').value;
         const currentLang = isEnglish ? 'en' : 'ar';
-        savedData[currentLang].name = document.getElementById('inputName').value; savedData[currentLang].title = document.getElementById('inputTitle').value; savedData[currentLang].bio = document.getElementById('inputBio').value; savedData[currentLang].edu = document.getElementById('inputEdu').value; savedData[currentLang].skills = document.getElementById('inputSkills').value; savedData[currentLang].langs = document.getElementById('inputLangs').value;
+        savedData[currentLang].name = document.getElementById('inputName').value; 
+        savedData[currentLang].title = document.getElementById('inputTitle').value; 
+        savedData[currentLang].bio = document.getElementById('inputBio').value; 
+        savedData[currentLang].edu = document.getElementById('inputEdu').value; 
+        savedData[currentLang].skills = document.getElementById('inputSkills').value; 
+        savedData[currentLang].langs = document.getElementById('inputLangs').value;
         savedData.email = document.getElementById('inputEmail').value;
         savedData.phone = document.getElementById('inputPhone').value;
         savedData.activeLang = currentLang;
+        
         btn.disabled = true; btn.innerText = "⏳ جاري الحفظ..."; 
+        saveThemeBtn.disabled = true; saveThemeBtn.innerText = "⏳ جاري الحفظ..."; // تعطيل الزر الثاني كمان
+        
         let base64Image = ""; 
         const cvPhoto = document.getElementById('cvPhoto');
         if (cvPhoto.src && cvPhoto.src.startsWith('data:image')) { base64Image = cvPhoto.src.split(',')[1]; savedData.userImageBase64 = base64Image; }
@@ -576,19 +587,18 @@
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") { 
-                if(result.status === "success") { 
-    currentUserUID = result.uid;
-    document.getElementById('saveThemeBtn').style.display = 'none'; // إخفاء الزر بعد الحفظ
-    navigateTo('preview'); 
-}
                 currentUserUID = result.uid;
+                saveThemeBtn.style.display = 'none'; // إخفاء الزر الأخضر نهائياً بعد الحفظ الأكيد
                 navigateTo('preview'); 
-            } else alert("❌ حدث خطأ أثناء الحفظ."); 
+            } else {
+                alert("❌ حدث خطأ أثناء الحفظ."); 
+            }
         } catch (e) { alert("❌ فشل الاتصال بالسيرفر."); }
         
+        // إرجاع الأزرار لحالتها الطبيعية
         btn.disabled = false; btn.innerText = "💾 حفظ البيانات والمعاينة";
+        saveThemeBtn.disabled = false; saveThemeBtn.innerText = "💾 احفظ الثيم الجديد أولاً!";
     }
-
     function generateCVLink() {
         if (currentUserStatus !== "Active") {
             document.getElementById('paymentModal').style.display = 'flex';
