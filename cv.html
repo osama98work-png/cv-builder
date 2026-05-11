@@ -9,19 +9,19 @@
     <link rel="stylesheet" href="themes.css">
     
     <style>
-        body { background: #eaeff1; padding: 20px; font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; }
+        body { background: #eaeff1; padding: 0; font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; }
         * { box-sizing: border-box; }
         
         #status-msg { text-align:center; padding:50px; }
         #cv-container { display:none; max-width: 100%; margin: 0 auto; overflow-x: hidden;}
         
         /* ⚠️ غلاف العدسة في صفحة العميل */
-        .cv-scale-wrapper { width: 100%; display: flex; justify-content: center; padding-top: 20px; padding-bottom: 50px; transform-origin: top center; }
-        @media (max-width: 767px) { .cv-scale-wrapper { zoom: calc(100vw / 820); } }
-        @media (min-width: 768px) { .cv-scale-wrapper { zoom: calc(80vw / 850); } }
+        .preview-wrapper { width: 100%; background-color: #d1d5db; padding: 30px 0; display: flex; justify-content: center; overflow-x: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); }
+        
+        .cv-paper { background: white; width: 210mm !important; min-width: 210mm !important; max-width: 210mm !important; min-height: 297mm !important; padding: 0; padding-bottom: 20mm; box-shadow: 0 15px 35px rgba(0,0,0,0.25); position: relative; word-wrap: break-word; overflow-wrap: break-word; transform-origin: top center; margin: 0 !important; }
 
-        /* الورقة الثابتة */
-        .cv-paper { background: white; width: 210mm !important; min-width: 210mm !important; max-width: 210mm !important; min-height: 297mm; padding: 0; padding-bottom: 20mm; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 5px; position: relative; overflow: hidden; word-wrap: break-word; overflow-wrap: break-word; }
+        @media (max-width: 767px) { .cv-paper { transform: scale(calc((100vw - 40px) / 794)); margin-bottom: calc(-1122px * (1 - ((100vw - 40px) / 794))) !important; } }
+        @media (min-width: 768px) { .cv-paper { transform: scale(0.8); margin-bottom: calc(-1122px * 0.2) !important; } }
         
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 100%; box-sizing: border-box;}
         .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none; }
@@ -43,8 +43,8 @@
             .no-print { display: none !important; } 
             body { background: white !important; margin: 0; padding: 0; }
             #cv-viewer-app { background: white; padding: 0; }
-            .cv-scale-wrapper { zoom: 1 !important; padding: 0 !important; display: block; }
-            .cv-paper { box-shadow: none; border-radius: 0; width: 210mm !important; }
+            .preview-wrapper { background: transparent !important; padding: 0 !important; box-shadow: none !important;}
+            .cv-paper { transform: none !important; margin: 0 !important; box-shadow: none !important; border-radius: 0; width: 210mm !important; }
         }
     </style>
 </head>
@@ -53,12 +53,12 @@
     <div id="cv-viewer-app">
         <div id="status-msg"><h2 style="color:#2c3e50;">جاري جلب السيرة الذاتية... ⏳</h2></div>
         <div id="cv-container">
-            <div style="text-align:center; margin-bottom:20px;" class="no-print">
+            <div style="text-align:center; padding: 20px;" class="no-print">
                 <button onclick="window.print()" style="background:#27ae60; color:white; padding:12px 25px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; font-size:16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ طباعة أو حفظ PDF</button>
                 <p style="color:#7f8c8d; font-size:12px; margin-top:8px;">(استخدم طابعة المتصفح للحصول على أفضل جودة)</p>
             </div>
 
-            <div class="cv-scale-wrapper">
+            <div class="preview-wrapper">
                 <div class="cv-paper" id="cvTemplate">
                     <div class="cv-header" id="sec-header">
                         <img id="cvPhoto" class="cv-photo" src="">
