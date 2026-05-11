@@ -425,6 +425,19 @@
             }
         } catch (e) { showToast("❌ فشل الاتصال.", true); }
     }
+    // ⚠️ دالة إرسال أمر التصدير للـ Iframe
+    function exportCV(format) {
+        if(format === 'image') {
+            showToast("⏳ جاري تجهيز الصورة... يرجى الانتظار", false);
+        } else {
+            showToast("🖨️ جاري تجهيز الـ PDF...", false);
+        }
+
+        const frame = document.getElementById('previewFrame');
+        if(frame && frame.contentWindow) {
+            frame.contentWindow.postMessage({ type: 'EXPORT', format: format }, '*');
+        }
+    }
 </script>
 </body>
 </html>
