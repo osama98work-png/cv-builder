@@ -3,102 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Builder - الواجهة المتكاملة</title>
+    <title>CV Builder - مسار الإنشاء الذكي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="themes.css">
     
     <style>
-        body { font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background: linear-gradient(-45deg, #e3eeff, #f3e7e9, #eafaf1, #f4f7f6); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: #333; }
+        body { font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background: linear-gradient(-45deg, #e3eeff, #f3e7e9, #eafaf1, #f4f7f6); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: #333; min-height: 100vh; overflow-x: hidden; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         * { box-sizing: border-box; }
-        .container { display: flex; flex-direction: column; width: 100%; height: 100vh; overflow: hidden; }
-        
-        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05); border-radius: 12px; }
-        
-        .app-screen { width: 100%; height: 100vh; overflow-y: auto; padding: 20px; padding-bottom: 80px; display: none; background: transparent; }
-        #homeSection { display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; padding-top: 50px;}
-        #formSection { background: rgba(255,255,255,0.85); z-index: 10; backdrop-filter: blur(5px); }
-        #previewSection { position: relative; overflow-x: hidden; } 
-        
-        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; border-top: 1px solid rgba(255,255,255,0.5); }
-        .mobile-nav button { flex: 1; padding: 15px; border: none; background: transparent; font-size: 15px; font-weight: bold; color: #7f8c8d; cursor: pointer; transition: 0.3s; border-top: 3px solid transparent; }
-        .mobile-nav button.active { color: #27ae60; border-top: 3px solid #27ae60; background: rgba(39, 174, 96, 0.05); }
 
-        @media (min-width: 768px) {
-            .container { flex-direction: row; }
-            #homeSection { width: 100%; display: flex !important; }
-            #formSection { width: 40%; display: none !important; border-left: 1px solid rgba(0,0,0,0.05); }
-            #previewSection { width: 60%; display: block !important; overflow-y: auto; }
-            .mobile-nav { display: none !important; } 
-            body.logged-in #homeSection { display: none !important; }
-            body.logged-in #formSection { display: block !important; }
-        }
+        /* الشفافية الفخمة */
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border-radius: 15px; }
+        
+        /* ⚠️ هندسة مسار المستخدم (Wizard Flow) */
+        .app-wrapper { display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; }
+        .step-container { display: none; width: 100%; max-width: 600px; padding: 30px; animation: slideUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .step-container.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* التصميم الداخلي للخطوات */
+        .step-header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 15px; }
+        .step-header h2 { color: #2c3e50; margin: 0 0 10px 0; font-size: 24px;}
+        .step-header p { color: #7f8c8d; font-size: 14px; margin: 0;}
+        
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 13px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; background: rgba(255,255,255,0.9); transition: all 0.3s ease; }
-        input:focus, textarea:focus { border-color: #3498db; outline: none; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); transform: translateY(-1px); }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; font-size: 13px; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; background: rgba(255,255,255,0.9); transition: all 0.3s ease; font-size: 14px; }
+        input:focus, textarea:focus, select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); transform: translateY(-2px); }
         
-        .auth-box { text-align: center; margin-bottom: 20px; padding: 25px; width: 100%; max-width: 400px; transition: transform 0.3s ease;}
-        .auth-box:hover { transform: translateY(-2px); }
-        .auth-box h3 { margin-top: 0; color: #2c3e50; font-size: 20px;}
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 15px; flex-wrap: wrap; }
-        .btn { flex: 1; padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; min-width: 130px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .btn-lang { background-color: #2c3e50; color: white; }
-        .btn-translate { background-color: #f39c12; color: white; }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        .btn:active { transform: translateY(0); }
+        /* أزرار التنقل (Next/Prev) */
+        .nav-buttons { display: flex; gap: 15px; margin-top: 30px; }
+        .btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-primary { background: linear-gradient(135deg, #27ae60, #219653); color: white; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); }
+        .btn-secondary { background: #34495e; color: white; }
+        .btn-outline { background: transparent; border: 2px solid #bdc3c7; color: #7f8c8d; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        .accordion-btn { background-color: #2c3e50; color: white; cursor: pointer; padding: 15px; width: 100%; text-align: right; border: none; outline: none; font-size: 16px; font-weight: bold; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .accordion-btn:hover { background-color: #34495e; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-        .accordion-content { padding: 15px; background-color: rgba(249, 251, 249, 0.8); border: 1px solid rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 20px; display: block; animation: fadeIn 0.3s ease-in-out; }
-
-        .theme-selector-container { padding: 10px; display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;}
-        .theme-selector-container select { padding: 8px; border-radius: 5px; border: 1px solid #3498db; font-weight: bold; color: #2c3e50; outline: none; font-family: inherit; transition: all 0.3s ease; background: rgba(255,255,255,0.9); }
-
-        /* ⚠️ التعديل الجذري الناجح: تقنية العدسة (zoom) ⚠️ */
-        .preview-wrapper {
-            width: 100%;
-            background-color: #d1d5db;
-            padding: 20px 0;
-            display: flex;
-            justify-content: center;
-            overflow: hidden; /* يمنع أي سكرول عرضي مزعج */
-            border-radius: 10px;
-        }
-
-        .cv-paper { 
-            background: white; 
-            width: 210mm !important; /* قفل العرض */
-            min-height: 297mm !important; /* قفل الطول */
-            padding: 0; 
-            padding-bottom: 20mm; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25); 
-            position: relative; 
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            margin: 0 auto !important; /* توسيط الورقة دايماً */
-        }
-
-        /* 📱 شاشات الموبايل: تصغير العدسة لـ 42% */
-        @media (max-width: 767px) { 
-            .cv-paper { 
-                zoom: 0.42; 
-            } 
-        }
-
-        /* 💻 شاشات الكمبيوتر: تصغير لـ 75% */
-        @media (min-width: 768px) { 
-            .cv-paper { 
-                zoom: 0.75; 
-            } 
-        }
+        /* تنسيقات المعاينة مؤقتاً في خطوة القوالب */
+        .preview-wrapper { width: 100%; background-color: #d1d5db; padding: 20px 0; display: flex; justify-content: center; overflow: hidden; border-radius: 10px; margin-top: 20px; }
+        .cv-paper { background: white; width: 210mm !important; min-height: 297mm !important; padding: 0; padding-bottom: 20mm; box-shadow: 0 15px 35px rgba(0,0,0,0.25); position: relative; word-wrap: break-word; overflow-wrap: break-word; margin: 0 auto !important; }
+        @media (max-width: 767px) { .cv-paper { zoom: 0.42; } }
+        @media (min-width: 768px) { .cv-paper { zoom: 0.75; } }
         
-        .cv-contact span { word-break: break-all; } 
+        /* علامة مائية وتغبيش */
         .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' transform='rotate(-45)'><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='24' font-family='Arial' font-weight='bold' fill='rgba(0,0,0,0.06)'>نسخة غير مدفوعة</text></svg>"); background-repeat: repeat; display: none; }
+        .cv-contact span { word-break: break-all; }
         
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 210mm; max-width: 210mm; box-sizing: border-box; }
         .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none;}
@@ -113,151 +65,103 @@
         .cv-paper[dir="rtl"] { text-align: right; }
         .cv-paper[dir="ltr"] { text-align: left; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; animation: fadeIn 0.3s; }
-        .modal-content { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.5); transform: translateY(0); transition: 0.3s; }
-        .modal-content h2 { margin-top: 0; color: #2c3e50; }
-        .modal-content input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #bdc3c7; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; }
-        .btn-pay { background-color: #27ae60; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: all 0.3s ease;}
-        .btn-pay:hover { background-color: #219653; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);}
-        .btn-close { background-color: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; transition: all 0.3s ease;}
-        .btn-close:hover { background-color: #c0392b; }
-
-        .social-bar { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 400px;}
-        .social-btn { flex: 1; padding: 12px; border-radius: 8px; text-decoration: none; color: white; font-weight: bold; font-size: 14px; text-align: center; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border: 1px solid rgba(255,255,255,0.2); }
-        .social-btn:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 7px 15px rgba(0,0,0,0.2); }
-        .btn-whatsapp { background: linear-gradient(135deg, #25D366, #128C7E); }
-        .btn-facebook { background: linear-gradient(135deg, #1877F2, #0d5aab); }
-        .btn-about { background: linear-gradient(135deg, #34495e, #2c3e50); }
-
-        .comments-wrapper { width: 100%; max-width: 400px; margin-top: 30px; padding: 20px; transition: transform 0.3s ease; }
-        .comments-list { max-height: 250px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
-        .comment-item { background: rgba(255,255,255,0.8); padding: 12px; border-radius: 8px; margin-bottom: 10px; border-right: 3px solid #3498db; text-align: right; transition: all 0.3s ease;}
-        .comment-name { font-weight: bold; color: #2c3e50; font-size: 13px; margin-bottom: 5px; }
-        .comment-text { font-size: 13px; color: #555; }
-        .add-comment-box { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; }
-        
+        /* Toast & Splash */
         #toast { visibility: hidden; min-width: 250px; background-color: #27ae60; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 16px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-
         #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(-45deg, #e3eeff, #f3e7e9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s ease; }
         .spinner { width: 60px; height: 60px; border: 4px solid rgba(52, 152, 219, 0.3); border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
+        .modal-content input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #bdc3c7; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="splashScreen">
         <div class="spinner"></div>
-        <h2 style="color: #2c3e50; margin-top: 25px; font-weight: bold; letter-spacing: 1px;">CV Builder</h2>
-        <p style="color: #7f8c8d; font-size: 14px;">نجهز لك الإبداع...</p>
+        <h2 style="color: #2c3e50; margin-top: 25px; font-weight: bold;">CV Builder</h2>
+    </div>
+    <div id="toast">رسالة تجريبية</div>
+
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content glass-panel">
+            <h2 style="margin-top:0; color:#2c3e50;">ترقية باقة VIP 🚀</h2>
+            <p>للحصول على الميزات الكاملة (روابط، صور نظيفة، PDF)، يرجى تحويل <strong style="color: #e74c3c;">25000 ل.س</strong>.</p>
+            <input type="text" id="shamCashCode" value="89dec5c74b1215b7e00cbbad7b53d370" readonly style="direction:ltr;">
+            <input type="text" id="receiptInput" placeholder="رقم الإشعار هنا...">
+            <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="submitReceipt()">إرسال الإشعار والتفعيل</button>
+            <button class="btn btn-outline" style="width:100%;" onclick="document.getElementById('paymentModal').style.display='none'">إلغاء</button>
+        </div>
     </div>
 
-    <div class="container">
-        <div id="toast">رسالة تجريبية</div>
+    <div class="app-wrapper">
         
-        <div class="modal-overlay" id="aboutModal">
-            <div class="modal-content glass-panel">
-                <h2>ℹ️ من نحن</h2>
-                <p style="font-size: 14px; color: #555; line-height: 1.6;">نحن منصة متخصصة في بناء السير الذاتية الاحترافية. نهدف إلى مساعدة الباحثين عن عمل في إبراز مهاراتهم بأفضل شكل ممكن للشركات من خلال قوالب عصرية وروابط ذكية سهلة المشاركة.</p>
-                <button class="btn-close" onclick="document.getElementById('aboutModal').style.display='none'">إغلاق</button>
+        <div id="step-welcome" class="step-container glass-panel active">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <i class="fas fa-file-signature" style="font-size: 60px; color: #3498db; margin-bottom: 15px;"></i>
+                <h1 style="color: #2c3e50; margin: 0 0 10px 0;">CV Builder</h1>
+                <p style="color: #7f8c8d; font-size: 16px; line-height: 1.6;">المنصة الأولى لبناء سيرتك الذاتية الاحترافية بأفضل القوالب العالمية. صمم، عاين، وانطلق نحو حلمك.</p>
             </div>
+            <button class="btn btn-primary" style="width: 100%; font-size: 18px; padding: 18px;" onclick="goToStep('step-login')">
+                اصنع سيرتك الآن <i class="fas fa-arrow-left"></i>
+            </button>
         </div>
 
-        <div class="modal-overlay" id="paymentModal">
-            <div class="modal-content glass-panel">
-                <h2>ترقية الحساب 🚀</h2>
-                <p>للحصول على رابط سيرتك الذاتية وإزالة العلامة المائية، يرجى تحويل مبلغ <strong style="color: #e74c3c; font-size: 20px;">25000 ل.س </strong> عبر <b>شام كاش</b>.</p>
-                <div style="background: rgba(248, 249, 250, 0.8); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #bdc3c7; text-align: right;">
-                    <label style="font-size: 13px; color: #555; margin-bottom: 8px; display: block;">1. انسخ كود الدفع الخاص بنا:</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="shamCashCode" value="89dec5c74b1215b7e00cbbad7b53d370" readonly style="margin: 0; padding: 10px; font-size: 13px; flex: 1; text-align: left; direction: ltr;">
-                        <button onclick="copyShamCash()" id="copyBtn" class="btn" style="background: #3498db; color: white; padding: 0 15px; min-width: auto; white-space: nowrap;">📋 نسخ</button>
-                    </div>
-                </div>
-                <label style="font-size: 13px; color: #555; text-align: right; display: block;">2. أدخل رقم إشعار التحويل هنا:</label>
-                <input type="text" id="receiptInput" placeholder="رقم الإشعار..." style="margin-top: 5px;">
-                <button class="btn-pay" id="submitPaymentBtn" onclick="submitReceipt()">إرسال الإشعار والتفعيل</button>
-                <button class="btn-close" onclick="document.getElementById('paymentModal').style.display='none'">إلغاء</button>
+        <div id="step-login" class="step-container glass-panel">
+            <div class="step-header">
+                <h2>تسجيل الدخول الدخول</h2>
+                <p>لحفظ سيرتك الذاتية والوصول إليها لاحقاً</p>
             </div>
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <div id="g_id_onload" data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleGoogleLogin" data-auto_prompt="false"></div>
+                <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
+            </div>
+            <p id="systemMsg" style="text-align:center; color: #3498db; font-size: 13px; font-weight: bold; margin-bottom: 15px;"></p>
+            <button id="resumeSessionBtn" onclick="resumeSession()" class="btn btn-secondary" style="display: none; width: 100%;">
+                <i class="fas fa-sync-alt"></i> استئناف جلستك السابقة
+            </button>
         </div>
 
-        <div id="linkModal" class="modal-overlay">
-            <div class="modal-content glass-panel" style="border: 2px solid rgba(52, 152, 219, 0.5);">
-                <h3 style="margin-top:0; color:#2c3e50;">🔗 رابط سيرتك الذاتية</h3>
-                <p style="font-size:13px; color:#7f8c8d;">هذا هو رابط سيرتك الذاتية الاحترافي، يمكنك فتحه وطباعته أو إرساله للشركات.</p>
-                <input type="text" id="finalCvLink" readonly style="width:100%; padding:10px; margin-bottom:15px; text-align:left; direction:ltr;">
-                <button onclick="openMyLink()" id="copyLinkBtn" class="btn-pay" style="margin-bottom:10px;">🌐 فتح وعرض السيرة الذاتية</button>
-                <button onclick="document.getElementById('linkModal').style.display='none'" class="btn-close">إغلاق</button>
-            </div>
-        </div>
-
-        <div id="homeSection" class="app-screen">
-            <div class="auth-box glass-panel">
-                <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 5px;">مرحباً بك في CV Builder</h3>
-                <p style="font-size: 13px; color: #555; margin-bottom: 15px;">أداة إنشاء السير الذاتية الاحترافية والذكية.</p>
-                <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-                    <div id="g_id_onload" data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleGoogleLogin" data-auto_prompt="false" data-itp_support="true"></div>
-                    <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
-                </div>
-                <p id="systemMsg" style="color: #3498db; font-size: 13px; font-weight: bold; margin-top: 5px;"></p>
-                <button id="resumeSessionBtn" onclick="resumeSession()" class="btn" style="display: none; background: linear-gradient(135deg, #27ae60, #219653); color: white; width: 100%; margin-top: 10px;">🔄 استئناف الجلسة السابقة</button>
+        <div id="step-data" class="step-container glass-panel">
+            <div class="step-header">
+                <h2>البيانات الشخصية والمهنية</h2>
+                <p>أدخل بياناتك بدقة لتبدو سيرتك احترافية</p>
             </div>
             
-            <div class="social-bar">
-                <a href="https://wa.me/رقم_الواتساب_هنا" target="_blank" class="social-btn btn-whatsapp"><i class="fab fa-whatsapp"></i> تواصل معنا</a>
-                <a href="https://facebook.com/رابط_فيسبوك_هنا" target="_blank" class="social-btn btn-facebook"><i class="fab fa-facebook"></i> صفحتنا</a>
-                <a href="javascript:void(0)" onclick="document.getElementById('aboutModal').style.display='flex'" class="social-btn btn-about"><i class="fas fa-info-circle"></i> من نحن</a>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-secondary" onclick="toggleLayout()"><i class="fas fa-language"></i> عربي / EN</button>
+                <button class="btn" style="background:#f39c12; color:white;" onclick="autoTranslate()"><i class="fas fa-magic"></i> ترجمة</button>
             </div>
 
-            <div class="comments-wrapper glass-panel">
-                <h4 style="margin-top:0; color:#2c3e50; text-align:center;"><i class="fas fa-comments" style="color:#f39c12;"></i> آراء مستخدمي المنصة</h4>
-                <div class="comments-list" id="publicCommentsList"><div style="text-align:center; color:#7f8c8d; font-size:12px;">جاري تحميل التعليقات... ⏳</div></div>
-                <div class="add-comment-box">
-                    <input type="text" id="newCommentName" placeholder="الاسم (اختياري)" style="padding:10px; font-size:13px; background: rgba(255,255,255,0.8);">
-                    <textarea id="newCommentText" placeholder="شاركنا رأيك بتجربة إنشاء سيرتك الذاتية..." rows="2" style="padding:10px; font-size:13px; background: rgba(255,255,255,0.8);"></textarea>
-                    <button id="submitCommentBtn" onclick="submitPublicComment()" class="btn" style="background:#34495e; color:white; padding:10px;">🚀 نشر التعليق</button>
-                </div>
+            <div class="form-group"><label>الصورة الشخصية (اختياري)</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
+            <div class="form-group"><label>الاسم الكامل</label><input type="text" id="inputName" oninput="updateCV()"></div>
+            <div class="form-group"><label>المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="updateCV()"></div>
+            <div class="form-group"><label>البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: rgba(238,238,238,0.5);"></div>
+            <div class="form-group"><label>رقم الهاتف</label><input type="text" id="inputPhone" oninput="updateCV()"></div>
+            <div class="form-group"><label>الملخص المهني</label><textarea id="inputBio" rows="3" oninput="updateCV()"></textarea></div>
+            <div class="form-group"><label>التعليم والشهادات (كل سطر بنقطة)</label><textarea id="inputEdu" rows="4" oninput="updateList('inputEdu', 'cvEdu')"></textarea></div>
+            <div class="form-group"><label>المهارات (كل سطر بنقطة)</label><textarea id="inputSkills" rows="4" oninput="updateList('inputSkills', 'cvSkills')"></textarea></div>
+            <div class="form-group"><label>اللغات (كل سطر بنقطة)</label><textarea id="inputLangs" rows="3" oninput="updateList('inputLangs', 'cvLangs')"></textarea></div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-primary" onclick="goToThemes()">التالي: اختيار القالب <i class="fas fa-arrow-left"></i></button>
             </div>
         </div>
 
-        <div id="formSection" class="app-screen">
-            <div class="glass-panel" style="padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h4 id="welcomeMsg" style="color: #27ae60; margin: 0; text-align: right;"></h4>
-                    <p id="accountStatusMsg" style="font-size: 12px; font-weight:bold; color: #333; margin: 5px 0 0 0; text-align: right;"></p>
-                </div>
-                <button onclick="logout()" class="btn" style="background: #e74c3c; color: white; min-width: auto; padding: 6px 12px;">تسجيل خروج</button>
+        <div id="step-themes" class="step-container glass-panel" style="max-width: 800px;">
+            <div class="step-header">
+                <h2>اختيار القالب</h2>
+                <p>اختر التصميم الذي يناسب شخصيتك (سيتم بناء معرض قوالب قريباً)</p>
             </div>
-            <div class="controls">
-                <button class="btn btn-lang" id="btnLang" onclick="toggleLayout()"><i class="fas fa-language"></i> عربي/English</button>
-                <button class="btn btn-translate" id="translateBtn" onclick="autoTranslate()"><i class="fas fa-magic"></i> ترجمة (غوغل)</button>
-                <button class="btn" style="background-color: #27ae60; color: white; width: 100%; margin-top: 5px; font-size: 15px;" id="saveBtn" onclick="saveDataToServer()"><i class="fas fa-save"></i> حفظ البيانات والمعاينة</button>
-            </div>
-            <button class="accordion-btn" onclick="toggleInputs()" id="toggleInputsBtn">
-                <span>📝 تعبئة بيانات السيرة الذاتية</span>
-                <span id="accordionArrow">▲</span>
-            </button>
-            <div id="inputsContainer" class="accordion-content">
-                <div class="form-group"><label>الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
-                <div class="form-group"><label id="lblName">الاسم الكامل</label><input type="text" id="inputName" oninput="updateCV()"></div>
-                <div class="form-group"><label id="lblTitle">المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="updateCV()"></div>
-                <div class="form-group"><label id="lblEmail">البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: rgba(238,238,238,0.5);"></div>
-                <div class="form-group"><label id="lblPhone">رقم الهاتف</label><input type="text" id="inputPhone" oninput="updateCV()"></div>
-                <div class="form-group"><label id="lblBio">الملخص المهني</label><textarea id="inputBio" rows="3" oninput="updateCV()"></textarea></div>
-                <div class="form-group"><label id="lblEdu">التعليم والشهادات</label><textarea id="inputEdu" rows="4" oninput="updateList('inputEdu', 'cvEdu')"></textarea></div>
-                <div class="form-group"><label id="lblSkills">المهارات</label><textarea id="inputSkills" rows="4" oninput="updateList('inputSkills', 'cvSkills')"></textarea></div>
-                <div class="form-group"><label id="lblLangs">اللغات</label><textarea id="inputLangs" rows="3" oninput="updateList('inputLangs', 'cvLangs')"></textarea></div>
-            </div>
-        </div>
-
-        <div id="previewSection" class="app-screen">
-            <div class="theme-selector-container glass-panel">
-                <label style="font-size: 12px; margin-bottom: 2px; color: #2c3e50; font-weight: bold;"><i class="fas fa-palette"></i> القالب:</label>
-                <select id="themeDropdown" onchange="changeTheme(this.value)"><option value="theme-default">جاري التحميل...</option></select>
-                <button class="btn" style="background-color: #2980b9; color: white; padding: 10px; margin-top: 5px;" id="linkBtn" onclick="generateCVLink()"><i class="fas fa-link"></i> الحصول على الرابط</button>
-                <button class="btn" style="background-color: #27ae60; color: white; padding: 10px; margin-top: 5px; display: none; animation: fadeIn 0.5s;" id="saveThemeBtn" onclick="saveDataToServer()"><i class="fas fa-save"></i> احفظ الثيم الجديد!</button>
+            
+            <div class="form-group">
+                <select id="themeDropdown" onchange="changeTheme(this.value)" style="font-size: 16px; padding: 15px;">
+                    <option value="theme-default">جاري تحميل القوالب...</option>
+                </select>
             </div>
 
             <div class="preview-wrapper">
@@ -275,30 +179,52 @@
                             </div>
                         </div>
                     </div>
-                    <div class="cv-section" id="sec-bio">
-                        <div class="cv-section-title" id="cvLblBio">الملخص الشخصي</div>
-                        <div class="cv-content" id="cvBio">أدخل النبذة الشخصية الخاصة بك...</div>
-                    </div>
-                    <div class="cv-section" id="sec-edu">
-                        <div class="cv-section-title" id="cvLblEdu">التعليم والشهادات</div>
-                        <div class="cv-list" id="cvEdu"></div>
-                    </div>
-                    <div class="cv-section" id="sec-skills">
-                        <div class="cv-section-title" id="cvLblSkills">المهارات</div>
-                        <div class="cv-list" id="cvSkills"></div>
-                    </div>
-                    <div class="cv-section" id="sec-langs">
-                        <div class="cv-section-title" id="cvLblLangs">اللغات</div>
-                        <div class="cv-list" id="cvLangs"></div>
-                    </div>
+                    <div class="cv-section" id="sec-bio"><div class="cv-section-title" id="cvLblBio">الملخص الشخصي</div><div class="cv-content" id="cvBio">أدخل النبذة...</div></div>
+                    <div class="cv-section" id="sec-edu"><div class="cv-section-title" id="cvLblEdu">التعليم والشهادات</div><div class="cv-list" id="cvEdu"></div></div>
+                    <div class="cv-section" id="sec-skills"><div class="cv-section-title" id="cvLblSkills">المهارات</div><div class="cv-list" id="cvSkills"></div></div>
+                    <div class="cv-section" id="sec-langs"><div class="cv-section-title" id="cvLblLangs">اللغات</div><div class="cv-list" id="cvLangs"></div></div>
                 </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="goToStep('step-data')"><i class="fas fa-arrow-right"></i> تعديل البيانات</button>
+                <button class="btn btn-primary" id="saveBtn" onclick="saveAndGoToExport()">التالي: التصدير والحفظ <i class="fas fa-arrow-left"></i></button>
             </div>
         </div>
 
-        <div class="mobile-nav" id="mobileNav">
-            <button id="tabForm" onclick="navigateTo('form')"><i class="fas fa-edit"></i> تعديل</button>
-            <button id="tabPreview" onclick="navigateTo('preview')"><i class="fas fa-file-alt"></i> معاينة</button>
+        <div id="step-export" class="step-container glass-panel">
+            <div class="step-header">
+                <h2>مبروك! سيرتك جاهزة 🎉</h2>
+                <p>اختر طريقة التصدير المناسبة لك</p>
+                <p id="accountStatusMsg" style="font-weight: bold; margin-top: 10px;"></p>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.02); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #bdc3c7;">
+                <h4 style="margin-top:0; color:#7f8c8d; text-align: center;"><i class="fas fa-lock"></i> خيارات مجانية (بعلامة مائية وتغبيش)</h4>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button class="btn btn-outline" onclick="showToast('سيتم برمجة التصدير بالمرحلة القادمة!')"><i class="fas fa-image"></i> كـ صورة</button>
+                    <button class="btn btn-outline" onclick="showToast('سيتم برمجة التصدير بالمرحلة القادمة!')"><i class="fas fa-file-pdf"></i> كـ PDF</button>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); padding: 20px; border-radius: 10px; color: white; text-align: center; box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);">
+                <h3 style="margin-top:0;"><i class="fas fa-crown"></i> باقة VIP الشاملة</h3>
+                <p style="font-size: 14px; margin-bottom: 20px;">احصل على رابط ويب احترافي دائم، بالإضافة إلى تحميل PDF وصور بدون أي علامات مائية وبجودة أصلية.</p>
+                <button class="btn" style="background: white; color: #e67e22; width: 100%; font-size: 16px;" onclick="triggerVIP()">
+                    <i class="fas fa-rocket"></i> تفعيل باقة VIP الآن
+                </button>
+            </div>
+            
+            <div id="vipLinkArea" style="display: none; margin-top: 20px;">
+                <h4 style="color:#27ae60; text-align:center;">رابط الـ VIP الخاص بك:</h4>
+                <input type="text" id="finalCvLink" readonly style="direction:ltr; text-align:center; font-weight:bold;">
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="goToStep('step-themes')"><i class="fas fa-arrow-right"></i> العودة للقوالب</button>
+            </div>
         </div>
+
     </div>
 
 <script>
@@ -311,120 +237,55 @@
     let currentUserUID = ""; 
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
+    // --- هندسة مسار الخطوات ---
+    function goToStep(stepId) {
+        document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+        document.getElementById(stepId).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function showToast(message, isError = false) {
         const toast = document.getElementById("toast");
         toast.innerText = message;
         toast.style.backgroundColor = isError ? "#e74c3c" : "#27ae60";
         if (message.includes("قيد المراجعة")) toast.style.backgroundColor = "#f39c12";
         toast.className = "show";
-        setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-    }
-
-    async function loadPublicComments() {
-        try {
-            const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "get_comments" }) });
-            const data = await res.json();
-            const listDiv = document.getElementById('publicCommentsList');
-            listDiv.innerHTML = '';
-            if(data.status === "success" && data.comments.length > 0) {
-                data.comments.forEach(c => { listDiv.innerHTML += `<div class="comment-item"><div class="comment-name"><i class="fas fa-user-circle"></i> ${c.name}</div><div class="comment-text">${c.text}</div></div>`; });
-            } else { listDiv.innerHTML = '<div style="text-align:center; color:#7f8c8d; font-size:12px;">كن أول من يشاركنا رأيه! 😊</div>'; }
-        } catch (e) { document.getElementById('publicCommentsList').innerHTML = '<div style="text-align:center; color:#e74c3c; font-size:12px;">حدث خطأ في تحميل التعليقات.</div>'; }
-    }
-
-    async function submitPublicComment() {
-        const nameInput = document.getElementById('newCommentName');
-        const textInput = document.getElementById('newCommentText');
-        const btn = document.getElementById('submitCommentBtn');
-        let name = nameInput.value.trim();
-        let text = textInput.value.trim();
-        if(!text) { showToast("⚠️ يرجى كتابة التعليق أولاً!", true); return; }
-        if(!name) { name = "مستخدم للمنصة"; } 
-        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
-        try {
-            const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "add_comment", name: name, comment: text }) });
-            const data = await res.json();
-            if(data.status === "success") { showToast("✅ تم نشر تعليقك بنجاح!"); textInput.value = ''; loadPublicComments(); }
-        } catch(e) { showToast("❌ فشل إرسال التعليق.", true); }
-        btn.disabled = false; btn.innerHTML = '🚀 نشر التعليق';
-    }
-
-    async function loadThemesDynamically() {
-        try {
-            const res = await fetch(THEMES_CSS_FILE);
-            if (!res.ok) throw new Error("ملف الثيمات غير موجود");
-            const cssText = await res.text();
-            const dropdown = document.getElementById('themeDropdown');
-            dropdown.innerHTML = ''; 
-            const regex = /\/\*!Theme:\s*(theme-[\w-]+)\s*\|\s*(.*?)\s*\*\//g;
-            let match; let hasThemes = false;
-            while ((match = regex.exec(cssText)) !== null) {
-                let opt = document.createElement('option');
-                opt.value = match[1].trim(); opt.text = match[2].trim(); dropdown.add(opt); hasThemes = true;
-            }
-            if(!hasThemes){ dropdown.innerHTML = '<option value="theme-default">الأزرق الكلاسيكي</option>'; }
-            const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
-            if(dropdown.querySelector(`option[value="${cachedTheme}"]`)) { dropdown.value = cachedTheme; }
-        } catch (e) { document.getElementById('themeDropdown').innerHTML = '<option value="theme-default">الأزرق الكلاسيكي (افتراضي)</option>'; }
+        setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
     }
 
     window.onload = async function() {
         const emergencyExit = setTimeout(() => {
             const splash = document.getElementById('splashScreen');
-            if(splash) { splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; }, 500); }
+            if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 500); }
         }, 3500);
 
-        try { await Promise.all([ loadThemesDynamically(), loadPublicComments() ]); } 
-        catch (e) { console.log("تم تخطي خطأ في التحميل"); }
+        try { await loadThemesDynamically(); } catch (e) { }
 
         clearTimeout(emergencyExit);
         const splash = document.getElementById('splashScreen');
-        if(splash) { splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; }, 500); }
+        if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 500); }
         
         const cachedEmail = localStorage.getItem('cv_email');
-        if (cachedEmail) { showScreen('home'); resumeSession(); } 
-        else { history.replaceState({ page: 'home' }, '', '#home'); showScreen('home'); }
+        if (cachedEmail) { 
+            document.getElementById('resumeSessionBtn').style.display = 'block';
+            goToStep('step-login'); 
+            resumeSession(); 
+        } 
     };
 
-    window.onpopstate = function(event) {
-        if (event.state && event.state.page) showScreen(event.state.page);
-        else showScreen('home');
-    };
-
-    function navigateTo(page) {
-        if (window.innerWidth >= 768 && (page === 'form' || page === 'preview')) return;
-        history.pushState({ page: page }, '', '#' + page);
-        showScreen(page);
-    }
-
-    function showScreen(page) {
-        const home = document.getElementById('homeSection');
-        const form = document.getElementById('formSection');
-        const preview = document.getElementById('previewSection');
-        const nav = document.getElementById('mobileNav');
-
-        home.style.display = 'none'; form.style.display = 'none'; preview.style.display = 'none';
-        document.getElementById('tabForm').classList.remove('active');
-        document.getElementById('tabPreview').classList.remove('active');
-        
-        if (window.innerWidth >= 768) {
-            if(page === 'home') document.body.classList.remove('logged-in');
-            else document.body.classList.add('logged-in');
-            return;
+    async function loadThemesDynamically() {
+        const res = await fetch(THEMES_CSS_FILE);
+        const cssText = await res.text();
+        const dropdown = document.getElementById('themeDropdown');
+        dropdown.innerHTML = ''; 
+        const regex = /\/\*!Theme:\s*(theme-[\w-]+)\s*\|\s*(.*?)\s*\*\//g;
+        let match; 
+        while ((match = regex.exec(cssText)) !== null) {
+            let opt = document.createElement('option');
+            opt.value = match[1].trim(); opt.text = match[2].trim(); dropdown.add(opt); 
         }
-
-        if (page === 'home') { home.style.display = 'flex'; nav.style.display = 'none'; } 
-        else if (page === 'form') { form.style.display = 'block'; nav.style.display = 'flex'; document.getElementById('tabForm').classList.add('active'); } 
-        else if (page === 'preview') { preview.style.display = 'block'; nav.style.display = 'flex'; document.getElementById('tabPreview').classList.add('active'); }
-    }
-
-    function logout() {
-        localStorage.removeItem('cv_email');
-        localStorage.removeItem('cv_name');
-        document.getElementById('resumeSessionBtn').style.display = 'none';
-        document.getElementById('systemMsg').innerText = "تم تسجيل الخروج.";
-        document.body.classList.remove('logged-in');
-        navigateTo('home');
+        const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
+        if(dropdown.querySelector(`option[value="${cachedTheme}"]`)) { dropdown.value = cachedTheme; }
     }
 
     async function handleGoogleLogin(response) {
@@ -442,8 +303,7 @@
         localStorage.setItem('cv_email', userEmail);
         localStorage.setItem('cv_name', userName);
 
-        document.getElementById('systemMsg').innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري جلب بياناتك...';
-        document.getElementById('welcomeMsg').innerText = `أهلاً، ${userName}`;
+        document.getElementById('systemMsg').innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري جلب بياناتك من الخوادم...';
         document.getElementById('inputEmail').value = userEmail;
         document.getElementById('inputName').value = userName;
         updateCV();
@@ -457,16 +317,15 @@
                 const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
                 document.getElementById('themeDropdown').value = cachedTheme;
                 changeTheme(cachedTheme);
-                document.getElementById('saveThemeBtn').style.display = 'none'; 
                 
                 currentUserStatus = data.userStatus; 
                 currentUserUID = data.uid || ""; 
                 if(savedData.phone) document.getElementById('inputPhone').value = savedData.phone;
                 
-                let statusText = "🔴 حساب مجاني";
-                if (currentUserStatus === "Active") statusText = "🟢 حساب مفعل";
-                else if (currentUserStatus === "Pending") statusText = "🟡 حساب قيد المراجعة";
-                document.getElementById('accountStatusMsg').innerText = statusText;
+                let statusText = "🔴 حالة الحساب: مجاني";
+                if (currentUserStatus === "Active") statusText = "🟢 حالة الحساب: VIP مفعل";
+                else if (currentUserStatus === "Pending") statusText = "🟡 حالة الحساب: قيد المراجعة";
+                document.getElementById('accountStatusMsg').innerHTML = statusText;
 
                 if(savedData.userImageBase64) {
                     const imgElement = document.getElementById('cvPhoto');
@@ -482,165 +341,22 @@
                 document.getElementById('inputLangs').value = savedData.ar.langs || '';
                 
                 updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
-            } else { document.getElementById('accountStatusMsg').innerText = "🔴 حساب مجاني (جديد)"; }
+            } else { document.getElementById('accountStatusMsg').innerHTML = "🔴 حالة الحساب: مجاني (مستخدم جديد)"; }
             
             document.getElementById('systemMsg').innerText = "";
-            navigateTo('form');
+            showToast("✅ تمت المصادقة بنجاح!");
+            goToStep('step-data'); // الانتقال لخطوة البيانات فوراً بعد الدخول
 
         } catch (e) { document.getElementById('systemMsg').innerText = "❌ حدث خطأ في الشبكة."; }
     }
 
-    function updateCV() {
-        document.getElementById('cvName').innerText = document.getElementById('inputName').value || (isEnglish ? 'Full Name' : 'الاسم الكامل');
-        document.getElementById('cvTitle').innerText = document.getElementById('inputTitle').value || (isEnglish ? 'Job Title' : 'المسمى الوظيفي');
-        document.getElementById('cvBio').innerText = document.getElementById('inputBio').value || (isEnglish ? 'Professional Summary...' : 'الملخص المهني...');
-
-        const emailEl = document.getElementById('cvEmail');
-        const phoneEl = document.getElementById('cvPhone');
-        let actualEmail = document.getElementById('inputEmail').value || 'Email';
-        let actualPhone = document.getElementById('inputPhone').value || 'Phone';
-
-        if (currentUserStatus !== "Active") {
-            emailEl.innerText = actualEmail.substring(0, 3) + '*****@***.com';
-            phoneEl.innerText = actualPhone.substring(0, 4) + '******';
-            emailEl.style.filter = "blur(3px)";
-            phoneEl.style.filter = "blur(3px)";
-            document.getElementById('watermark').style.display = "block"; 
-        } else {
-            emailEl.innerText = actualEmail;
-            phoneEl.innerText = actualPhone;
-            emailEl.style.filter = "none";
-            phoneEl.style.filter = "none";
-            document.getElementById('watermark').style.display = "none";
-        }
+    function goToThemes() {
+        updateCV(); // تأكيد تحديث المعاينة
+        goToStep('step-themes');
     }
 
-    function updateList(inputId, cvId) {
-        const lines = document.getElementById(inputId).value.split('\n').filter(line => line.trim() !== '');
-        const container = document.getElementById(cvId);
-        const bulletColor = document.getElementById('themeDropdown').value === 'theme-minimal' ? '#16a085' : '#3498db';
-        const align = isEnglish ? 'left' : 'right';
-        const dir = isEnglish ? 'ltr' : 'rtl';
-        
-        let html = `<table width="100%" dir="${dir}" style="border-collapse: collapse; margin: 0; padding: 0; font-size: 14px; color: #444; line-height: 1.6;">`;
-        if (lines.length === 0) { 
-            html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align};">${isEnglish ? 'Enter details...' : 'أدخل بياناتك...'}</td></tr>`;
-        } else {
-            lines.forEach(line => { html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align};">${line}</td></tr>`; });
-        }
-        html += '</table>';
-        container.innerHTML = html;
-    }
-
-    function toggleLayout() {
-        const currentLang = isEnglish ? 'en' : 'ar';
-        savedData[currentLang].name = document.getElementById('inputName').value;
-        savedData[currentLang].title = document.getElementById('inputTitle').value;
-        savedData[currentLang].bio = document.getElementById('inputBio').value;
-        savedData[currentLang].edu = document.getElementById('inputEdu').value;
-        savedData[currentLang].skills = document.getElementById('inputSkills').value;
-        savedData[currentLang].langs = document.getElementById('inputLangs').value;
-
-        isEnglish = !isEnglish;
-        const newLang = isEnglish ? 'en' : 'ar';
-
-        document.getElementById('inputName').value = savedData[newLang].name;
-        document.getElementById('inputTitle').value = savedData[newLang].title;
-        document.getElementById('inputBio').value = savedData[newLang].bio;
-        document.getElementById('inputEdu').value = savedData[newLang].edu;
-        document.getElementById('inputSkills').value = savedData[newLang].skills;
-        document.getElementById('inputLangs').value = savedData[newLang].langs;
-
-        const paper = document.getElementById('cvTemplate');
-        if (isEnglish) {
-            paper.setAttribute('dir', 'ltr');
-            document.getElementById('cvLblBio').innerText = 'Professional Summary';
-            document.getElementById('cvLblEdu').innerText = 'Education';
-            document.getElementById('cvLblSkills').innerText = 'Skills';
-            document.getElementById('cvLblLangs').innerText = 'Languages';
-        } else {
-            paper.setAttribute('dir', 'rtl');
-            document.getElementById('cvLblBio').innerText = 'الملخص الشخصي';
-            document.getElementById('cvLblEdu').innerText = 'التعليم والشهادات';
-            document.getElementById('cvLblSkills').innerText = 'المهارات';
-            document.getElementById('cvLblLangs').innerText = 'اللغات';
-        }
-        
-        updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
-    }
-
-    function toggleInputs() {
-        const container = document.getElementById('inputsContainer');
-        const arrow = document.getElementById('accordionArrow');
-        if (container.style.display === 'none') { container.style.display = 'block'; arrow.innerText = '▲'; } 
-        else { container.style.display = 'none'; arrow.innerText = '▼'; }
-    }
-
-    function previewPhoto(event) {
-        const file = event.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const MAX_SIZE = 250;
-                let width = img.width; let height = img.height;
-                if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
-                else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-                canvas.width = width; canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                const cvPhoto = document.getElementById('cvPhoto');
-                cvPhoto.src = compressedBase64;
-                cvPhoto.style.display = 'block';
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function changeTheme(themeName) {
-        const paper = document.getElementById('cvTemplate');
-        paper.className = 'cv-paper';
-        if (themeName !== 'theme-default') paper.classList.add(themeName);
-        savedData.selectedTheme = themeName;
-        localStorage.setItem('cv_theme', themeName); 
-        updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
-        document.getElementById('saveThemeBtn').style.display = 'block';
-    }
-
-    async function autoTranslate() {
-        const btn = document.getElementById('translateBtn');
-        const payloadData = { action: "translate", texts: { name: document.getElementById('inputName').value, title: document.getElementById('inputTitle').value, bio: document.getElementById('inputBio').value, edu: document.getElementById('inputEdu').value, skills: document.getElementById('inputSkills').value, langs: document.getElementById('inputLangs').value } };
-        if(!payloadData.texts.title && !payloadData.texts.bio && !payloadData.texts.edu) { showToast("⚠️ يرجى كتابة البيانات أولاً لترجمتها.", true); return; }
-        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ترجمة...'; 
-        try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
-            const result = await response.json();
-            if(result.status === "success") {
-                savedData.en.name = result.translated.name || payloadData.texts.name; 
-                savedData.en.title = result.translated.title || '';
-                savedData.en.bio = result.translated.bio || '';
-                savedData.en.edu = result.translated.edu || '';
-                savedData.en.skills = result.translated.skills || '';
-                savedData.en.langs = result.translated.langs || '';
-                if(!isEnglish) toggleLayout();
-                else {
-                    document.getElementById('inputName').value = savedData.en.name; document.getElementById('inputTitle').value = savedData.en.title; document.getElementById('inputBio').value = savedData.en.bio; document.getElementById('inputEdu').value = savedData.en.edu; document.getElementById('inputSkills').value = savedData.en.skills; document.getElementById('inputLangs').value = savedData.en.langs;
-                    updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
-                }
-                showToast("✅ تمت الترجمة بنجاح!");
-            }
-        } catch (e) { showToast("❌ خطأ في الاتصال أثناء الترجمة.", true); }
-        btn.disabled = false; btn.innerHTML = '<i class="fas fa-magic"></i> ترجمة (غوغل)';
-    }
-
-    async function saveDataToServer() {
+    async function saveAndGoToExport() {
         const btn = document.getElementById('saveBtn');
-        const saveThemeBtn = document.getElementById('saveThemeBtn'); 
-        
         const email = document.getElementById('inputEmail').value;
         const currentLang = isEnglish ? 'en' : 'ar';
         savedData[currentLang].name = document.getElementById('inputName').value; 
@@ -653,77 +369,117 @@
         savedData.phone = document.getElementById('inputPhone').value;
         savedData.activeLang = currentLang;
         
-        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; 
-        saveThemeBtn.disabled = true; saveThemeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; 
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...'; 
         
         let base64Image = ""; 
         const cvPhoto = document.getElementById('cvPhoto');
-        if (cvPhoto.src && cvPhoto.src.startsWith('data:image')) { 
-            base64Image = cvPhoto.src.split(',')[1]; 
-            savedData.userImageBase64 = base64Image; 
-        }
+        if (cvPhoto.src && cvPhoto.src.startsWith('data:image')) { base64Image = cvPhoto.src.split(',')[1]; savedData.userImageBase64 = base64Image; }
 
         const payloadData = { action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: base64Image, receipt: "" };
 
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payloadData) });
             const result = await response.json();
-            
             if(result.status === "success") { 
                 currentUserUID = result.uid;
-                saveThemeBtn.style.display = 'none'; 
-                showToast("✅ تم حفظ البيانات بنجاح!");
-                navigateTo('preview'); 
-            } else { showToast("❌ حدث خطأ أثناء الحفظ.", true); }
+                goToStep('step-export'); 
+                checkVipStatus();
+            }
         } catch (e) { showToast("❌ فشل الاتصال بالسيرفر.", true); }
-        
-        btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> حفظ البيانات والمعاينة';
-        saveThemeBtn.disabled = false; saveThemeBtn.innerHTML = '<i class="fas fa-save"></i> احفظ الثيم الجديد!';
+        btn.disabled = false; btn.innerHTML = 'التالي: التصدير والحفظ <i class="fas fa-arrow-left"></i>';
     }
 
-    function generateCVLink() {
-        if (!currentUserUID) { showToast("⚠️ يرجى الضغط على زر 'حفظ البيانات' أولاً!", true); return; }
-        if (currentUserStatus === "Pending") { showToast("⏳ حسابك قيد المراجعة حالياً، يرجى الانتظار لحين التفعيل.", true); return; }
-        if (currentUserStatus !== "Active") { document.getElementById('paymentModal').style.display = 'flex'; return; }
-        const linkInput = document.getElementById('finalCvLink');
-        linkInput.value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
-        document.getElementById('linkModal').style.display = 'flex';
+    function triggerVIP() {
+        if (currentUserStatus === "Pending") { showToast("⏳ إيصالك قيد المراجعة حالياً.", true); return; }
+        if (currentUserStatus === "Active") { showToast("🟢 حسابك مفعل بالفعل!"); return; }
+        document.getElementById('paymentModal').style.display = 'flex';
     }
 
-    function openMyLink() {
-        const linkUrl = document.getElementById("finalCvLink").value;
-        window.open(linkUrl, '_blank'); 
+    function checkVipStatus() {
+        if (currentUserStatus === "Active" && currentUserUID) {
+            document.getElementById('vipLinkArea').style.display = 'block';
+            document.getElementById('finalCvLink').value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
+            // ⚠️ التغبيش يزال فقط للـ VIP (كما اتفقنا في النقاش)
+            document.getElementById('watermark').style.display = "none";
+            document.getElementById('cvEmail').style.filter = "none";
+            document.getElementById('cvPhone').style.filter = "none";
+        } else {
+            document.getElementById('watermark').style.display = "block";
+            document.getElementById('cvEmail').style.filter = "blur(3px)";
+            document.getElementById('cvPhone').style.filter = "blur(3px)";
+        }
     }
-   
-    function copyShamCash() {
-        const codeInput = document.getElementById('shamCashCode');
-        const copyBtn = document.getElementById('copyBtn');
-        codeInput.select(); codeInput.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(codeInput.value).then(() => {
-            copyBtn.innerText = "✔ تم النسخ"; copyBtn.style.background = "#27ae60";
-            setTimeout(() => { copyBtn.innerText = "📋 نسخ"; copyBtn.style.background = "#3498db"; }, 3000);
-        }).catch(err => { showToast("❌ فشل النسخ التلقائي.", true); });
+
+    // --- الوظائف القديمة للحقول والعرض ---
+    function updateCV() {
+        document.getElementById('cvName').innerText = document.getElementById('inputName').value || (isEnglish ? 'Full Name' : 'الاسم الكامل');
+        document.getElementById('cvTitle').innerText = document.getElementById('inputTitle').value || (isEnglish ? 'Job Title' : 'المسمى الوظيفي');
+        document.getElementById('cvBio').innerText = document.getElementById('inputBio').value || (isEnglish ? 'Professional Summary...' : 'الملخص المهني...');
+
+        const emailEl = document.getElementById('cvEmail');
+        const phoneEl = document.getElementById('cvPhone');
+        let actualEmail = document.getElementById('inputEmail').value || 'Email';
+        let actualPhone = document.getElementById('inputPhone').value || 'Phone';
+
+        // ⚠️ إظهار الاسم بوضوح دائماً، وتغبيش الباقي للمجاني
+        emailEl.innerText = actualEmail.substring(0, 3) + '*****@***.com';
+        phoneEl.innerText = actualPhone.substring(0, 4) + '******';
+        if (currentUserStatus !== "Active") {
+            emailEl.style.filter = "blur(3px)"; phoneEl.style.filter = "blur(3px)";
+            document.getElementById('watermark').style.display = "block"; 
+        } else {
+            emailEl.innerText = actualEmail; phoneEl.innerText = actualPhone;
+            emailEl.style.filter = "none"; phoneEl.style.filter = "none";
+            document.getElementById('watermark').style.display = "none";
+        }
+    }
+
+    function updateList(inputId, cvId) {
+        const lines = document.getElementById(inputId).value.split('\n').filter(line => line.trim() !== '');
+        const container = document.getElementById(cvId);
+        const bulletColor = document.getElementById('themeDropdown').value === 'theme-minimal' ? '#16a085' : '#3498db';
+        const align = isEnglish ? 'left' : 'right';
+        const dir = isEnglish ? 'ltr' : 'rtl';
+        let html = `<table width="100%" dir="${dir}" style="border-collapse: collapse; margin: 0; padding: 0; font-size: 14px; color: #444; line-height: 1.6;">`;
+        lines.forEach(line => { html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align};">${line}</td></tr>`; });
+        html += '</table>'; container.innerHTML = html;
+    }
+
+    function changeTheme(themeName) {
+        const paper = document.getElementById('cvTemplate');
+        paper.className = 'cv-paper';
+        if (themeName !== 'theme-default') paper.classList.add(themeName);
+        savedData.selectedTheme = themeName;
+        localStorage.setItem('cv_theme', themeName); 
+        updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
+    }
+
+    function toggleLayout() {
+        isEnglish = !isEnglish;
+        const paper = document.getElementById('cvTemplate');
+        paper.setAttribute('dir', isEnglish ? 'ltr' : 'rtl');
+        document.getElementById('cvLblBio').innerText = isEnglish ? 'Professional Summary' : 'الملخص الشخصي';
+        document.getElementById('cvLblEdu').innerText = isEnglish ? 'Education' : 'التعليم والشهادات';
+        document.getElementById('cvLblSkills').innerText = isEnglish ? 'Skills' : 'المهارات';
+        document.getElementById('cvLblLangs').innerText = isEnglish ? 'Languages' : 'اللغات';
+        updateCV(); updateList('inputEdu', 'cvEdu'); updateList('inputSkills', 'cvSkills'); updateList('inputLangs', 'cvLangs');
     }
 
     async function submitReceipt() {
         const receiptNum = document.getElementById('receiptInput').value;
         if (!receiptNum) { showToast("⚠️ يرجى إدخال رقم الإشعار أولاً!", true); return; }
-        const btn = document.getElementById('submitPaymentBtn');
         const email = document.getElementById('inputEmail').value;
-        btn.innerText = "⏳ جاري الإرسال..."; btn.disabled = true;
-
         const payloadData = { action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: "", receipt: receiptNum };
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") { 
                 currentUserStatus = "Pending";
                 document.getElementById('paymentModal').style.display = 'none';
-                document.getElementById('accountStatusMsg').innerText = "🟡 حساب قيد المراجعة";
+                document.getElementById('accountStatusMsg').innerText = "🟡 حالة الحساب: قيد المراجعة";
                 showToast("✅ تم إرسال إشعار الدفع بنجاح!");
             }
         } catch (e) { showToast("❌ فشل الاتصال بالسيرفر.", true); }
-        btn.innerText = "إرسال الإشعار والتفعيل"; btn.disabled = false;
     }
 </script>
 </body>
