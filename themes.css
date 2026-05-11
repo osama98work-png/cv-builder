@@ -34,7 +34,7 @@
 .theme-creative .cv-section:last-child { border-bottom: none; }
 
 /*!Theme: theme-twocolumn | المودرن (عمودين) 🌟 */
-.theme-twocolumn { display: grid; grid-template-columns: 35% 65%; grid-template-rows: auto auto 1fr; align-content: start; padding: 0 !important; background-color: #ffffff; }
+.theme-twocolumn { display: grid; grid-template-columns: 73.5mm 136.5mm !important; grid-template-rows: auto auto 1fr; align-content: start; padding: 0 !important; background-color: #ffffff; width: 210mm !important; }
 .theme-twocolumn > div { min-width: 0; } 
 .theme-twocolumn .watermark { grid-column: 1 / -1; }
 .theme-twocolumn .cv-header { grid-column: 1 / 2; grid-row: 1; flex-direction: column; background: #2c3e50; margin: 0; padding: 40px 15px 20px; border: none; text-align: center; overflow: hidden; }
