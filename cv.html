@@ -15,14 +15,16 @@
         #status-msg { text-align:center; padding:50px; }
         #cv-container { display:none; max-width: 100%; margin: 0 auto; overflow-x: hidden;}
         
-        /* ⚠️ غلاف العدسة في صفحة العميل */
-        .preview-wrapper { width: 100%; background-color: #d1d5db; padding: 30px 0; display: flex; justify-content: center; overflow-x: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); }
+        /* ⚠️ حاوية العدسة */
+        .preview-wrapper { width: 100%; background-color: #d1d5db; padding: 20px 0; display: flex; justify-content: center; overflow: hidden; border-radius: 10px; }
         
-        .cv-paper { background: white; width: 210mm !important; min-width: 210mm !important; max-width: 210mm !important; min-height: 297mm !important; padding: 0; padding-bottom: 20mm; box-shadow: 0 15px 35px rgba(0,0,0,0.25); position: relative; word-wrap: break-word; overflow-wrap: break-word; transform-origin: top center; margin: 0 !important; }
+        /* الورقة الثابتة */
+        .cv-paper { background: white; width: 210mm !important; min-height: 297mm !important; padding: 0; padding-bottom: 20mm; box-shadow: 0 15px 35px rgba(0,0,0,0.25); position: relative; word-wrap: break-word; overflow-wrap: break-word; margin: 0 auto !important; }
 
-        @media (max-width: 767px) { .cv-paper { transform: scale(calc((100vw - 40px) / 794)); margin-bottom: calc(-1122px * (1 - ((100vw - 40px) / 794))) !important; } }
-        @media (min-width: 768px) { .cv-paper { transform: scale(0.8); margin-bottom: calc(-1122px * 0.2) !important; } }
+        @media (max-width: 767px) { .cv-paper { zoom: 0.42; } }
+        @media (min-width: 768px) { .cv-paper { zoom: 0.75; } }
         
+        .cv-contact span { word-break: break-all; }
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 100%; box-sizing: border-box;}
         .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none; }
         .cv-paper[dir="ltr"] .cv-photo { margin-left: 0; margin-right: 20px; } 
@@ -30,21 +32,19 @@
         .cv-name { font-size: 28px; font-weight: bold; color: #2c3e50; margin: 0; }
         .cv-title { font-size: 16px; color: #3498db; margin-top: 5px; font-weight: 600; }
         .cv-contact { font-size: 13px; color: #7f8c8d; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .cv-contact span { word-break: break-all; }
-        
         .cv-section { margin-bottom: 20px; padding: 0 20mm; width: 100%; box-sizing: border-box;}
         .cv-section-title { font-size: 18px; color: #2c3e50; border-bottom: 1px solid #bdc3c7; margin-bottom: 10px; padding-bottom: 5px; font-weight: bold; }
         .cv-content { font-size: 14px; color: #444; line-height: 1.6; white-space: pre-wrap; }
         .cv-paper[dir="rtl"] { text-align: right; }
         .cv-paper[dir="ltr"] { text-align: left; }
 
-        /* ⚠️ أهم أمر: إلغاء الزووم أثناء الطباعة ليطلع مقاس الورقة A4 نظامي عالحبر */
+        /* ⚠️ إلغاء العدسة عند الطباعة */
         @media print { 
             .no-print { display: none !important; } 
             body { background: white !important; margin: 0; padding: 0; }
             #cv-viewer-app { background: white; padding: 0; }
             .preview-wrapper { background: transparent !important; padding: 0 !important; box-shadow: none !important;}
-            .cv-paper { transform: none !important; margin: 0 !important; box-shadow: none !important; border-radius: 0; width: 210mm !important; }
+            .cv-paper { zoom: 1 !important; margin: 0 !important; box-shadow: none !important; border-radius: 0; width: 210mm !important; min-height: 297mm !important; }
         }
     </style>
 </head>
@@ -100,28 +100,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             const uid = urlParams.get('user');
             
-            if (!uid) {
-                document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ عذراً، الرابط غير صحيح أو مفقود.</h2>";
-                return;
-            }
+            if (!uid) { document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ عذراً، الرابط غير صحيح أو مفقود.</h2>"; return; }
 
             try {
-                const res = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "fetch_public", uid: uid })
-                });
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetch_public", uid: uid }) });
                 const data = await res.json();
 
-                if (data.status === "success") {
-                    renderCV(data);
-                } else if (data.status === "inactive") {
-                    document.getElementById('status-msg').innerHTML = "<h2>🔒 هذه السيرة الذاتية غير متاحة حالياً.</h2><p>يرجى من صاحب السيرة تفعيل حسابه.</p>";
-                } else {
-                    document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ لم يتم العثور على السيرة الذاتية.</h2>";
-                }
-            } catch (e) {
-                document.getElementById('status-msg').innerHTML = "<h2>❌ حدث خطأ أثناء الاتصال بالخوادم.</h2>";
-            }
+                if (data.status === "success") { renderCV(data); } 
+                else if (data.status === "inactive") { document.getElementById('status-msg').innerHTML = "<h2>🔒 هذه السيرة الذاتية غير متاحة حالياً.</h2><p>يرجى من صاحب السيرة تفعيل حسابه.</p>"; } 
+                else { document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ لم يتم العثور على السيرة الذاتية.</h2>"; }
+            } catch (e) { document.getElementById('status-msg').innerHTML = "<h2>❌ حدث خطأ أثناء الاتصال بالخوادم.</h2>"; }
         }
 
         function renderList(linesString, containerId, theme, isEnglish) {
