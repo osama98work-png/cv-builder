@@ -15,7 +15,8 @@
 
         .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border-radius: 15px; }
         
-        .app-wrapper { display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; }
+        /* ⚠️ تم تعديل الـ Wrapper لترتيب العناصر بشكل عمودي */
+        .app-wrapper { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; min-height: 100vh; padding: 40px 20px; }
         .step-container { display: none; width: 100%; max-width: 600px; padding: 30px; animation: slideUp 0.5s ease; }
         .step-container.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -37,7 +38,6 @@
         .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ⚠️ CSS معرض القوالب الجديد ⚠️ */
         .theme-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .theme-card { background: white; border: 2px solid transparent; border-radius: 12px; padding: 10px; cursor: pointer; transition: all 0.3s ease; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; }
         .theme-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
@@ -46,7 +46,7 @@
         .theme-thumb { width: 100%; height: 120px; border-radius: 8px; margin-bottom: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
         .theme-name { font-size: 13px; font-weight: bold; color: #2c3e50; }
 
-        .iframe-container { width: 100%; background: #d1d5db; padding: 20px 0; border-radius: 10px; overflow: hidden; margin-top: 15px; display: flex; justify-content: center;}
+        .iframe-container { width: 100%; background: #d1d5db; padding: 20px 0; border-radius: 10px; overflow: hidden; display: flex; justify-content: center;}
         #previewFrame { width: 100%; height: 600px; border: none; }
 
         #toast { visibility: hidden; min-width: 250px; background-color: #27ae60; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 16px; font-weight: bold; }
@@ -114,17 +114,12 @@
         </div>
 
         <div id="step-themes" class="step-container glass-panel" style="max-width: 800px;">
-            <div class="step-header"><h2>اختر القالب المناسب</h2><p>اضغط على القالب لمشاهدة التغيير فوراً</p></div>
+            <div class="step-header"><h2>اختر القالب المناسب</h2><p>اضغط على القالب لمشاهدة التغيير بالأسفل</p></div>
             
-            <div id="themeGallery" class="theme-gallery">
-                </div>
-
-            <div class="iframe-container">
-                <iframe id="previewFrame" src="cv.html?preview=true" onload="liveUpdateIframe()"></iframe>
-            </div>
+            <div id="themeGallery" class="theme-gallery"></div>
 
             <div class="nav-buttons">
-                <button class="btn btn-outline" onclick="goToStep('step-data')"><i class="fas fa-arrow-right"></i> تعديل البيانات</button>
+                <button class="btn btn-outline" onclick="goToStep('step-data')"><i class="fas fa-arrow-right"></i> رجوع</button>
                 <button class="btn btn-primary" id="saveBtn" onclick="saveAndGoToExport()">التالي: التصدير <i class="fas fa-arrow-left"></i></button>
             </div>
         </div>
@@ -132,12 +127,12 @@
         <div id="step-export" class="step-container glass-panel">
             <div class="step-header"><h2>مبروك! سيرتك جاهزة 🎉</h2><p id="accountStatusMsg" style="font-weight: bold; margin-top: 10px;"></p></div>
             <div style="background: rgba(0,0,0,0.02); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #bdc3c7;">
-    <h4 style="margin-top:0; color:#7f8c8d; text-align: center;"><i class="fas fa-lock"></i> خيارات مجانية (بعلامة مائية وتغبيش)</h4>
-    <div style="display:flex; gap:10px; justify-content:center;">
-        <button class="btn btn-outline" onclick="exportCV('image')"><i class="fas fa-image"></i> كـ صورة</button>
-        <button class="btn btn-outline" onclick="exportCV('pdf')"><i class="fas fa-file-pdf"></i> كـ PDF</button>
-    </div>
-</div>
+                <h4 style="margin-top:0; color:#7f8c8d; text-align: center;"><i class="fas fa-lock"></i> خيارات مجانية (بعلامة مائية وتغبيش)</h4>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button class="btn btn-outline" onclick="exportCV('image')"><i class="fas fa-image"></i> كـ صورة</button>
+                    <button class="btn btn-outline" onclick="exportCV('pdf')"><i class="fas fa-file-pdf"></i> كـ PDF</button>
+                </div>
+            </div>
             <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); padding: 20px; border-radius: 10px; color: white; text-align: center;">
                 <h3 style="margin-top:0;"><i class="fas fa-crown"></i> باقة VIP الشاملة</h3>
                 <p style="font-size: 14px; margin-bottom: 20px;">رابط ويب احترافي، PDF وصور بدون أي علامات مائية.</p>
@@ -149,6 +144,12 @@
                 <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="window.open(document.getElementById('finalCvLink').value, '_blank')">🌐 افتح الرابط</button>
             </div>
             <div class="nav-buttons"><button class="btn btn-secondary" onclick="goToStep('step-themes')"><i class="fas fa-arrow-right"></i> العودة للقوالب</button></div>
+        </div>
+
+        <div id="persistentIframe" style="display: none; width: 100%; max-width: 800px; margin-top: 30px; animation: slideUp 0.5s ease;">
+            <div class="iframe-container">
+                <iframe id="previewFrame" src="cv.html?preview=true" onload="liveUpdateIframe()"></iframe>
+            </div>
         </div>
 
     </div>
@@ -163,7 +164,6 @@
     let base64ImageGlobal = "";
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
-    // ⚠️ مصفوفة القوالب (للمعرض البصري)
     const themesList = [
         { id: 'theme-default', name: 'الكلاسيكي', color: 'linear-gradient(135deg, #3498db, #2980b9)' },
         { id: 'theme-dark', name: 'الداكن', color: 'linear-gradient(135deg, #2c3e50, #1a252f)' },
@@ -181,15 +181,23 @@
         setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
     }
 
+    // ⚠️ دالة الانتقال المعدلة (تُظهر الـ Iframe في الشاشة 4 و 5)
     function goToStep(stepId) {
         document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
         document.getElementById(stepId).classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if(stepId === 'step-themes') liveUpdateIframe(); 
+        
+        const iframeBox = document.getElementById('persistentIframe');
+        if(stepId === 'step-themes' || stepId === 'step-export') {
+            iframeBox.style.display = 'block';
+            liveUpdateIframe(); 
+        } else {
+            iframeBox.style.display = 'none';
+        }
     }
 
     window.onload = function() {
-        buildThemeGallery(); // رسم المعرض فور تحميل الصفحة
+        buildThemeGallery(); 
         const cachedEmail = localStorage.getItem('cv_email');
         if (cachedEmail) { 
             document.getElementById('resumeSessionBtn').style.display = 'block';
@@ -198,7 +206,6 @@
         } 
     };
 
-    // ⚠️ دالة بناء معرض القوالب وتحديث الاختيار
     function buildThemeGallery() {
         const gallery = document.getElementById('themeGallery');
         gallery.innerHTML = '';
@@ -206,23 +213,16 @@
 
         themesList.forEach(theme => {
             const isActive = theme.id === currentSelectedTheme ? 'active' : '';
-            // مكان الستايل هون، مستقبلاً فيك تستبدل الديف بـ <img> وتحط رابط الصورة المصغرة
             const thumbStyle = `background: ${theme.color}; border: 1px solid ${theme.border || 'transparent'};`;
-            
-            gallery.innerHTML += `
-                <div class="theme-card ${isActive}" onclick="selectTheme('${theme.id}')">
-                    <div class="theme-thumb" style="${thumbStyle}"></div>
-                    <div class="theme-name">${theme.name}</div>
-                </div>
-            `;
+            gallery.innerHTML += `<div class="theme-card ${isActive}" onclick="selectTheme('${theme.id}')"><div class="theme-thumb" style="${thumbStyle}"></div><div class="theme-name">${theme.name}</div></div>`;
         });
     }
 
     function selectTheme(themeId) {
         savedData.selectedTheme = themeId;
         localStorage.setItem('cv_theme', themeId);
-        buildThemeGallery(); // إعادة رسم المعرض لتفعيل الـ (صح) على القالب الجديد
-        liveUpdateIframe(); // إرسال التحديث لـ Iframe
+        buildThemeGallery(); 
+        liveUpdateIframe(); 
     }
 
     function liveUpdateIframe() {
@@ -280,7 +280,7 @@
                 savedData = JSON.parse(data.cvData);
                 if (savedData.selectedTheme) {
                     localStorage.setItem('cv_theme', savedData.selectedTheme);
-                    buildThemeGallery(); // تحديث المعرض إذا كان مختار قالب مسبقاً
+                    buildThemeGallery(); 
                 }
                 
                 currentUserStatus = data.userStatus; 
@@ -425,7 +425,8 @@
             }
         } catch (e) { showToast("❌ فشل الاتصال.", true); }
     }
-    // ⚠️ دالة إرسال أمر التصدير للـ Iframe
+
+    // ⚠️ دالة إرسال أمر التصدير للـ Iframe (الآن ستعمل لأن الـ Iframe مرئي)
     function exportCV(format) {
         if(format === 'image') {
             showToast("⏳ جاري تجهيز الصورة... يرجى الانتظار", false);
