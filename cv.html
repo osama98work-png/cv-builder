@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="themes.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         body { background: #eaeff1; padding: 0; font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; }
@@ -15,16 +16,17 @@
         #status-msg { text-align:center; padding:50px; }
         #cv-container { display:none; max-width: 100%; margin: 0 auto; overflow-x: hidden;}
         
-        /* حاوية العدسة */
         .preview-wrapper { width: 100%; background-color: #d1d5db; padding: 20px 0; display: flex; justify-content: center; overflow: hidden; border-radius: 10px; }
         body.is-preview .preview-wrapper { background: transparent; padding: 0; border-radius: 0; }
         
-        /* الورقة الثابتة */
         .cv-paper { background: white; width: 210mm !important; min-height: 297mm !important; padding: 0; padding-bottom: 20mm; box-shadow: 0 15px 35px rgba(0,0,0,0.25); position: relative; word-wrap: break-word; overflow-wrap: break-word; margin: 0 auto !important; }
 
         @media (max-width: 767px) { .cv-paper { zoom: 0.42; } }
         @media (min-width: 768px) { .cv-paper { zoom: 0.75; } }
         
+        /* ⚠️ كلاس مؤقت يُستخدم قبل التقاط الصورة للحصول على دقة كاملة */
+        .cv-paper.no-zoom { zoom: 1 !important; transform: none !important; margin: 0 !important; box-shadow: none !important; }
+
         .cv-contact span { word-break: break-all; }
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 100%; box-sizing: border-box;}
         .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #3498db; margin-left: 20px; display: none; }
@@ -46,7 +48,7 @@
             body { background: white !important; margin: 0; padding: 0; }
             #cv-viewer-app { background: white; padding: 0; }
             .preview-wrapper { background: transparent !important; padding: 0 !important; box-shadow: none !important;}
-            .cv-paper { zoom: 1 !important; margin: 0 !important; box-shadow: none !important; border-radius: 0; width: 210mm !important; min-height: 297mm !important; }
+            .cv-paper { zoom: 1 !important; transform: none !important; margin: 0 !important; box-shadow: none !important; border-radius: 0; width: 210mm !important; min-height: 297mm !important; }
         }
     </style>
 </head>
@@ -59,7 +61,7 @@
                 <button onclick="window.print()" style="background:#27ae60; color:white; padding:12px 25px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; font-size:16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ طباعة أو حفظ PDF</button>
             </div>
 
-            <div class="preview-wrapper">
+            <div class="preview-wrapper" id="captureArea">
                 <div class="cv-paper" id="cvTemplate">
                     <div class="watermark" id="watermark"></div>
                     <div class="cv-header" id="sec-header">
@@ -86,26 +88,60 @@
     <script>
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSEEpu5FyJggjZHV33y9Ja-KaAQYRTi_k3gR92ghlAoD_m_dFv8JLTbFtwh6sZBwo/exec';
 
-        // 1. استقبال البيانات الحية من البيلدر عبر (Iframe)
+        // ⚠️ الاستماع للأوامر القادمة من البيلدر
         window.addEventListener('message', function(event) {
             const data = event.data;
-            if (!data || data.type !== 'LIVE_PREVIEW') return;
-            applyDataToCV(data.payload);
+            if (!data) return;
+            
+            if (data.type === 'LIVE_PREVIEW') {
+                applyDataToCV(data.payload);
+            } 
+            else if (data.type === 'EXPORT') {
+                if (data.format === 'pdf') {
+                    window.print(); // تفعيل واجهة الطباعة للـ PDF
+                } else if (data.format === 'image') {
+                    exportAsImage(); // تفعيل دالة الصورة
+                }
+            }
         });
+
+        // ⚠️ دالة التقاط الصورة
+        function exportAsImage() {
+            const paper = document.getElementById('cvTemplate');
+            
+            // إلغاء الزووم مؤقتاً للحصول على دقة A4 الأصلية (عالية الوضوح)
+            paper.classList.add('no-zoom');
+
+            html2canvas(paper, {
+                scale: 2, // دقة مضاعفة للصورة
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                // إرجاع الزووم بعد التقاط الصورة
+                paper.classList.remove('no-zoom');
+
+                // إنشاء رابط التحميل وتنزيل الصورة
+                const link = document.createElement('a');
+                link.download = 'My_CV_CVB.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error("حدث خطأ أثناء إنشاء الصورة", err);
+                paper.classList.remove('no-zoom');
+            });
+        }
 
         function loadPublicCV() {
             const urlParams = new URLSearchParams(window.location.search);
             
-            // وضع المعاينة (Iframe)
             if (urlParams.get('preview') === 'true') {
                 document.body.classList.add('is-preview');
                 document.getElementById('printSection').style.display = 'none';
                 document.getElementById('status-msg').style.display = 'none';
                 document.getElementById('cv-container').style.display = 'block';
-                return; // ننتظر الـ message من البيلدر
+                return; 
             }
 
-            // وضع العرض للجمهور (الرابط العادي)
             const uid = urlParams.get('user');
             if (!uid) { document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ عذراً، الرابط غير صحيح.</h2>"; return; }
 
@@ -114,13 +150,13 @@
             .then(data => {
                 if (data.status === "success") {
                     const parsedData = JSON.parse(data.cvData);
-                    parsedData.userImageBase64 = data.image; // إضافة الصورة
+                    parsedData.userImageBase64 = data.image; 
                     const activeLangData = parsedData.activeLang === 'en' ? parsedData.en : parsedData.ar;
                     
                     const payload = {
                         theme: parsedData.selectedTheme || 'theme-default',
                         isEnglish: parsedData.activeLang === 'en',
-                        status: "Active", // الرابط العام دائماً Active
+                        status: "Active", 
                         data: {
                             name: activeLangData.name, title: activeLangData.title,
                             email: parsedData.email, phone: parsedData.phone,
@@ -138,7 +174,6 @@
             }).catch(e => { document.getElementById('status-msg').innerHTML = "<h2>❌ حدث خطأ في الاتصال.</h2>"; });
         }
 
-        // 2. دالة تطبيق البيانات على الـ HTML
         function applyDataToCV(payload) {
             const paper = document.getElementById('cvTemplate');
             paper.className = 'cv-paper ' + payload.theme;
@@ -153,7 +188,6 @@
             document.getElementById('cvTitle').innerText = payload.data.title || '';
             document.getElementById('cvBio').innerText = payload.data.bio || '';
             
-            // إدارة التغبيش والعلامة المائية
             const emailEl = document.getElementById('cvEmail');
             const phoneEl = document.getElementById('cvPhone');
             const watermark = document.getElementById('watermark');
@@ -169,12 +203,10 @@
                 watermark.style.display = "none";
             }
 
-            // رسم القوائم
             renderList(payload.data.edu, 'cvEdu', payload.theme, payload.isEnglish);
             renderList(payload.data.skills, 'cvSkills', payload.theme, payload.isEnglish);
             renderList(payload.data.langs, 'cvLangs', payload.theme, payload.isEnglish);
 
-            // الصورة
             const imgEl = document.getElementById('cvPhoto');
             if(payload.data.image) {
                 imgEl.src = payload.data.image;
