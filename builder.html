@@ -20,7 +20,7 @@
         .app-screen { width: 100%; height: 100vh; overflow-y: auto; padding: 20px; padding-bottom: 80px; display: none; background: transparent; }
         #homeSection { display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; padding-top: 50px;}
         #formSection { background: rgba(255,255,255,0.85); z-index: 10; backdrop-filter: blur(5px); }
-        #previewSection { position: relative; } 
+        #previewSection { position: relative; overflow-x: hidden; } 
         
         .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1000; border-top: 1px solid rgba(255,255,255,0.5); }
         .mobile-nav button { flex: 1; padding: 15px; border: none; background: transparent; font-size: 15px; font-weight: bold; color: #7f8c8d; cursor: pointer; transition: 0.3s; border-top: 3px solid transparent; }
@@ -59,53 +59,45 @@
         .theme-selector-container { padding: 10px; display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;}
         .theme-selector-container select { padding: 8px; border-radius: 5px; border: 1px solid #3498db; font-weight: bold; color: #2c3e50; outline: none; font-family: inherit; transition: all 0.3s ease; background: rgba(255,255,255,0.9); }
 
-        /* ⚠️ التعديل الجذري: تطبيق تقنية العدسة (PDF Viewer Style) ⚠️ */
+        /* ⚠️ التعديل الجذري الناجح: تقنية العدسة (zoom) ⚠️ */
         .preview-wrapper {
             width: 100%;
-            background-color: #d1d5db; /* خلفية رمادية فخمة لمعاينة الـ PDF */
-            padding: 30px 0;
+            background-color: #d1d5db;
+            padding: 20px 0;
             display: flex;
             justify-content: center;
-            overflow-x: hidden;
+            overflow: hidden; /* يمنع أي سكرول عرضي مزعج */
             border-radius: 10px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
         }
 
-        /* تثبيت ورقة الـ A4 ومنع المتصفح من اللعب بأبعادها */
         .cv-paper { 
             background: white; 
-            width: 210mm !important; 
-            min-width: 210mm !important; 
-            max-width: 210mm !important; 
-            min-height: 297mm !important; /* طول A4 ثابت */
+            width: 210mm !important; /* قفل العرض */
+            min-height: 297mm !important; /* قفل الطول */
             padding: 0; 
             padding-bottom: 20mm; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.25); 
             position: relative; 
             word-wrap: break-word;
             overflow-wrap: break-word;
-            transform-origin: top center; /* نقطة الانطلاق للتصغير من فوق بالنص */
-            margin: 0 !important;
+            margin: 0 auto !important; /* توسيط الورقة دايماً */
         }
 
-        /* 📱 شاشات الموبايل: تصغير الورقة بالكامل مع الحفاظ على مقاسها */
+        /* 📱 شاشات الموبايل: تصغير العدسة لـ 42% */
         @media (max-width: 767px) { 
             .cv-paper { 
-                transform: scale(calc((100vw - 60px) / 794)); /* تصغير ديناميكي بناءً على عرض الموبايل */
-                /* سحب المساحة الفارغة اللي بيتركها التصغير من تحت */
-                margin-bottom: calc(-1122px * (1 - ((100vw - 60px) / 794))) !important; 
+                zoom: 0.42; 
             } 
         }
 
-        /* 💻 شاشات الكمبيوتر: تصغير ثابت 70% */
+        /* 💻 شاشات الكمبيوتر: تصغير لـ 75% */
         @media (min-width: 768px) { 
             .cv-paper { 
-                transform: scale(0.7); 
-                margin-bottom: calc(-1122px * 0.3) !important; 
+                zoom: 0.75; 
             } 
         }
         
-        .cv-contact span { word-break: break-all; } /* قفل خاص للإيميلات الطويلة */
+        .cv-contact span { word-break: break-all; } 
         .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' transform='rotate(-45)'><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='24' font-family='Arial' font-weight='bold' fill='rgba(0,0,0,0.06)'>نسخة غير مدفوعة</text></svg>"); background-repeat: repeat; display: none; }
         
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 210mm; max-width: 210mm; box-sizing: border-box; }
