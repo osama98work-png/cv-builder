@@ -27,7 +27,7 @@
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; font-size: 13px; }
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; background: rgba(255,255,255,0.9); transition: all 0.3s ease; font-size: 14px; }
-        input:focus, textarea:focus, select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); }
+        input:focus, textarea:focus { border-color: #3498db; outline: none; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); }
         
         .nav-buttons { display: flex; gap: 15px; margin-top: 30px; }
         .btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
@@ -37,7 +37,15 @@
         .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ⚠️ حاوية Iframe الجديدة المعزولة */
+        /* ⚠️ CSS معرض القوالب الجديد ⚠️ */
+        .theme-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .theme-card { background: white; border: 2px solid transparent; border-radius: 12px; padding: 10px; cursor: pointer; transition: all 0.3s ease; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; }
+        .theme-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .theme-card.active { border-color: #27ae60; background: #f0fdf4; }
+        .theme-card.active::after { content: '\f058'; font-family: "Font Awesome 6 Free"; font-weight: 900; color: #27ae60; position: absolute; top: -10px; right: -10px; font-size: 22px; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .theme-thumb { width: 100%; height: 120px; border-radius: 8px; margin-bottom: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+        .theme-name { font-size: 13px; font-weight: bold; color: #2c3e50; }
+
         .iframe-container { width: 100%; background: #d1d5db; padding: 20px 0; border-radius: 10px; overflow: hidden; margin-top: 15px; display: flex; justify-content: center;}
         #previewFrame { width: 100%; height: 600px; border: none; }
 
@@ -78,7 +86,7 @@
         </div>
 
         <div id="step-login" class="step-container glass-panel">
-            <div class="step-header"><h2>تسجيل الدخول الدخول</h2><p>لحفظ سيرتك الذاتية</p></div>
+            <div class="step-header"><h2>تسجيل الدخول</h2><p>لحفظ سيرتك الذاتية</p></div>
             <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                 <div id="g_id_onload" data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleGoogleLogin" data-auto_prompt="false"></div>
                 <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
@@ -106,17 +114,10 @@
         </div>
 
         <div id="step-themes" class="step-container glass-panel" style="max-width: 800px;">
-            <div class="step-header"><h2>اختيار القالب والمعاينة</h2></div>
-            <div class="form-group">
-                <select id="themeDropdown" onchange="liveUpdateIframe()" style="font-size: 16px; padding: 15px;">
-                    <option value="theme-default">الأزرق الكلاسيكي</option>
-                    <option value="theme-dark">الداكن الاحترافي</option>
-                    <option value="theme-minimal">الأخضر البسيط</option>
-                    <option value="theme-elegant">العنابي الأنيق</option>
-                    <option value="theme-creative">الإبداعي العصري</option>
-                    <option value="theme-twocolumn">المودرن (عمودين)</option>
-                </select>
-            </div>
+            <div class="step-header"><h2>اختر القالب المناسب</h2><p>اضغط على القالب لمشاهدة التغيير فوراً</p></div>
+            
+            <div id="themeGallery" class="theme-gallery">
+                </div>
 
             <div class="iframe-container">
                 <iframe id="previewFrame" src="cv.html?preview=true" onload="liveUpdateIframe()"></iframe>
@@ -162,6 +163,16 @@
     let base64ImageGlobal = "";
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
+    // ⚠️ مصفوفة القوالب (للمعرض البصري)
+    const themesList = [
+        { id: 'theme-default', name: 'الكلاسيكي', color: 'linear-gradient(135deg, #3498db, #2980b9)' },
+        { id: 'theme-dark', name: 'الداكن', color: 'linear-gradient(135deg, #2c3e50, #1a252f)' },
+        { id: 'theme-minimal', name: 'البسيط', color: 'linear-gradient(135deg, #16a085, #1abc9c)' },
+        { id: 'theme-elegant', name: 'الأنيق', color: 'linear-gradient(135deg, #722F37, #5a252b)' },
+        { id: 'theme-creative', name: 'الإبداعي', color: 'linear-gradient(135deg, #FF6D00, #e65c00)' },
+        { id: 'theme-twocolumn', name: 'المودرن', color: 'linear-gradient(to left, #2c3e50 35%, #ffffff 35%)', border: '#bdc3c7' }
+    ];
+
     function showToast(message, isError = false) {
         const toast = document.getElementById("toast");
         toast.innerText = message;
@@ -174,10 +185,11 @@
         document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
         document.getElementById(stepId).classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if(stepId === 'step-themes') liveUpdateIframe(); // تحديث المعاينة لما يفتحها
+        if(stepId === 'step-themes') liveUpdateIframe(); 
     }
 
     window.onload = function() {
+        buildThemeGallery(); // رسم المعرض فور تحميل الصفحة
         const cachedEmail = localStorage.getItem('cv_email');
         if (cachedEmail) { 
             document.getElementById('resumeSessionBtn').style.display = 'block';
@@ -186,15 +198,43 @@
         } 
     };
 
-    // ⚠️ المحرك السري: إرسال البيانات للنافذة المعزولة (Iframe)
+    // ⚠️ دالة بناء معرض القوالب وتحديث الاختيار
+    function buildThemeGallery() {
+        const gallery = document.getElementById('themeGallery');
+        gallery.innerHTML = '';
+        const currentSelectedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
+
+        themesList.forEach(theme => {
+            const isActive = theme.id === currentSelectedTheme ? 'active' : '';
+            // مكان الستايل هون، مستقبلاً فيك تستبدل الديف بـ <img> وتحط رابط الصورة المصغرة
+            const thumbStyle = `background: ${theme.color}; border: 1px solid ${theme.border || 'transparent'};`;
+            
+            gallery.innerHTML += `
+                <div class="theme-card ${isActive}" onclick="selectTheme('${theme.id}')">
+                    <div class="theme-thumb" style="${thumbStyle}"></div>
+                    <div class="theme-name">${theme.name}</div>
+                </div>
+            `;
+        });
+    }
+
+    function selectTheme(themeId) {
+        savedData.selectedTheme = themeId;
+        localStorage.setItem('cv_theme', themeId);
+        buildThemeGallery(); // إعادة رسم المعرض لتفعيل الـ (صح) على القالب الجديد
+        liveUpdateIframe(); // إرسال التحديث لـ Iframe
+    }
+
     function liveUpdateIframe() {
         const frame = document.getElementById('previewFrame');
         if(!frame || !frame.contentWindow) return;
 
+        const currentTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
+
         const payload = {
             type: 'LIVE_PREVIEW',
             payload: {
-                theme: document.getElementById('themeDropdown').value,
+                theme: currentTheme,
                 isEnglish: isEnglish,
                 status: currentUserStatus,
                 data: {
@@ -238,11 +278,13 @@
             
             if(data.status === "success") {
                 savedData = JSON.parse(data.cvData);
-                const cachedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
-                document.getElementById('themeDropdown').value = cachedTheme;
+                if (savedData.selectedTheme) {
+                    localStorage.setItem('cv_theme', savedData.selectedTheme);
+                    buildThemeGallery(); // تحديث المعرض إذا كان مختار قالب مسبقاً
+                }
+                
                 currentUserStatus = data.userStatus; 
                 currentUserUID = data.uid || ""; 
-                
                 if(savedData.userImageBase64) { base64ImageGlobal = "data:image/jpeg;base64," + savedData.userImageBase64; }
 
                 document.getElementById('inputPhone').value = savedData.phone || '';
@@ -287,8 +329,7 @@
                 savedData.en.edu = result.translated.edu || '';
                 savedData.en.skills = result.translated.skills || '';
                 savedData.en.langs = result.translated.langs || '';
-                if(!isEnglish) toggleLayout();
-                else { toggleLayout(); toggleLayout(); } // تحديث الحقول
+                if(!isEnglish) toggleLayout(); else { toggleLayout(); toggleLayout(); } 
                 showToast("✅ تمت الترجمة!");
             }
         } catch (e) { showToast("❌ خطأ بالترجمة.", true); }
@@ -310,7 +351,7 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
                 base64ImageGlobal = canvas.toDataURL('image/jpeg', 0.8);
-                liveUpdateIframe(); // التحديث الفوري للصورة
+                liveUpdateIframe(); 
             };
             img.src = e.target.result;
         };
@@ -330,7 +371,7 @@
         savedData.email = email;
         savedData.phone = document.getElementById('inputPhone').value;
         savedData.activeLang = currentLang;
-        savedData.selectedTheme = document.getElementById('themeDropdown').value;
+        savedData.selectedTheme = localStorage.getItem('cv_theme') || 'theme-default';
         
         btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...'; 
         let rawBase64 = base64ImageGlobal ? base64ImageGlobal.split(',')[1] : "";
@@ -365,7 +406,7 @@
             statusText = "🟡 حسابك قيد المراجعة";
         }
         document.getElementById('accountStatusMsg').innerHTML = statusText;
-        liveUpdateIframe(); // نرسل تحديث للايفرام عشان يفك التغبيش إذا صار VIP
+        liveUpdateIframe(); 
     }
 
     async function submitReceipt() {
