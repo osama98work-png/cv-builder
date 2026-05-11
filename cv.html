@@ -15,8 +15,9 @@
         #status-msg { text-align:center; padding:50px; }
         #cv-container { display:none; max-width: 100%; margin: 0 auto; overflow-x: hidden;}
         
-        /* ⚠️ حاوية العدسة */
+        /* حاوية العدسة */
         .preview-wrapper { width: 100%; background-color: #d1d5db; padding: 20px 0; display: flex; justify-content: center; overflow: hidden; border-radius: 10px; }
+        body.is-preview .preview-wrapper { background: transparent; padding: 0; border-radius: 0; }
         
         /* الورقة الثابتة */
         .cv-paper { background: white; width: 210mm !important; min-height: 297mm !important; padding: 0; padding-bottom: 20mm; box-shadow: 0 15px 35px rgba(0,0,0,0.25); position: relative; word-wrap: break-word; overflow-wrap: break-word; margin: 0 auto !important; }
@@ -37,8 +38,9 @@
         .cv-content { font-size: 14px; color: #444; line-height: 1.6; white-space: pre-wrap; }
         .cv-paper[dir="rtl"] { text-align: right; }
         .cv-paper[dir="ltr"] { text-align: left; }
+        
+        .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' transform='rotate(-45)'><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='24' font-family='Arial' font-weight='bold' fill='rgba(0,0,0,0.06)'>نسخة غير مدفوعة</text></svg>"); background-repeat: repeat; display: none; }
 
-        /* ⚠️ إلغاء العدسة عند الطباعة */
         @media print { 
             .no-print { display: none !important; } 
             body { background: white !important; margin: 0; padding: 0; }
@@ -53,13 +55,13 @@
     <div id="cv-viewer-app">
         <div id="status-msg"><h2 style="color:#2c3e50;">جاري جلب السيرة الذاتية... ⏳</h2></div>
         <div id="cv-container">
-            <div style="text-align:center; padding: 20px;" class="no-print">
+            <div style="text-align:center; padding: 20px;" class="no-print" id="printSection">
                 <button onclick="window.print()" style="background:#27ae60; color:white; padding:12px 25px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; font-size:16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ طباعة أو حفظ PDF</button>
-                <p style="color:#7f8c8d; font-size:12px; margin-top:8px;">(استخدم طابعة المتصفح للحصول على أفضل جودة)</p>
             </div>
 
             <div class="preview-wrapper">
                 <div class="cv-paper" id="cvTemplate">
+                    <div class="watermark" id="watermark"></div>
                     <div class="cv-header" id="sec-header">
                         <img id="cvPhoto" class="cv-photo" src="">
                         <div class="cv-header-info">
@@ -72,22 +74,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="cv-section" id="sec-bio">
-                        <div class="cv-section-title" id="lblBio">الملخص الشخصي</div>
-                        <div class="cv-content" id="cvBio"></div>
-                    </div>
-                    <div class="cv-section" id="sec-edu">
-                        <div class="cv-section-title" id="lblEdu">التعليم والشهادات</div>
-                        <div class="cv-list" id="cvEdu"></div>
-                    </div>
-                    <div class="cv-section" id="sec-skills">
-                        <div class="cv-section-title" id="lblSkills">المهارات</div>
-                        <div class="cv-list" id="cvSkills"></div>
-                    </div>
-                    <div class="cv-section" id="sec-langs">
-                        <div class="cv-section-title" id="lblLangs">اللغات</div>
-                        <div class="cv-list" id="cvLangs"></div>
-                    </div>
+                    <div class="cv-section" id="sec-bio"><div class="cv-section-title" id="lblBio">الملخص الشخصي</div><div class="cv-content" id="cvBio"></div></div>
+                    <div class="cv-section" id="sec-edu"><div class="cv-section-title" id="lblEdu">التعليم والشهادات</div><div class="cv-list" id="cvEdu"></div></div>
+                    <div class="cv-section" id="sec-skills"><div class="cv-section-title" id="lblSkills">المهارات</div><div class="cv-list" id="cvSkills"></div></div>
+                    <div class="cv-section" id="sec-langs"><div class="cv-section-title" id="lblLangs">اللغات</div><div class="cv-list" id="cvLangs"></div></div>
                 </div>
             </div>
         </div>
@@ -96,79 +86,118 @@
     <script>
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSEEpu5FyJggjZHV33y9Ja-KaAQYRTi_k3gR92ghlAoD_m_dFv8JLTbFtwh6sZBwo/exec';
 
-        async function loadPublicCV() {
+        // 1. استقبال البيانات الحية من البيلدر عبر (Iframe)
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            if (!data || data.type !== 'LIVE_PREVIEW') return;
+            applyDataToCV(data.payload);
+        });
+
+        function loadPublicCV() {
             const urlParams = new URLSearchParams(window.location.search);
-            const uid = urlParams.get('user');
             
-            if (!uid) { document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ عذراً، الرابط غير صحيح أو مفقود.</h2>"; return; }
+            // وضع المعاينة (Iframe)
+            if (urlParams.get('preview') === 'true') {
+                document.body.classList.add('is-preview');
+                document.getElementById('printSection').style.display = 'none';
+                document.getElementById('status-msg').style.display = 'none';
+                document.getElementById('cv-container').style.display = 'block';
+                return; // ننتظر الـ message من البيلدر
+            }
 
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetch_public", uid: uid }) });
-                const data = await res.json();
+            // وضع العرض للجمهور (الرابط العادي)
+            const uid = urlParams.get('user');
+            if (!uid) { document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ عذراً، الرابط غير صحيح.</h2>"; return; }
 
-                if (data.status === "success") { renderCV(data); } 
-                else if (data.status === "inactive") { document.getElementById('status-msg').innerHTML = "<h2>🔒 هذه السيرة الذاتية غير متاحة حالياً.</h2><p>يرجى من صاحب السيرة تفعيل حسابه.</p>"; } 
-                else { document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ لم يتم العثور على السيرة الذاتية.</h2>"; }
-            } catch (e) { document.getElementById('status-msg').innerHTML = "<h2>❌ حدث خطأ أثناء الاتصال بالخوادم.</h2>"; }
+            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetch_public", uid: uid }) })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    const parsedData = JSON.parse(data.cvData);
+                    parsedData.userImageBase64 = data.image; // إضافة الصورة
+                    const activeLangData = parsedData.activeLang === 'en' ? parsedData.en : parsedData.ar;
+                    
+                    const payload = {
+                        theme: parsedData.selectedTheme || 'theme-default',
+                        isEnglish: parsedData.activeLang === 'en',
+                        status: "Active", // الرابط العام دائماً Active
+                        data: {
+                            name: activeLangData.name, title: activeLangData.title,
+                            email: parsedData.email, phone: parsedData.phone,
+                            bio: activeLangData.bio, edu: activeLangData.edu,
+                            skills: activeLangData.skills, langs: activeLangData.langs,
+                            image: data.image ? "data:image/jpeg;base64," + data.image : ""
+                        }
+                    };
+                    applyDataToCV(payload);
+                    document.getElementById('status-msg').style.display = 'none';
+                    document.getElementById('cv-container').style.display = 'block';
+                } 
+                else if (data.status === "inactive") { document.getElementById('status-msg').innerHTML = "<h2>🔒 السيرة غير متاحة حالياً.</h2>"; } 
+                else { document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ لم يتم العثور على السيرة.</h2>"; }
+            }).catch(e => { document.getElementById('status-msg').innerHTML = "<h2>❌ حدث خطأ في الاتصال.</h2>"; });
+        }
+
+        // 2. دالة تطبيق البيانات على الـ HTML
+        function applyDataToCV(payload) {
+            const paper = document.getElementById('cvTemplate');
+            paper.className = 'cv-paper ' + payload.theme;
+            paper.setAttribute('dir', payload.isEnglish ? 'ltr' : 'rtl');
+            
+            document.getElementById('lblBio').innerText = payload.isEnglish ? 'Professional Summary' : 'الملخص الشخصي';
+            document.getElementById('lblEdu').innerText = payload.isEnglish ? 'Education' : 'التعليم والشهادات';
+            document.getElementById('lblSkills').innerText = payload.isEnglish ? 'Skills' : 'المهارات';
+            document.getElementById('lblLangs').innerText = payload.isEnglish ? 'Languages' : 'اللغات';
+
+            document.getElementById('cvName').innerText = payload.data.name || '';
+            document.getElementById('cvTitle').innerText = payload.data.title || '';
+            document.getElementById('cvBio').innerText = payload.data.bio || '';
+            
+            // إدارة التغبيش والعلامة المائية
+            const emailEl = document.getElementById('cvEmail');
+            const phoneEl = document.getElementById('cvPhone');
+            const watermark = document.getElementById('watermark');
+            
+            if (payload.status !== "Active") {
+                emailEl.innerText = (payload.data.email || 'Email').substring(0, 3) + '*****@***.com';
+                phoneEl.innerText = (payload.data.phone || 'Phone').substring(0, 4) + '******';
+                emailEl.style.filter = "blur(3px)"; phoneEl.style.filter = "blur(3px)";
+                watermark.style.display = "block";
+            } else {
+                emailEl.innerText = payload.data.email; phoneEl.innerText = payload.data.phone;
+                emailEl.style.filter = "none"; phoneEl.style.filter = "none";
+                watermark.style.display = "none";
+            }
+
+            // رسم القوائم
+            renderList(payload.data.edu, 'cvEdu', payload.theme, payload.isEnglish);
+            renderList(payload.data.skills, 'cvSkills', payload.theme, payload.isEnglish);
+            renderList(payload.data.langs, 'cvLangs', payload.theme, payload.isEnglish);
+
+            // الصورة
+            const imgEl = document.getElementById('cvPhoto');
+            if(payload.data.image) {
+                imgEl.src = payload.data.image;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
         }
 
         function renderList(linesString, containerId, theme, isEnglish) {
-            if(!linesString) return;
-            const lines = linesString.split('\n').filter(line => line.trim() !== '');
             const container = document.getElementById(containerId);
+            if(!linesString) { container.innerHTML = ''; return; }
+            const lines = linesString.split('\n').filter(line => line.trim() !== '');
             const bulletColor = theme === 'theme-minimal' ? '#16a085' : '#3498db';
             const align = isEnglish ? 'left' : 'right';
             const dir = isEnglish ? 'ltr' : 'rtl';
             
             let html = `<table width="100%" dir="${dir}" style="border-collapse: collapse; margin: 0; padding: 0; font-size: 14px; color: #444; line-height: 1.6;">`;
             lines.forEach(line => {
-                html += `<tr>
-                    <td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td>
-                    <td style="vertical-align: top; text-align: ${align}; word-break: break-word;">${line}</td>
-                </tr>`;
+                html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align}; word-break: break-word;">${line}</td></tr>`;
             });
             html += '</table>';
             container.innerHTML = html;
-        }
-
-        function renderCV(userData) {
-            const cvData = JSON.parse(userData.cvData);
-            const activeLang = cvData.activeLang || 'ar'; 
-            const isEnglish = (activeLang === 'en');
-            const langData = isEnglish ? cvData.en : cvData.ar;
-            
-            const theme = cvData.selectedTheme || 'theme-default';
-            const paper = document.getElementById('cvTemplate');
-
-            paper.className = 'cv-paper';
-            if (theme !== 'theme-default') { paper.classList.add(theme); }
-
-            paper.setAttribute('dir', isEnglish ? 'ltr' : 'rtl');
-            
-            document.getElementById('lblBio').innerText = isEnglish ? 'Professional Summary' : 'الملخص الشخصي';
-            document.getElementById('lblEdu').innerText = isEnglish ? 'Education' : 'التعليم والشهادات';
-            document.getElementById('lblSkills').innerText = isEnglish ? 'Skills' : 'المهارات';
-            document.getElementById('lblLangs').innerText = isEnglish ? 'Languages' : 'اللغات';
-
-            document.getElementById('cvName').innerText = langData.name;
-            document.getElementById('cvTitle').innerText = langData.title;
-            document.getElementById('cvBio').innerText = langData.bio;
-            
-            document.getElementById('cvEmail').innerText = cvData.email || "البريد الإلكتروني"; 
-            document.getElementById('cvPhone').innerText = cvData.phone || "رقم الهاتف"; 
-            
-            if(userData.image) {
-                const imgEl = document.getElementById('cvPhoto');
-                imgEl.src = "data:image/jpeg;base64," + userData.image;
-                imgEl.style.display = 'block';
-            }
-
-            renderList(langData.edu, 'cvEdu', theme, isEnglish);
-            renderList(langData.skills, 'cvSkills', theme, isEnglish);
-            renderList(langData.langs, 'cvLangs', theme, isEnglish);
-
-            document.getElementById('status-msg').style.display = 'none';
-            document.getElementById('cv-container').style.display = 'block';
         }
 
         window.onload = loadPublicCV;
