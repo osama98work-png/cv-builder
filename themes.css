@@ -97,16 +97,3 @@
 .theme-brutalist .cv-photo { border: 5px solid #000000; border-radius: 0; box-shadow: 8px 8px 0px #000000; }
 .theme-brutalist .cv-section { padding: 0 20mm; margin-bottom: 30px; }
 .theme-brutalist .cv-section-title { border: 4px solid #000000; display: inline-block; padding: 5px 15px; background: #f1f2f6; box-shadow: 4px 4px 0px #000000; font-weight: 900; }
-
-/*!Theme: theme-magazine | المجلة 📰 (كلاسيكي جداً، يركز على ترتيب النصوص مثل الصحف الأجنبية) */
-.theme-magazine { font-family: 'Times New Roman', Times, serif; }
-.theme-magazine .cv-header { text-align: center; border-top: 5px solid #000; border-bottom: 2px solid #000; padding: 30px 20mm; margin-top: 20px; flex-direction: column; justify-content: center;}
-.theme-magazine .cv-photo { margin: 0 auto 15px auto !important; border-radius: 0; border: 1px solid #000; padding: 3px; }
-.theme-magazine .cv-name { font-size: 42px; font-weight: normal; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase;}
-.theme-magazine .cv-title { font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #555; }
-.theme-magazine .cv-contact { font-size: 12px; font-style: italic; margin-top: 15px; justify-content: center; }
-.theme-magazine .cv-section-title { text-align: center; border: none; font-size: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; overflow: hidden; position: relative; }
-.theme-magazine .cv-section-title::before, .theme-magazine .cv-section-title::after { content: ""; display: inline-block; vertical-align: middle; width: 50%; height: 1px; background-color: #000; position: relative; }
-.theme-magazine .cv-section-title::before { margin-left: -50%; right: 15px; }
-.theme-magazine .cv-section-title::after { margin-right: -50%; left: 15px; }
-.theme-magazine .cv-content, .theme-magazine td { color: #000 !important; }
