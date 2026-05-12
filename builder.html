@@ -225,15 +225,9 @@
     window.onload = function() {
         buildThemeGallery(); 
         const cachedEmail = localStorage.getItem('cv_email');
-        const lastStep = localStorage.getItem('cv_current_step');
-
         if (cachedEmail) { 
             document.getElementById('resumeSessionBtn').style.display = 'block';
-            resumeSession().then(() => {
-                if (lastStep && lastStep !== 'step-login' && lastStep !== 'step-welcome') {
-                    goToStep(lastStep);
-                }
-            });
+            resumeSession(); 
         } 
     };
 
@@ -281,10 +275,10 @@
         loginProcess(payload.email, payload.name);
     }
 
-    async function resumeSession() {
+    function resumeSession() {
         const email = localStorage.getItem('cv_email');
         const name = localStorage.getItem('cv_name') || "عزيزي المستخدم";
-        if(email) return loginProcess(email, name);
+        if(email) loginProcess(email, name);
     }
 
     async function loginProcess(userEmail, userName) {
@@ -295,7 +289,6 @@
         document.getElementById('inputName').value = userName;
 
         try {
-            // ⚠️ السطر السري تم إرجاعه لحل مشكلة الاتصال مع سيرفر غوغل! ⚠️
             const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "fetch", email: userEmail }) });
             const data = await res.json();
             if(data.status === "success") {
@@ -314,9 +307,16 @@
                 checkVipStatus();
             } 
             document.getElementById('systemMsg').innerText = "";
-            if(!localStorage.getItem('cv_current_step')) goToStep('step-data');
-            return true;
-        } catch (e) { document.getElementById('systemMsg').innerText = "❌ فشل الاتصال بالسيرفر."; return false; }
+            showToast("✅ تمت المصادقة بنجاح!");
+            
+            // ⚠️ الإصلاح السحري: التوجيه للخطوة الصحيحة بعد الدخول ⚠️
+            let targetStep = localStorage.getItem('cv_current_step');
+            if (!targetStep || targetStep === 'step-welcome' || targetStep === 'step-login') {
+                targetStep = 'step-data';
+            }
+            goToStep(targetStep);
+
+        } catch (e) { document.getElementById('systemMsg').innerText = "❌ فشل الاتصال بالسيرفر."; }
     }
 
     function toggleLayout() {
@@ -336,7 +336,6 @@
         const payloadData = { action: "translate", texts: { name: document.getElementById('inputName').value, title: document.getElementById('inputTitle').value, bio: document.getElementById('inputBio').value, edu: document.getElementById('inputEdu').value, skills: document.getElementById('inputSkills').value, langs: document.getElementById('inputLangs').value } };
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
         try {
-            // ⚠️ تم إرجاع الهيدر هنا أيضاً
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") {
@@ -387,7 +386,6 @@
         let rawBase64 = base64ImageGlobal ? base64ImageGlobal.split(',')[1] : "";
 
         try {
-            // ⚠️ تم إرجاع الهيدر هنا للحفظ
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64 }) });
             const result = await response.json();
             if(result.status === "success") { 
@@ -423,7 +421,6 @@
         if (!receiptNum) { showToast("⚠️ يرجى إدخال رقم الإشعار!", true); return; }
         const email = document.getElementById('inputEmail').value;
         try {
-            // ⚠️ تم إرجاع الهيدر هنا لإشعار الدفع
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, receipt: receiptNum }) });
             const result = await response.json();
             if(result.status === "success") { 
