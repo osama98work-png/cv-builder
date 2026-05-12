@@ -106,15 +106,15 @@
                 <button class="btn btn-secondary" onclick="toggleLayout()"><i class="fas fa-language"></i> عربي / EN</button>
                 <button class="btn" style="background:#f39c12; color:white;" onclick="autoTranslate()"><i class="fas fa-magic"></i> ترجمة</button>
             </div>
-            <div class="form-group"><label>الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
-            <div class="form-group"><label>الاسم الكامل</label><input type="text" id="inputName" oninput="liveUpdateIframe()"></div>
-            <div class="form-group"><label>المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="liveUpdateIframe()"></div>
-            <div class="form-group"><label>البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: rgba(238,238,238,0.5);"></div>
-            <div class="form-group"><label>رقم الهاتف</label><input type="text" id="inputPhone" oninput="liveUpdateIframe()"></div>
-            <div class="form-group"><label>الملخص المهني</label><textarea id="inputBio" rows="3" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label>التعليم</label><textarea id="inputEdu" rows="4" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label>المهارات</label><textarea id="inputSkills" rows="4" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label>اللغات</label><textarea id="inputLangs" rows="3" oninput="liveUpdateIframe()"></textarea></div>
+            <div class="form-group"><label for="inputPhoto">الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
+            <div class="form-group"><label for="inputName">الاسم الكامل</label><input type="text" id="inputName" oninput="liveUpdateIframe()"></div>
+            <div class="form-group"><label for="inputTitle">المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="liveUpdateIframe()"></div>
+            <div class="form-group"><label for="inputEmail">البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: rgba(238,238,238,0.5);"></div>
+            <div class="form-group"><label for="inputPhone">رقم الهاتف</label><input type="text" id="inputPhone" oninput="liveUpdateIframe()"></div>
+            <div class="form-group"><label for="inputBio">الملخص المهني</label><textarea id="inputBio" rows="3" oninput="liveUpdateIframe()"></textarea></div>
+            <div class="form-group"><label for="inputEdu">التعليم</label><textarea id="inputEdu" rows="4" oninput="liveUpdateIframe()"></textarea></div>
+            <div class="form-group"><label for="inputSkills">المهارات</label><textarea id="inputSkills" rows="4" oninput="liveUpdateIframe()"></textarea></div>
+            <div class="form-group"><label for="inputLangs">اللغات</label><textarea id="inputLangs" rows="3" oninput="liveUpdateIframe()"></textarea></div>
             <div class="nav-buttons"><button class="btn btn-primary" onclick="goToStep('step-themes')">التالي: اختيار القالب <i class="fas fa-arrow-left"></i></button></div>
         </div>
 
@@ -129,23 +129,23 @@
 
         <div id="step-export" class="step-container glass-panel">
             <div class="step-header"><h2>سيرتك جاهزة 🎉</h2><p id="accountStatusMsg" style="font-weight: bold; margin-top: 10px;"></p></div>
-            <div style="background: rgba(0,0,0,0.02); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #bdc3c7;">
-                <h4 style="margin-top:0; color:#7f8c8d; text-align: center;"><i class="fas fa-lock"></i> خيارات مجانية (بعلامة مائية وتغبيش)</h4>
-                <div style="display:flex; gap:10px; justify-content:center;">
-                    <button class="btn btn-outline" onclick="exportCV('image')"><i class="fas fa-image"></i> كـ صورة</button>
-                    <button class="btn btn-outline" onclick="exportCV('pdf')"><i class="fas fa-file-pdf"></i> كـ PDF</button>
-                </div>
-            </div>
+            
             <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); padding: 20px; border-radius: 10px; color: white; text-align: center;">
                 <h3 style="margin-top:0;"><i class="fas fa-crown"></i> باقة VIP الشاملة</h3>
                 <p style="font-size: 14px; margin-bottom: 20px;">رابط دائم، PDF وصور أصلية بدون أي علامات مائية.</p>
                 <button class="btn" style="background: white; color: #e67e22; width: 100%;" onclick="triggerVIP()"><i class="fas fa-rocket"></i> تفعيل باقة VIP الآن</button>
             </div>
+
             <div id="vipLinkArea" style="display: none; margin-top: 20px;">
-                <h4 style="color:#27ae60; text-align:center;">رابط الـ VIP الخاص بك:</h4>
+                <h4 style="color:#27ae60; text-align:center;">تهانينا! حسابك مفعل 🟢</h4>
+                <div style="display:flex; gap:10px; justify-content:center; margin-bottom: 15px;">
+                    <button class="btn btn-outline" onclick="exportCV('image')" style="flex:1;"><i class="fas fa-image"></i> تحميل صورة</button>
+                    <button class="btn btn-outline" onclick="exportCV('pdf')" style="flex:1;"><i class="fas fa-file-pdf"></i> تحميل PDF</button>
+                </div>
                 <input type="text" id="finalCvLink" readonly style="direction:ltr; text-align:center; font-weight:bold;">
                 <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="window.open(document.getElementById('finalCvLink').value, '_blank')">🌐 افتح الرابط</button>
             </div>
+            
             <div class="nav-buttons"><button class="btn btn-secondary" onclick="goToStep('step-themes')"><i class="fas fa-arrow-right"></i> العودة للقوالب</button></div>
         </div>
 
@@ -190,7 +190,12 @@
 
     function goToStep(stepId) {
         document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
-        document.getElementById(stepId).classList.add('active');
+        
+        // حماية من الأخطاء: إذا كانت الخطوة غير موجودة، ارجع للبيانات
+        const targetElement = document.getElementById(stepId);
+        if(!targetElement) { stepId = 'step-data'; document.getElementById(stepId).classList.add('active'); } 
+        else { targetElement.classList.add('active'); }
+
         localStorage.setItem('cv_current_step', stepId); 
         
         const iframeBox = document.getElementById('persistentIframe');
@@ -211,14 +216,11 @@
         if(stepId === 'step-themes' || stepId === 'step-export') liveUpdateIframe();
     }
 
-    function scrollToPreview() {
-        document.getElementById('persistentIframe').scrollIntoView({ behavior: 'smooth' });
-    }
+    function scrollToPreview() { document.getElementById('persistentIframe').scrollIntoView({ behavior: 'smooth' }); }
 
     function logout() {
         if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
-            localStorage.clear();
-            location.reload();
+            localStorage.clear(); location.reload();
         }
     }
 
@@ -227,7 +229,7 @@
         const cachedEmail = localStorage.getItem('cv_email');
         if (cachedEmail) { 
             document.getElementById('resumeSessionBtn').style.display = 'block';
-            resumeSession(); 
+            resumeSession();
         } 
     };
 
@@ -270,12 +272,20 @@
         }, '*');
     }
 
+    // ⚠️ فك التشفير الآمن والمدعوم لتوكن غوغل
     async function handleGoogleLogin(response) {
-        const payload = JSON.parse(atob(response.credential.split('.')[1]));
-        loginProcess(payload.email, payload.name);
+        try {
+            let base64Url = response.credential.split('.')[1];
+            let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            const payload = JSON.parse(jsonPayload);
+            loginProcess(payload.email, payload.name);
+        } catch(e) { showToast("❌ خطأ في قراءة بيانات غوغل", true); }
     }
 
-    function resumeSession() {
+    async function resumeSession() {
         const email = localStorage.getItem('cv_email');
         const name = localStorage.getItem('cv_name') || "عزيزي المستخدم";
         if(email) loginProcess(email, name);
@@ -289,34 +299,41 @@
         document.getElementById('inputName').value = userName;
 
         try {
-            const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "fetch", email: userEmail }) });
+            // ⚠️ الاتصال بدون Headers لتجنب الـ CORS نهائياً
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetch", email: userEmail }) });
             const data = await res.json();
+            
             if(data.status === "success") {
-                savedData = JSON.parse(data.cvData);
+                try { savedData = JSON.parse(data.cvData); } catch(e) {} // حماية ضد الداتا المضروبة
                 currentUserStatus = data.userStatus; 
                 currentUserUID = data.uid || ""; 
                 if(savedData.userImageBase64) { base64ImageGlobal = "data:image/jpeg;base64," + savedData.userImageBase64; }
+                
+                // التأكد أن العناصر موجودة قبل القراءة لتجنب الأخطاء
+                if(savedData.ar) {
+                    document.getElementById('inputName').value = savedData.ar.name || userName;
+                    document.getElementById('inputTitle').value = savedData.ar.title || '';
+                    document.getElementById('inputBio').value = savedData.ar.bio || '';
+                    document.getElementById('inputEdu').value = savedData.ar.edu || '';
+                    document.getElementById('inputSkills').value = savedData.ar.skills || '';
+                    document.getElementById('inputLangs').value = savedData.ar.langs || '';
+                }
                 document.getElementById('inputPhone').value = savedData.phone || '';
-                document.getElementById('inputName').value = savedData.ar.name || userName;
-                document.getElementById('inputTitle').value = savedData.ar.title || '';
-                document.getElementById('inputBio').value = savedData.ar.bio || '';
-                document.getElementById('inputEdu').value = savedData.ar.edu || '';
-                document.getElementById('inputSkills').value = savedData.ar.skills || '';
-                document.getElementById('inputLangs').value = savedData.ar.langs || '';
+                
                 buildThemeGallery();
                 checkVipStatus();
             } 
             document.getElementById('systemMsg').innerText = "";
             showToast("✅ تمت المصادقة بنجاح!");
             
-            // ⚠️ الإصلاح السحري: التوجيه للخطوة الصحيحة بعد الدخول ⚠️
+            // ⚠️ توجيه المستخدم للخطوة المحفوظة بكل أمان
             let targetStep = localStorage.getItem('cv_current_step');
-            if (!targetStep || targetStep === 'step-welcome' || targetStep === 'step-login') {
-                targetStep = 'step-data';
-            }
+            if (!targetStep || targetStep === 'step-welcome' || targetStep === 'step-login') { targetStep = 'step-data'; }
             goToStep(targetStep);
 
-        } catch (e) { document.getElementById('systemMsg').innerText = "❌ فشل الاتصال بالسيرفر."; }
+        } catch (e) { 
+            document.getElementById('systemMsg').innerText = "❌ فشل الاتصال بالسيرفر. تأكد من الإنترنت."; 
+        }
     }
 
     function toggleLayout() {
@@ -336,7 +353,7 @@
         const payloadData = { action: "translate", texts: { name: document.getElementById('inputName').value, title: document.getElementById('inputTitle').value, bio: document.getElementById('inputBio').value, edu: document.getElementById('inputEdu').value, skills: document.getElementById('inputSkills').value, langs: document.getElementById('inputLangs').value } };
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") {
                 savedData.en = result.translated;
@@ -373,6 +390,8 @@
         const btn = document.getElementById('saveBtn');
         const email = document.getElementById('inputEmail').value;
         const currentLang = isEnglish ? 'en' : 'ar';
+        
+        if(!savedData[currentLang]) savedData[currentLang] = {};
         savedData[currentLang].name = document.getElementById('inputName').value; 
         savedData[currentLang].title = document.getElementById('inputTitle').value; 
         savedData[currentLang].bio = document.getElementById('inputBio').value; 
@@ -386,7 +405,7 @@
         let rawBase64 = base64ImageGlobal ? base64ImageGlobal.split(',')[1] : "";
 
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64 }) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64 }) });
             const result = await response.json();
             if(result.status === "success") { 
                 currentUserUID = result.uid;
@@ -421,7 +440,7 @@
         if (!receiptNum) { showToast("⚠️ يرجى إدخال رقم الإشعار!", true); return; }
         const email = document.getElementById('inputEmail').value;
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, receipt: receiptNum }) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, receipt: receiptNum }) });
             const result = await response.json();
             if(result.status === "success") { 
                 currentUserStatus = "Pending";
