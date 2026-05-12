@@ -1,157 +1,3 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Builder - المنصة المتكاملة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    
-    <style>
-        body { font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background: linear-gradient(-45deg, #e3eeff, #f3e7e9, #eafaf1, #f4f7f6); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: #333; min-height: 100vh; overflow-x: hidden; }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        * { box-sizing: border-box; }
-
-        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border-radius: 15px; }
-        
-        .app-wrapper { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; min-height: 100vh; padding: 40px 20px; }
-        .step-container { display: none; width: 100%; max-width: 600px; padding: 30px; animation: slideUp 0.5s ease; position: relative; }
-        .step-container.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        #logoutBtn { position: absolute; top: 10px; left: 10px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: none; justify-content: center; align-items: center; transition: 0.3s; z-index: 100; }
-        #logoutBtn:hover { transform: scale(1.1); background: #c0392b; }
-
-        .step-header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 15px; }
-        .step-header h2 { color: #2c3e50; margin: 0 0 10px 0; font-size: 24px;}
-        .step-header p { color: #7f8c8d; font-size: 14px; margin: 0;}
-        
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; font-size: 13px; }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; background: rgba(255,255,255,0.9); transition: all 0.3s ease; font-size: 14px; }
-        input:focus, textarea:focus { border-color: #3498db; outline: none; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); }
-        
-        .nav-buttons { display: flex; gap: 15px; margin-top: 30px; }
-        .btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-primary { background: linear-gradient(135deg, #27ae60, #219653); color: white; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); }
-        .btn-secondary { background: #34495e; color: white; }
-        .btn-outline { background: transparent; border: 2px solid #bdc3c7; color: #7f8c8d; }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-
-        .theme-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .theme-card { background: white; border: 2px solid transparent; border-radius: 12px; padding: 8px; cursor: pointer; transition: 0.3s; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); position: relative; }
-        .theme-card.active { border-color: #27ae60; background: #f0fdf4; }
-        .theme-card.active::after { content: '\f058'; font-family: "Font Awesome 6 Free"; font-weight: 900; color: #27ae60; position: absolute; top: -5px; right: -5px; background: white; border-radius: 50%; }
-        .theme-thumb { width: 100%; height: 80px; border-radius: 6px; margin-bottom: 5px; }
-        .theme-name { font-size: 11px; font-weight: bold; color: #2c3e50; }
-
-        .iframe-container { width: 100%; background: #d1d5db; padding: 20px 0; border-radius: 10px; overflow: hidden; display: flex; justify-content: center;}
-        #previewFrame { width: 100%; height: 600px; border: none; }
-
-        #scrollFAB { position: fixed; bottom: 30px; left: 30px; width: 55px; height: 55px; background: #3498db; color: white; border: none; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4); display: none; justify-content: center; align-items: center; z-index: 1000; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); } }
-
-        #toast { visibility: hidden; min-width: 250px; background-color: #27ae60; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 16px; font-weight: bold; }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-        
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
-        .modal-content input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #bdc3c7; border-radius: 8px; text-align: center; font-size: 16px; font-weight: bold; }
-    </style>
-</head>
-<body>
-
-    <div id="toast">رسالة تجريبية</div>
-    <button id="scrollFAB" onclick="scrollToPreview()"><i class="fas fa-chevron-down"></i></button>
-
-    <div class="modal-overlay" id="paymentModal">
-        <div class="modal-content glass-panel">
-            <h2 style="margin-top:0; color:#2c3e50;">ترقية باقة VIP 🚀</h2>
-            <p>للحصول على الميزات الكاملة، يرجى تحويل <strong style="color: #e74c3c;">25000 ل.س</strong> عبر شام كاش.</p>
-            <input type="text" id="shamCashCode" value="89dec5c74b1215b7e00cbbad7b53d370" readonly style="direction:ltr;">
-            <input type="text" id="receiptInput" placeholder="رقم الإشعار هنا...">
-            <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="submitReceipt()">إرسال الإشعار والتفعيل</button>
-            <button class="btn btn-outline" style="width:100%;" onclick="document.getElementById('paymentModal').style.display='none'">إلغاء</button>
-        </div>
-    </div>
-
-    <div class="app-wrapper">
-        
-        <div id="step-welcome" class="step-container glass-panel active">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <i class="fas fa-file-signature" style="font-size: 60px; color: #3498db; margin-bottom: 15px;"></i>
-                <h1 style="color: #2c3e50; margin: 0 0 10px 0;">CV Builder</h1>
-                <p style="color: #7f8c8d; font-size: 16px; line-height: 1.6;">المنصة الاحترافية لبناء سيرتك الذاتية.</p>
-            </div>
-            <button class="btn btn-primary" style="width: 100%; font-size: 18px; padding: 18px;" onclick="goToStep('step-login')">اصنع سيرتك الآن <i class="fas fa-arrow-left"></i></button>
-        </div>
-
-        <div id="step-login" class="step-container glass-panel">
-            <div class="step-header"><h2>تسجيل الدخول</h2><p>لحفظ بياناتك بشكل آمن</p></div>
-            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                <div id="g_id_onload" data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleGoogleLogin" data-auto_prompt="false"></div>
-                <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
-            </div>
-            <p id="systemMsg" style="text-align:center; color: #3498db; font-size: 13px; font-weight: bold; margin-bottom: 15px;"></p>
-            <button id="resumeSessionBtn" onclick="resumeSession()" class="btn btn-secondary" style="display: none; width: 100%;"><i class="fas fa-sync-alt"></i> استئناف جلستك السابقة</button>
-        </div>
-
-        <div id="step-data" class="step-container glass-panel">
-            <button id="logoutBtn" onclick="logout()" title="تسجيل خروج"><i class="fas fa-sign-out-alt"></i></button>
-            <div class="step-header"><h2>البيانات الشخصية</h2><p>أدخل بياناتك بدقة</p></div>
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button class="btn btn-secondary" onclick="toggleLayout()"><i class="fas fa-language"></i> عربي / EN</button>
-                <button class="btn" style="background:#f39c12; color:white;" onclick="autoTranslate()"><i class="fas fa-magic"></i> ترجمة</button>
-            </div>
-            <div class="form-group"><label for="inputPhoto">الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
-            <div class="form-group"><label for="inputName">الاسم الكامل</label><input type="text" id="inputName" oninput="liveUpdateIframe()"></div>
-            <div class="form-group"><label for="inputTitle">المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="liveUpdateIframe()"></div>
-            <div class="form-group"><label for="inputEmail">البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: rgba(238,238,238,0.5);"></div>
-            <div class="form-group"><label for="inputPhone">رقم الهاتف</label><input type="text" id="inputPhone" oninput="liveUpdateIframe()"></div>
-            <div class="form-group"><label for="inputBio">الملخص المهني</label><textarea id="inputBio" rows="3" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label for="inputEdu">التعليم</label><textarea id="inputEdu" rows="4" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label for="inputSkills">المهارات</label><textarea id="inputSkills" rows="4" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label for="inputLangs">اللغات</label><textarea id="inputLangs" rows="3" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="nav-buttons"><button class="btn btn-primary" onclick="goToStep('step-themes')">التالي: اختيار القالب <i class="fas fa-arrow-left"></i></button></div>
-        </div>
-
-        <div id="step-themes" class="step-container glass-panel" style="max-width: 800px;">
-            <div class="step-header"><h2>اختر القالب</h2><p>سيظهر التغيير في المعاينة بالأسفل</p></div>
-            <div id="themeGallery" class="theme-gallery"></div>
-            <div class="nav-buttons">
-                <button class="btn btn-outline" onclick="goToStep('step-data')"><i class="fas fa-arrow-right"></i> رجوع</button>
-                <button class="btn btn-primary" id="saveBtn" onclick="saveAndGoToExport()">التالي: التصدير <i class="fas fa-arrow-left"></i></button>
-            </div>
-        </div>
-
-        <div id="step-export" class="step-container glass-panel">
-            <div class="step-header"><h2>سيرتك جاهزة 🎉</h2><p id="accountStatusMsg" style="font-weight: bold; margin-top: 10px;"></p></div>
-            
-            <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); padding: 20px; border-radius: 10px; color: white; text-align: center;">
-                <h3 style="margin-top:0;"><i class="fas fa-crown"></i> باقة VIP الشاملة</h3>
-                <p style="font-size: 14px; margin-bottom: 20px;">رابط دائم، PDF وصور أصلية بدون أي علامات مائية.</p>
-                <button class="btn" style="background: white; color: #e67e22; width: 100%;" onclick="triggerVIP()"><i class="fas fa-rocket"></i> تفعيل باقة VIP الآن</button>
-            </div>
-
-            <div id="vipLinkArea" style="display: none; margin-top: 20px;">
-                <h4 style="color:#27ae60; text-align:center;">تهانينا! حسابك مفعل 🟢</h4>
-            
-                <input type="text" id="finalCvLink" readonly style="direction:ltr; text-align:center; font-weight:bold;">
-                <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="window.open(document.getElementById('finalCvLink').value, '_blank')">🌐 افتح الرابط</button>
-            </div>
-            
-            <div class="nav-buttons"><button class="btn btn-secondary" onclick="goToStep('step-themes')"><i class="fas fa-arrow-right"></i> العودة للقوالب</button></div>
-        </div>
-
-        <div id="persistentIframe" style="display: none; width: 100%; max-width: 800px; margin-top: 30px; animation: slideUp 0.5s ease;">
-            <div class="iframe-container"><iframe id="previewFrame" src="cv.html?preview=true" onload="liveUpdateIframe()"></iframe></div>
-        </div>
-
-    </div>
-
 <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSEEpu5FyJggjZHV33y9Ja-KaAQYRTi_k3gR92ghlAoD_m_dFv8JLTbFtwh6sZBwo/exec';
     const BLOGGER_PAGE_URL = "https://osama98work-png.github.io/cv-builder/cv.html";
@@ -162,24 +8,23 @@
     let base64ImageGlobal = "";
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
+    // ⚠️ قائمة القوالب الـ 15 (بدون أي أخطاء)
     const themesList = [
         { id: 'theme-default', name: 'الكلاسيكي', color: 'linear-gradient(135deg, #3498db, #2980b9)' },
         { id: 'theme-dark', name: 'الداكن', color: 'linear-gradient(135deg, #2c3e50, #1a252f)' },
         { id: 'theme-minimal', name: 'البسيط', color: 'linear-gradient(135deg, #16a085, #1abc9c)' },
         { id: 'theme-elegant', name: 'الأنيق', color: 'linear-gradient(135deg, #722F37, #5a252b)' },
         { id: 'theme-creative', name: 'الإبداعي', color: 'linear-gradient(135deg, #FF6D00, #e65c00)' },
-        { id: 'theme-harvard', name: 'الأكاديمي', color: '#ffffff', border: '#000000' },
+        { id: 'theme-harvard', name: 'هارفارد', color: '#ffffff', border: '#000000' },
         { id: 'theme-techie', name: 'التقني', color: '#121212', border: '#00e676' },
         { id: 'theme-boldheader', name: 'الجريء', color: 'linear-gradient(to bottom, #FFC107 40%, #ffffff 40%)', border: '#bdc3c7' },
         { id: 'theme-scandi', name: 'الاسكندنافي', color: '#fafafa', border: '#e0e0e0' },
         { id: 'theme-timeline', name: 'المسار الزمني', color: 'linear-gradient(to left, #ffffff 80%, #3498db 20%)', border: '#bdc3c7' },
-        { id: 'theme-neumorphic', name: 'العصري 3D', color: '#e0e5ec', border: '#ffffff' },
-        { id: 'theme-brutalist', name: 'المتمرد', color: 'linear-gradient(to bottom, #ff4757 40%, #ffffff 40%)', border: '#000000' },
+        { id: 'theme-neumorphic', name: 'ثلاثي الأبعاد', color: '#e0e5ec', border: '#ffffff' },
         { id: 'theme-executive', name: 'التنفيذي', color: 'linear-gradient(to bottom, #1a2a6c 40%, #f2a900 40%, #f2a900 45%, #ffffff 45%)', border: '#1a2a6c' },
         { id: 'theme-soft', name: 'المودرن الناعم', color: 'linear-gradient(135deg, #fdfbfb, #ebedee)', border: '#f3e5f5' },
         { id: 'theme-industrial', name: 'الصناعي', color: '#343a40', border: '#ffc107' },
         { id: 'theme-royal', name: 'الملكي', color: '#111111', border: '#d4af37' }
-    
     ];
 
     function showToast(message, isError = false) {
@@ -191,7 +36,6 @@
     }
 
     function goToStep(stepId) {
-        // ⚠️ الفخ الثاني: حفظ الداتا صامتاً إذا كان المستخدم ينتقل من خطوة البيانات لخطوة القوالب
         if(stepId === 'step-themes' && document.getElementById('step-data').classList.contains('active')) {
             silentSaveData();
         }
@@ -254,6 +98,7 @@
         buildThemeGallery(); liveUpdateIframe(); 
     }
 
+    // ⚠️ الدالة اللي كانت ضايعة رجعت بسلام ⚠️
     function liveUpdateIframe() {
         const frame = document.getElementById('previewFrame');
         if(!frame || !frame.contentWindow) return;
@@ -303,7 +148,6 @@
         document.getElementById('inputName').value = userName;
 
         try {
-            // ⚠️ إضافة الهيدر لمنع حظر غوغل (CORS Fix)
             const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "fetch", email: userEmail }) });
             const data = await res.json();
             
@@ -326,7 +170,6 @@
                 buildThemeGallery();
                 checkVipStatus();
             } else {
-                // ⚠️ الفخ الأول: تسجيل صامت للمستخدم الجديد فوراً في قاعدة البيانات
                 currentUserStatus = "Not Active";
                 fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: userEmail, fullName: userName, cvData: savedData, receipt: "", image: "" }) });
             }
@@ -341,7 +184,6 @@
         } catch (e) { document.getElementById('systemMsg').innerText = "❌ فشل الاتصال بالسيرفر. تأكد من الإنترنت."; }
     }
 
-    // ⚠️ الدالة الجديدة: للحفظ الصامت عند التنقل بين الشاشات
     function silentSaveData() {
         const email = document.getElementById('inputEmail').value;
         if(!email) return;
@@ -429,7 +271,6 @@
         let rawBase64 = base64ImageGlobal ? base64ImageGlobal.split(',')[1] : "";
 
         try {
-            // ⚠️ الفخ الثالث: تأكيد الحفظ قبل التصدير 
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64, receipt: "" }) });
             const result = await response.json();
             if(result.status === "success") { 
@@ -484,5 +325,3 @@
         }
     }
 </script>
-</body>
-</html>
