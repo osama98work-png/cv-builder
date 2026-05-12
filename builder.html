@@ -158,13 +158,17 @@
     let base64ImageGlobal = "";
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
+    // ⚠️ مصفوفة القوالب (بعد حذف قالب المودرن المزعج)
     const themesList = [
         { id: 'theme-default', name: 'الكلاسيكي', color: 'linear-gradient(135deg, #3498db, #2980b9)' },
         { id: 'theme-dark', name: 'الداكن', color: 'linear-gradient(135deg, #2c3e50, #1a252f)' },
         { id: 'theme-minimal', name: 'البسيط', color: 'linear-gradient(135deg, #16a085, #1abc9c)' },
         { id: 'theme-elegant', name: 'الأنيق', color: 'linear-gradient(135deg, #722F37, #5a252b)' },
         { id: 'theme-creative', name: 'الإبداعي', color: 'linear-gradient(135deg, #FF6D00, #e65c00)' },
-        { id: 'theme-twocolumn', name: 'المودرن', color: 'linear-gradient(to left, #2c3e50 35%, #ffffff 35%)', border: '#bdc3c7' }
+        { id: 'theme-harvard', name: 'الأكاديمي', color: '#ffffff', border: '#000000' },
+        { id: 'theme-techie', name: 'التقني', color: '#121212', border: '#00e676' },
+        { id: 'theme-boldheader', name: 'الجريء', color: 'linear-gradient(to bottom, #FFC107 40%, #ffffff 40%)', border: '#bdc3c7' },
+        { id: 'theme-scandi', name: 'الاسكندنافي', color: '#fafafa', border: '#e0e0e0' }
     ];
 
     function showToast(message, isError = false) {
