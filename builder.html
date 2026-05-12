@@ -186,9 +186,12 @@
     }
 
     function goToStep(stepId) {
+        // ⚠️ الفخ الثاني: حفظ الداتا صامتاً إذا كان المستخدم ينتقل من خطوة البيانات لخطوة القوالب
+        if(stepId === 'step-themes' && document.getElementById('step-data').classList.contains('active')) {
+            silentSaveData();
+        }
+
         document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
-        
-        // حماية من الأخطاء: إذا كانت الخطوة غير موجودة، ارجع للبيانات
         const targetElement = document.getElementById(stepId);
         if(!targetElement) { stepId = 'step-data'; document.getElementById(stepId).classList.add('active'); } 
         else { targetElement.classList.add('active'); }
@@ -269,7 +272,6 @@
         }, '*');
     }
 
-    // ⚠️ فك التشفير الآمن والمدعوم لتوكن غوغل
     async function handleGoogleLogin(response) {
         try {
             let base64Url = response.credential.split('.')[1];
@@ -296,17 +298,16 @@
         document.getElementById('inputName').value = userName;
 
         try {
-            // ⚠️ الاتصال بدون Headers لتجنب الـ CORS نهائياً
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetch", email: userEmail }) });
+            // ⚠️ إضافة الهيدر لمنع حظر غوغل (CORS Fix)
+            const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "fetch", email: userEmail }) });
             const data = await res.json();
             
             if(data.status === "success") {
-                try { savedData = JSON.parse(data.cvData); } catch(e) {} // حماية ضد الداتا المضروبة
+                try { savedData = JSON.parse(data.cvData); } catch(e) {} 
                 currentUserStatus = data.userStatus; 
                 currentUserUID = data.uid || ""; 
                 if(savedData.userImageBase64) { base64ImageGlobal = "data:image/jpeg;base64," + savedData.userImageBase64; }
                 
-                // التأكد أن العناصر موجودة قبل القراءة لتجنب الأخطاء
                 if(savedData.ar) {
                     document.getElementById('inputName').value = savedData.ar.name || userName;
                     document.getElementById('inputTitle').value = savedData.ar.title || '';
@@ -319,18 +320,39 @@
                 
                 buildThemeGallery();
                 checkVipStatus();
-            } 
+            } else {
+                // ⚠️ الفخ الأول: تسجيل صامت للمستخدم الجديد فوراً في قاعدة البيانات
+                currentUserStatus = "Not Active";
+                fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: userEmail, fullName: userName, cvData: savedData, receipt: "", image: "" }) });
+            }
+            
             document.getElementById('systemMsg').innerText = "";
             showToast("✅ تمت المصادقة بنجاح!");
             
-            // ⚠️ توجيه المستخدم للخطوة المحفوظة بكل أمان
             let targetStep = localStorage.getItem('cv_current_step');
             if (!targetStep || targetStep === 'step-welcome' || targetStep === 'step-login') { targetStep = 'step-data'; }
             goToStep(targetStep);
 
-        } catch (e) { 
-            document.getElementById('systemMsg').innerText = "❌ فشل الاتصال بالسيرفر. تأكد من الإنترنت."; 
-        }
+        } catch (e) { document.getElementById('systemMsg').innerText = "❌ فشل الاتصال بالسيرفر. تأكد من الإنترنت."; }
+    }
+
+    // ⚠️ الدالة الجديدة: للحفظ الصامت عند التنقل بين الشاشات
+    function silentSaveData() {
+        const email = document.getElementById('inputEmail').value;
+        if(!email) return;
+        const currentLang = isEnglish ? 'en' : 'ar';
+        if(!savedData[currentLang]) savedData[currentLang] = {};
+        savedData[currentLang].name = document.getElementById('inputName').value; 
+        savedData[currentLang].title = document.getElementById('inputTitle').value; 
+        savedData[currentLang].bio = document.getElementById('inputBio').value; 
+        savedData[currentLang].edu = document.getElementById('inputEdu').value; 
+        savedData[currentLang].skills = document.getElementById('inputSkills').value; 
+        savedData[currentLang].langs = document.getElementById('inputLangs').value;
+        savedData.email = email; savedData.phone = document.getElementById('inputPhone').value;
+        savedData.activeLang = currentLang; savedData.selectedTheme = localStorage.getItem('cv_theme') || 'theme-default';
+        
+        let rawBase64 = base64ImageGlobal ? base64ImageGlobal.split(',')[1] : "";
+        fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64, receipt: "" }) });
     }
 
     function toggleLayout() {
@@ -350,7 +372,7 @@
         const payloadData = { action: "translate", texts: { name: document.getElementById('inputName').value, title: document.getElementById('inputTitle').value, bio: document.getElementById('inputBio').value, edu: document.getElementById('inputEdu').value, skills: document.getElementById('inputSkills').value, langs: document.getElementById('inputLangs').value } };
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payloadData) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") {
                 savedData.en = result.translated;
@@ -402,7 +424,8 @@
         let rawBase64 = base64ImageGlobal ? base64ImageGlobal.split(',')[1] : "";
 
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64 }) });
+            // ⚠️ الفخ الثالث: تأكيد الحفظ قبل التصدير 
+            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64, receipt: "" }) });
             const result = await response.json();
             if(result.status === "success") { 
                 currentUserUID = result.uid;
@@ -437,7 +460,7 @@
         if (!receiptNum) { showToast("⚠️ يرجى إدخال رقم الإشعار!", true); return; }
         const email = document.getElementById('inputEmail').value;
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, receipt: receiptNum }) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, receipt: receiptNum }) });
             const result = await response.json();
             if(result.status === "success") { 
                 currentUserStatus = "Pending";
