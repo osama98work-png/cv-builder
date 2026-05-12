@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Builder - مسار الإنشاء الذكي</title>
+    <title>CV Builder - المنصة المتكاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -15,11 +15,14 @@
 
         .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border-radius: 15px; }
         
-        /* ⚠️ تم تعديل الـ Wrapper لترتيب العناصر بشكل عمودي */
         .app-wrapper { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; min-height: 100vh; padding: 40px 20px; }
-        .step-container { display: none; width: 100%; max-width: 600px; padding: 30px; animation: slideUp 0.5s ease; }
+        .step-container { display: none; width: 100%; max-width: 600px; padding: 30px; animation: slideUp 0.5s ease; position: relative; }
         .step-container.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* زر تسجيل الخروج العلوي */
+        #logoutBtn { position: absolute; top: 10px; left: 10px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: none; justify-content: center; align-items: center; transition: 0.3s; z-index: 100; }
+        #logoutBtn:hover { transform: scale(1.1); background: #c0392b; }
 
         .step-header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 15px; }
         .step-header h2 { color: #2c3e50; margin: 0 0 10px 0; font-size: 24px;}
@@ -36,18 +39,20 @@
         .btn-secondary { background: #34495e; color: white; }
         .btn-outline { background: transparent; border: 2px solid #bdc3c7; color: #7f8c8d; }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .theme-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .theme-card { background: white; border: 2px solid transparent; border-radius: 12px; padding: 10px; cursor: pointer; transition: all 0.3s ease; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; }
-        .theme-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .theme-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .theme-card { background: white; border: 2px solid transparent; border-radius: 12px; padding: 8px; cursor: pointer; transition: 0.3s; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); position: relative; }
         .theme-card.active { border-color: #27ae60; background: #f0fdf4; }
-        .theme-card.active::after { content: '\f058'; font-family: "Font Awesome 6 Free"; font-weight: 900; color: #27ae60; position: absolute; top: -10px; right: -10px; font-size: 22px; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .theme-thumb { width: 100%; height: 120px; border-radius: 8px; margin-bottom: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
-        .theme-name { font-size: 13px; font-weight: bold; color: #2c3e50; }
+        .theme-card.active::after { content: '\f058'; font-family: "Font Awesome 6 Free"; font-weight: 900; color: #27ae60; position: absolute; top: -5px; right: -5px; background: white; border-radius: 50%; }
+        .theme-thumb { width: 100%; height: 80px; border-radius: 6px; margin-bottom: 5px; }
+        .theme-name { font-size: 11px; font-weight: bold; color: #2c3e50; }
 
         .iframe-container { width: 100%; background: #d1d5db; padding: 20px 0; border-radius: 10px; overflow: hidden; display: flex; justify-content: center;}
         #previewFrame { width: 100%; height: 600px; border: none; }
+
+        /* ⚠️ زر السكرول العائم (FAB) ⚠️ */
+        #scrollFAB { position: fixed; bottom: 30px; left: 30px; width: 55px; height: 55px; background: #3498db; color: white; border: none; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4); display: none; justify-content: center; align-items: center; z-index: 1000; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); } }
 
         #toast { visibility: hidden; min-width: 250px; background-color: #27ae60; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 16px; font-weight: bold; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
@@ -62,11 +67,12 @@
 <body>
 
     <div id="toast">رسالة تجريبية</div>
+    <button id="scrollFAB" onclick="scrollToPreview()"><i class="fas fa-chevron-down"></i></button>
 
     <div class="modal-overlay" id="paymentModal">
         <div class="modal-content glass-panel">
             <h2 style="margin-top:0; color:#2c3e50;">ترقية باقة VIP 🚀</h2>
-            <p>للحصول على الميزات الكاملة، يرجى تحويل <strong style="color: #e74c3c;">25000 ل.س</strong>.</p>
+            <p>للحصول على الميزات الكاملة، يرجى تحويل <strong style="color: #e74c3c;">25000 ل.س</strong> عبر شام كاش.</p>
             <input type="text" id="shamCashCode" value="89dec5c74b1215b7e00cbbad7b53d370" readonly style="direction:ltr;">
             <input type="text" id="receiptInput" placeholder="رقم الإشعار هنا...">
             <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="submitReceipt()">إرسال الإشعار والتفعيل</button>
@@ -80,13 +86,13 @@
             <div style="text-align: center; margin-bottom: 30px;">
                 <i class="fas fa-file-signature" style="font-size: 60px; color: #3498db; margin-bottom: 15px;"></i>
                 <h1 style="color: #2c3e50; margin: 0 0 10px 0;">CV Builder</h1>
-                <p style="color: #7f8c8d; font-size: 16px; line-height: 1.6;">المنصة الأولى لبناء سيرتك الذاتية الاحترافية.</p>
+                <p style="color: #7f8c8d; font-size: 16px; line-height: 1.6;">المنصة الاحترافية لبناء سيرتك الذاتية.</p>
             </div>
             <button class="btn btn-primary" style="width: 100%; font-size: 18px; padding: 18px;" onclick="goToStep('step-login')">اصنع سيرتك الآن <i class="fas fa-arrow-left"></i></button>
         </div>
 
         <div id="step-login" class="step-container glass-panel">
-            <div class="step-header"><h2>تسجيل الدخول</h2><p>لحفظ سيرتك الذاتية</p></div>
+            <div class="step-header"><h2>تسجيل الدخول</h2><p>لحفظ بياناتك بشكل آمن</p></div>
             <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                 <div id="g_id_onload" data-client_id="680205121196-2hs35t07mf53upksm5h9cpmscdr78ev5.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleGoogleLogin" data-auto_prompt="false"></div>
                 <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
@@ -96,28 +102,27 @@
         </div>
 
         <div id="step-data" class="step-container glass-panel">
+            <button id="logoutBtn" onclick="logout()" title="تسجيل خروج"><i class="fas fa-sign-out-alt"></i></button>
             <div class="step-header"><h2>البيانات الشخصية</h2><p>أدخل بياناتك بدقة</p></div>
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <button class="btn btn-secondary" onclick="toggleLayout()"><i class="fas fa-language"></i> عربي / EN</button>
                 <button class="btn" style="background:#f39c12; color:white;" onclick="autoTranslate()"><i class="fas fa-magic"></i> ترجمة</button>
             </div>
-            <div class="form-group"><label>الصورة الشخصية (اختياري)</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
+            <div class="form-group"><label>الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
             <div class="form-group"><label>الاسم الكامل</label><input type="text" id="inputName" oninput="liveUpdateIframe()"></div>
             <div class="form-group"><label>المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="liveUpdateIframe()"></div>
             <div class="form-group"><label>البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: rgba(238,238,238,0.5);"></div>
             <div class="form-group"><label>رقم الهاتف</label><input type="text" id="inputPhone" oninput="liveUpdateIframe()"></div>
             <div class="form-group"><label>الملخص المهني</label><textarea id="inputBio" rows="3" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label>التعليم والشهادات</label><textarea id="inputEdu" rows="4" oninput="liveUpdateIframe()"></textarea></div>
+            <div class="form-group"><label>التعليم</label><textarea id="inputEdu" rows="4" oninput="liveUpdateIframe()"></textarea></div>
             <div class="form-group"><label>المهارات</label><textarea id="inputSkills" rows="4" oninput="liveUpdateIframe()"></textarea></div>
             <div class="form-group"><label>اللغات</label><textarea id="inputLangs" rows="3" oninput="liveUpdateIframe()"></textarea></div>
             <div class="nav-buttons"><button class="btn btn-primary" onclick="goToStep('step-themes')">التالي: اختيار القالب <i class="fas fa-arrow-left"></i></button></div>
         </div>
 
         <div id="step-themes" class="step-container glass-panel" style="max-width: 800px;">
-            <div class="step-header"><h2>اختر القالب المناسب</h2><p>اضغط على القالب لمشاهدة التغيير بالأسفل</p></div>
-            
+            <div class="step-header"><h2>اختر القالب</h2><p>سيظهر التغيير في المعاينة بالأسفل</p></div>
             <div id="themeGallery" class="theme-gallery"></div>
-
             <div class="nav-buttons">
                 <button class="btn btn-outline" onclick="goToStep('step-data')"><i class="fas fa-arrow-right"></i> رجوع</button>
                 <button class="btn btn-primary" id="saveBtn" onclick="saveAndGoToExport()">التالي: التصدير <i class="fas fa-arrow-left"></i></button>
@@ -125,11 +130,17 @@
         </div>
 
         <div id="step-export" class="step-container glass-panel">
-            <div class="step-header"><h2>مبروك! سيرتك جاهزة 🎉</h2><p id="accountStatusMsg" style="font-weight: bold; margin-top: 10px;"></p></div>
-        
+            <div class="step-header"><h2>سيرتك جاهزة 🎉</h2><p id="accountStatusMsg" style="font-weight: bold; margin-top: 10px;"></p></div>
+            <div style="background: rgba(0,0,0,0.02); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #bdc3c7;">
+                <h4 style="margin-top:0; color:#7f8c8d; text-align: center;"><i class="fas fa-lock"></i> خيارات مجانية (بعلامة مائية وتغبيش)</h4>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button class="btn btn-outline" onclick="exportCV('image')"><i class="fas fa-image"></i> كـ صورة</button>
+                    <button class="btn btn-outline" onclick="exportCV('pdf')"><i class="fas fa-file-pdf"></i> كـ PDF</button>
+                </div>
+            </div>
             <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); padding: 20px; border-radius: 10px; color: white; text-align: center;">
                 <h3 style="margin-top:0;"><i class="fas fa-crown"></i> باقة VIP الشاملة</h3>
-                <p style="font-size: 14px; margin-bottom: 20px;">رابط ويب احترافي، PDF وصور بدون أي علامات مائية.</p>
+                <p style="font-size: 14px; margin-bottom: 20px;">رابط دائم، PDF وصور أصلية بدون أي علامات مائية.</p>
                 <button class="btn" style="background: white; color: #e67e22; width: 100%;" onclick="triggerVIP()"><i class="fas fa-rocket"></i> تفعيل باقة VIP الآن</button>
             </div>
             <div id="vipLinkArea" style="display: none; margin-top: 20px;">
@@ -141,9 +152,7 @@
         </div>
 
         <div id="persistentIframe" style="display: none; width: 100%; max-width: 800px; margin-top: 30px; animation: slideUp 0.5s ease;">
-            <div class="iframe-container">
-                <iframe id="previewFrame" src="cv.html?preview=true" onload="liveUpdateIframe()"></iframe>
-            </div>
+            <div class="iframe-container"><iframe id="previewFrame" src="cv.html?preview=true" onload="liveUpdateIframe()"></iframe></div>
         </div>
 
     </div>
@@ -158,7 +167,6 @@
     let base64ImageGlobal = "";
     let savedData = { ar: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' }, en: { name: '', title: '', bio: '', edu: '', skills: '', langs: '' } };
 
-   // ⚠️ مصفوفة القوالب (الآن تضم 13 قالب احترافي خارج الصندوق)
     const themesList = [
         { id: 'theme-default', name: 'الكلاسيكي', color: 'linear-gradient(135deg, #3498db, #2980b9)' },
         { id: 'theme-dark', name: 'الداكن', color: 'linear-gradient(135deg, #2c3e50, #1a252f)' },
@@ -171,7 +179,7 @@
         { id: 'theme-scandi', name: 'الاسكندنافي', color: '#fafafa', border: '#e0e0e0' },
         { id: 'theme-timeline', name: 'المسار الزمني', color: 'linear-gradient(to left, #ffffff 80%, #3498db 20%)', border: '#bdc3c7' },
         { id: 'theme-neumorphic', name: 'العصري 3D', color: '#e0e5ec', border: '#ffffff' },
-        { id: 'theme-brutalist', name: 'المتمرد', color: 'linear-gradient(to bottom, #ff4757 40%, #ffffff 40%)', border: '#000000' },
+        { id: 'theme-brutalist', name: 'المتمرد', color: 'linear-gradient(to bottom, #ff4757 40%, #ffffff 40%)', border: '#000000' }
     ];
 
     function showToast(message, isError = false) {
@@ -182,28 +190,55 @@
         setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
     }
 
-    // ⚠️ دالة الانتقال المعدلة (تُظهر الـ Iframe في الشاشة 4 و 5)
+    // ⚠️ دالة الانتقال مع حفظ الحالة ⚠️
     function goToStep(stepId) {
         document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
         document.getElementById(stepId).classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        localStorage.setItem('cv_current_step', stepId); // حفظ الخطوة الحالية
         
+        // إظهار/إخفاء عناصر الـ UI حسب الخطوة
         const iframeBox = document.getElementById('persistentIframe');
-        if(stepId === 'step-themes' || stepId === 'step-export') {
-            iframeBox.style.display = 'block';
-            liveUpdateIframe(); 
+        const fab = document.getElementById('scrollFAB');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if(stepId === 'step-welcome' || stepId === 'step-login') {
+            iframeBox.style.display = 'none'; fab.style.display = 'none'; logoutBtn.style.display = 'none';
         } else {
-            iframeBox.style.display = 'none';
+            logoutBtn.style.display = 'flex';
+            if(stepId === 'step-themes' || stepId === 'step-export') {
+                iframeBox.style.display = 'block'; fab.style.display = 'flex';
+            } else {
+                iframeBox.style.display = 'none'; fab.style.display = 'none';
+            }
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if(stepId === 'step-themes' || stepId === 'step-export') liveUpdateIframe();
+    }
+
+    function scrollToPreview() {
+        document.getElementById('persistentIframe').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function logout() {
+        if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+            localStorage.clear();
+            location.reload();
         }
     }
 
     window.onload = function() {
         buildThemeGallery(); 
         const cachedEmail = localStorage.getItem('cv_email');
+        const lastStep = localStorage.getItem('cv_current_step');
+
         if (cachedEmail) { 
             document.getElementById('resumeSessionBtn').style.display = 'block';
-            goToStep('step-login'); 
-            resumeSession(); 
+            // إذا كان هناك خطوة محفوظة، نتوجه إليها فوراً بعد استئناف الجلسة
+            resumeSession().then(() => {
+                if (lastStep && lastStep !== 'step-login' && lastStep !== 'step-welcome') {
+                    goToStep(lastStep);
+                }
+            });
         } 
     };
 
@@ -211,47 +246,39 @@
         const gallery = document.getElementById('themeGallery');
         gallery.innerHTML = '';
         const currentSelectedTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
-
         themesList.forEach(theme => {
             const isActive = theme.id === currentSelectedTheme ? 'active' : '';
-            const thumbStyle = `background: ${theme.color}; border: 1px solid ${theme.border || 'transparent'};`;
-            gallery.innerHTML += `<div class="theme-card ${isActive}" onclick="selectTheme('${theme.id}')"><div class="theme-thumb" style="${thumbStyle}"></div><div class="theme-name">${theme.name}</div></div>`;
+            gallery.innerHTML += `<div class="theme-card ${isActive}" onclick="selectTheme('${theme.id}')"><div class="theme-thumb" style="background:${theme.color}; border:1px solid ${theme.border||'transparent'}"></div><div class="theme-name">${theme.name}</div></div>`;
         });
     }
 
     function selectTheme(themeId) {
         savedData.selectedTheme = themeId;
         localStorage.setItem('cv_theme', themeId);
-        buildThemeGallery(); 
-        liveUpdateIframe(); 
+        buildThemeGallery(); liveUpdateIframe(); 
     }
 
     function liveUpdateIframe() {
         const frame = document.getElementById('previewFrame');
         if(!frame || !frame.contentWindow) return;
-
         const currentTheme = localStorage.getItem('cv_theme') || savedData.selectedTheme || 'theme-default';
-
-        const payload = {
+        frame.contentWindow.postMessage({
             type: 'LIVE_PREVIEW',
             payload: {
-                theme: currentTheme,
-                isEnglish: isEnglish,
-                status: currentUserStatus,
+                theme: currentTheme, isEnglish: isEnglish, status: currentUserStatus,
                 data: {
                     name: document.getElementById('inputName').value || (isEnglish ? 'Your Name' : 'الاسم الكامل'),
                     title: document.getElementById('inputTitle').value || (isEnglish ? 'Job Title' : 'المسمى الوظيفي'),
                     email: document.getElementById('inputEmail').value || 'Email',
                     phone: document.getElementById('inputPhone').value || 'Phone',
                     bio: document.getElementById('inputBio').value || '...',
-                    edu: document.getElementById('inputEdu').value || '',
-                    skills: document.getElementById('inputSkills').value || '',
-                    langs: document.getElementById('inputLangs').value || '',
+                    edu: document.getElementById('inputEdu').value,
+                    skills: document.getElementById('inputSkills').value,
+                    langs: document.getElementById('inputLangs').value,
                     image: base64ImageGlobal
                 }
             }
-        };
-        frame.contentWindow.postMessage(payload, '*');
+        }, '*');
     }
 
     async function handleGoogleLogin(response) {
@@ -259,35 +286,27 @@
         loginProcess(payload.email, payload.name);
     }
 
-    function resumeSession() {
+    async function resumeSession() {
         const email = localStorage.getItem('cv_email');
         const name = localStorage.getItem('cv_name') || "عزيزي المستخدم";
-        if(email) loginProcess(email, name);
+        if(email) return loginProcess(email, name);
     }
 
     async function loginProcess(userEmail, userName) {
         localStorage.setItem('cv_email', userEmail);
         localStorage.setItem('cv_name', userName);
-
-        document.getElementById('systemMsg').innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري جلب بياناتك...';
+        document.getElementById('systemMsg').innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
         document.getElementById('inputEmail').value = userEmail;
         document.getElementById('inputName').value = userName;
 
         try {
             const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetch", email: userEmail }) });
             const data = await res.json();
-            
             if(data.status === "success") {
                 savedData = JSON.parse(data.cvData);
-                if (savedData.selectedTheme) {
-                    localStorage.setItem('cv_theme', savedData.selectedTheme);
-                    buildThemeGallery(); 
-                }
-                
                 currentUserStatus = data.userStatus; 
                 currentUserUID = data.uid || ""; 
                 if(savedData.userImageBase64) { base64ImageGlobal = "data:image/jpeg;base64," + savedData.userImageBase64; }
-
                 document.getElementById('inputPhone').value = savedData.phone || '';
                 document.getElementById('inputName').value = savedData.ar.name || userName;
                 document.getElementById('inputTitle').value = savedData.ar.title || '';
@@ -295,13 +314,13 @@
                 document.getElementById('inputEdu').value = savedData.ar.edu || '';
                 document.getElementById('inputSkills').value = savedData.ar.skills || '';
                 document.getElementById('inputLangs').value = savedData.ar.langs || '';
+                buildThemeGallery();
+                checkVipStatus();
             } 
             document.getElementById('systemMsg').innerText = "";
-            showToast("✅ تمت المصادقة بنجاح!");
-            goToStep('step-data');
-            liveUpdateIframe();
-
-        } catch (e) { document.getElementById('systemMsg').innerText = "❌ حدث خطأ."; }
+            if(!localStorage.getItem('cv_current_step')) goToStep('step-data');
+            return true;
+        } catch (e) { document.getElementById('systemMsg').innerText = "❌ فشل الاتصال."; return false; }
     }
 
     function toggleLayout() {
@@ -324,12 +343,7 @@
             const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payloadData) });
             const result = await response.json();
             if(result.status === "success") {
-                savedData.en.name = result.translated.name || payloadData.texts.name; 
-                savedData.en.title = result.translated.title || '';
-                savedData.en.bio = result.translated.bio || '';
-                savedData.en.edu = result.translated.edu || '';
-                savedData.en.skills = result.translated.skills || '';
-                savedData.en.langs = result.translated.langs || '';
+                savedData.en = result.translated;
                 if(!isEnglish) toggleLayout(); else { toggleLayout(); toggleLayout(); } 
                 showToast("✅ تمت الترجمة!");
             }
@@ -369,72 +383,61 @@
         savedData[currentLang].edu = document.getElementById('inputEdu').value; 
         savedData[currentLang].skills = document.getElementById('inputSkills').value; 
         savedData[currentLang].langs = document.getElementById('inputLangs').value;
-        savedData.email = email;
-        savedData.phone = document.getElementById('inputPhone').value;
-        savedData.activeLang = currentLang;
-        savedData.selectedTheme = localStorage.getItem('cv_theme') || 'theme-default';
+        savedData.email = email; savedData.phone = document.getElementById('inputPhone').value;
+        savedData.activeLang = currentLang; savedData.selectedTheme = localStorage.getItem('cv_theme') || 'theme-default';
         
-        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...'; 
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; 
         let rawBase64 = base64ImageGlobal ? base64ImageGlobal.split(',')[1] : "";
 
-        const payloadData = { action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64, receipt: "" };
-
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payloadData) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64 }) });
             const result = await response.json();
             if(result.status === "success") { 
                 currentUserUID = result.uid;
-                goToStep('step-export'); 
-                checkVipStatus();
+                goToStep('step-export'); checkVipStatus();
             }
         } catch (e) { showToast("❌ فشل الحفظ.", true); }
         btn.disabled = false; btn.innerHTML = 'التالي: التصدير <i class="fas fa-arrow-left"></i>';
     }
 
-    function triggerVIP() {
-        if (currentUserStatus === "Pending") { showToast("⏳ إيصالك قيد المراجعة حالياً.", true); return; }
-        if (currentUserStatus === "Active") { showToast("🟢 حسابك مفعل بالفعل!"); return; }
-        document.getElementById('paymentModal').style.display = 'flex';
-    }
-
     function checkVipStatus() {
-        let statusText = "🔴 حسابك مجاني";
+        let statusText = "🔴 حالة الحساب: مجاني";
         if (currentUserStatus === "Active" && currentUserUID) {
-            statusText = "🟢 حسابك VIP مفعل!";
+            statusText = "🟢 حالة الحساب: VIP مفعل!";
             document.getElementById('vipLinkArea').style.display = 'block';
             document.getElementById('finalCvLink').value = BLOGGER_PAGE_URL + "?user=" + currentUserUID;
         } else if (currentUserStatus === "Pending") {
-            statusText = "🟡 حسابك قيد المراجعة";
+            statusText = "🟡 حالة الحساب: قيد المراجعة";
+            document.getElementById('vipLinkArea').style.display = 'none';
         }
         document.getElementById('accountStatusMsg').innerHTML = statusText;
         liveUpdateIframe(); 
+    }
+
+    function triggerVIP() {
+        if (currentUserStatus === "Pending") { showToast("⏳ طلبك قيد المراجعة حالياً.", true); return; }
+        if (currentUserStatus === "Active") { showToast("🟢 أنت مشترك VIP بالفعل!"); return; }
+        document.getElementById('paymentModal').style.display = 'flex';
     }
 
     async function submitReceipt() {
         const receiptNum = document.getElementById('receiptInput').value;
         if (!receiptNum) { showToast("⚠️ يرجى إدخال رقم الإشعار!", true); return; }
         const email = document.getElementById('inputEmail').value;
-        const payloadData = { action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: "", receipt: receiptNum };
         try {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payloadData) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, receipt: receiptNum }) });
             const result = await response.json();
             if(result.status === "success") { 
                 currentUserStatus = "Pending";
                 document.getElementById('paymentModal').style.display = 'none';
                 checkVipStatus();
-                showToast("✅ تم إرسال إشعار الدفع بنجاح!");
+                showToast("✅ تم إرسال الإشعار بنجاح!");
             }
         } catch (e) { showToast("❌ فشل الاتصال.", true); }
     }
 
-    // ⚠️ دالة إرسال أمر التصدير للـ Iframe (الآن ستعمل لأن الـ Iframe مرئي)
     function exportCV(format) {
-        if(format === 'image') {
-            showToast("⏳ جاري تجهيز الصورة... يرجى الانتظار", false);
-        } else {
-            showToast("🖨️ جاري تجهيز الـ PDF...", false);
-        }
-
+        showToast(format === 'image' ? "⏳ جاري تجهيز الصورة..." : "🖨️ جاري تجهيز الـ PDF...", false);
         const frame = document.getElementById('previewFrame');
         if(frame && frame.contentWindow) {
             frame.contentWindow.postMessage({ type: 'EXPORT', format: format }, '*');
