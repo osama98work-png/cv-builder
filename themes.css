@@ -97,3 +97,35 @@
 .theme-brutalist .cv-photo { border: 5px solid #000000; border-radius: 0; box-shadow: 8px 8px 0px #000000; }
 .theme-brutalist .cv-section { padding: 0 20mm; margin-bottom: 30px; }
 .theme-brutalist .cv-section-title { border: 4px solid #000000; display: inline-block; padding: 5px 15px; background: #f1f2f6; box-shadow: 4px 4px 0px #000000; font-weight: 900; }
+/*!Theme: theme-executive | التنفيذي الفخم 🖋️ (كحلي ملكي، خطوط عريضة، مناسب للمناصب الإدارية) */
+.theme-executive .cv-header { background-color: #1a2a6c; color: #ffffff; padding: 45px 20mm; border-bottom: 8px solid #f2a900; }
+.theme-executive .cv-name { color: #ffffff; font-size: 38px; text-transform: uppercase; }
+.theme-executive .cv-title { color: #f2a900; letter-spacing: 2px; }
+.theme-executive .cv-contact { color: #e0e0e0; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; margin-top: 15px; }
+.theme-executive .cv-section-title { color: #1a2a6c; border-right: 5px solid #1a2a6c; padding-right: 15px; background: #f8f9fa; }
+.theme-executive[dir="ltr"] .cv-section-title { border-right: none; border-left: 5px solid #1a2a6c; padding-left: 15px; }
+
+/*!Theme: theme-soft | المودرن الناعم 🌸 (ألوان باستيل، حواف دائرية، مريح جداً للعين) */
+.theme-soft { background-color: #fdfbfb !important; }
+.theme-soft .cv-header { border: none; background: #ffffff; margin: 20px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); padding: 30px; }
+.theme-soft .cv-photo { border: 4px solid #f3e5f5; border-radius: 35% 65% 70% 30% / 30% 30% 70% 70%; } /* شكل عضوي مميز */
+.theme-soft .cv-name { color: #6a1b9a; font-weight: 800; }
+.theme-soft .cv-section { background: #ffffff; margin: 15px 20px; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+.theme-soft .cv-section-title { color: #9c27b0; border: none; font-size: 16px; text-align: center; background: #f3e5f5; border-radius: 10px; padding: 5px; }
+
+/*!Theme: theme-industrial | الصناعي الصلب 🛠️ (رمادي إسمنتي، خطوط تقنية، رائع للمهندسين والمقاولين) */
+.theme-industrial { background-color: #e9ecef !important; }
+.theme-industrial .cv-header { border: 10px solid #343a40; background: #ffffff; padding: 30px; margin: 10px; }
+.theme-industrial .cv-name { font-family: 'Courier New', monospace; font-weight: 900; color: #212529; }
+.theme-industrial .cv-title { background: #ffc107; color: #000; padding: 2px 10px; display: inline-block; }
+.theme-industrial .cv-section-title { border-bottom: 5px solid #343a40; text-transform: uppercase; font-family: monospace; }
+.theme-industrial .cv-list td { border-bottom: 1px solid #dee2e6; padding: 8px 0; }
+
+/*!Theme: theme-royal | الملكي الذهبي 👑 (أسود وذهبي، قمة الفخامة والتميز) */
+.theme-royal { background-color: #111111 !important; color: #ffffff; }
+.theme-royal .cv-header { border-bottom: 2px solid #d4af37; padding-bottom: 30px; text-align: center; flex-direction: column; }
+.theme-royal .cv-photo { border: 3px solid #d4af37; border-radius: 0; transform: rotate(5deg); margin-bottom: 20px !important; }
+.theme-royal .cv-name { color: #d4af37; font-family: 'serif'; font-size: 40px; }
+.theme-royal .cv-contact { color: #bbbbbb; justify-content: center; }
+.theme-royal .cv-section-title { color: #d4af37; border-bottom: 1px solid #d4af37; text-align: center; letter-spacing: 5px; }
+.theme-royal .cv-content, .theme-royal td { color: #dddddd !important; }
