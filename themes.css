@@ -33,74 +33,42 @@
 .theme-creative .cv-section { border-bottom: 1px dashed #eee; padding-bottom: 15px; }
 .theme-creative .cv-section:last-child { border-bottom: none; }
 
-/*!Theme: theme-twocolumn | المودرن (عمودين) 🌟 */
-.theme-twocolumn { 
-    display: block !important; 
-    padding: 0 !important; 
-    background-color: #ffffff !important; 
-    width: 210mm !important; 
-    min-height: 297mm !important;
-}
-.theme-twocolumn::after { content: ""; display: table; clear: both; } 
+/*!Theme: theme-harvard | هارفارد الأكاديمي 🎓 (رسمي، أبيض وأسود، مناسب للأطباء والمحامين والمهندسين) */
+.theme-harvard { font-family: 'Times New Roman', Times, serif; background-color: #ffffff; }
+.theme-harvard .cv-header { text-align: center; border-bottom: 4px double #000000; padding-bottom: 20px; flex-direction: column; justify-content: center; }
+.theme-harvard .cv-photo { margin: 0 auto 15px auto !important; border-radius: 0; border: 2px solid #000000; padding: 2px; }
+.theme-harvard .cv-name { color: #000000; font-size: 32px; text-transform: uppercase; letter-spacing: 2px; }
+.theme-harvard .cv-title { color: #444444; font-weight: bold; font-size: 18px; margin-bottom: 10px; text-transform: capitalize; }
+.theme-harvard .cv-contact { color: #333333; justify-content: center; }
+.theme-harvard .cv-section-title { color: #000000; border-bottom: 1px solid #000000; text-transform: uppercase; font-weight: bold; font-size: 20px; padding-bottom: 5px; }
+.theme-harvard .cv-content, .theme-harvard td { color: #000000 !important; }
 
-.theme-twocolumn .watermark { position: absolute; z-index: 100; }
+/*!Theme: theme-techie | التقني المظلم 💻 (للمبرمجين ومجال الـ IT، خلفية داكنة مع نيون) */
+.theme-techie { background-color: #121212 !important; color: #e0e0e0; }
+.theme-techie .cv-header { background-color: #1f1f1f; border-bottom: 2px solid #00e676; padding-bottom: 25px; }
+.theme-techie .cv-name { color: #ffffff; font-family: monospace; font-size: 30px;}
+.theme-techie .cv-title { color: #00e676; font-family: monospace; font-size: 16px; }
+.theme-techie .cv-contact { color: #aaaaaa; }
+.theme-techie .cv-photo { border: 2px dashed #00e676; border-radius: 12px; }
+.theme-techie .cv-section-title { color: #00e676; border-bottom: 1px dashed #333333; font-family: monospace; font-size: 18px; }
+.theme-techie .cv-content, .theme-techie td { color: #cccccc !important; }
 
-/* ⚠️ العمود الجانبي (الأزرق الغامق) */
-.theme-twocolumn .cv-header, 
-.theme-twocolumn #sec-skills, 
-.theme-twocolumn #sec-langs { 
-    float: right; 
-    clear: right; 
-    width: 73.5mm; 
-    background-color: #2c3e50 !important; /* اللون الأزرق الغامق الصريح */
-    color: #ffffff !important; 
-    box-sizing: border-box;
-    min-height: 50px; /* لضمان عدم اختفاء القسم إذا كان فارغاً */
-}
+/*!Theme: theme-boldheader | الجريء 🟨 (هيدر فاقع يلفت نظر الـ HR فوراً) */
+.theme-boldheader .cv-header { background-color: #FFC107; padding: 40px 20mm; flex-direction: column; align-items: center; border: none; margin-bottom: 30px; margin-top: -2px; }
+.theme-boldheader .cv-photo { margin: 0 auto 15px auto !important; border: 4px solid #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 120px; height: 120px; }
+.theme-boldheader .cv-name { color: #212121; font-size: 36px; text-shadow: 1px 1px 0px rgba(255,255,255,0.3); }
+.theme-boldheader .cv-title { color: #333333; background: #ffffff; padding: 5px 20px; border-radius: 20px; margin-top: 10px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.theme-boldheader .cv-contact { color: #212121; margin-top: 15px; font-weight: bold; }
+.theme-boldheader .cv-section-title { color: #212121; border-bottom: 3px solid #FFC107; display: inline-block; padding-bottom: 3px; margin-bottom: 15px; }
 
-/* ⚠️ العمود الرئيسي (الأبيض) */
-.theme-twocolumn #sec-bio, 
-.theme-twocolumn #sec-edu { 
-    float: left; 
-    clear: left; 
-    width: 136.5mm; 
-    background-color: #ffffff !important;
-    box-sizing: border-box;
-}
-
-/* ضبط الاتجاه للإنجليزي (LTR) */
-.theme-twocolumn[dir="ltr"] .cv-header, 
-.theme-twocolumn[dir="ltr"] #sec-skills, 
-.theme-twocolumn[dir="ltr"] #sec-langs { float: left; clear: left; }
-.theme-twocolumn[dir="ltr"] #sec-bio, 
-.theme-twocolumn[dir="ltr"] #sec-edu { float: right; clear: right; }
-
-/* تنسيقات المحتوى الداخلي */
-.theme-twocolumn .cv-header { padding: 40px 15px 20px; text-align: center; border: none; }
-.theme-twocolumn .cv-photo { margin: 0 auto 15px auto !important; width: 110px; height: 110px; border: 3px solid #3498db; }
-.theme-twocolumn .cv-name { color: #ffffff !important; font-size: 20px; margin-top: 10px; word-wrap: break-word; }
-.theme-twocolumn .cv-contact { flex-direction: column; margin-top: 25px; gap: 12px; color: #bdc3c7 !important; align-items: center; font-size: 11px; }
-.theme-twocolumn .contact-separator { display: none; }
-
-/* تنسيق النصوص في المهارات واللغات */
-.theme-twocolumn #sec-skills, .theme-twocolumn #sec-langs { padding: 15px; }
-.theme-twocolumn #sec-skills .cv-section-title, 
-.theme-twocolumn #sec-langs .cv-section-title { 
-    color: #3498db !important; /* عنوان المهارات بالأزرق الفاتح */
-    border-bottom: 1px solid #445566; 
-    font-size: 16px; 
-    margin-bottom: 10px;
-}
-
-/* إجبار لون النص والرموز في القوائم */
-.theme-twocolumn #sec-skills table, 
-.theme-twocolumn #sec-langs table, 
-.theme-twocolumn #sec-skills td, 
-.theme-twocolumn #sec-langs td { 
-    color: #ffffff !important; 
-    font-size: 13px;
-}
-
-/* تنسيق العمود العريض */
-.theme-twocolumn #sec-bio { padding: 40px 25px 20px; }
-.theme-twocolumn #sec-edu { padding: 0 25px 20px; }
+/*!Theme: theme-scandi | الاسكندنافي البسيط ❄️ (أنيق، بدون إطارات، يعتمد على المساحات البيضاء) */
+.theme-scandi { background-color: #fafafa !important; }
+.theme-scandi .cv-header { border: none; padding-bottom: 10px; border-bottom: 1px solid #eeeeee; }
+.theme-scandi .cv-photo { border: none; border-radius: 25px; filter: grayscale(30%); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+.theme-scandi .cv-name { color: #2c3e50; font-weight: 300; font-size: 34px; letter-spacing: -1px; }
+.theme-scandi .cv-title { color: #95a5a6; font-weight: 300; }
+.theme-scandi .cv-contact { color: #7f8c8d; }
+.theme-scandi .cv-section-title { color: #2c3e50; border: none; font-weight: 300; font-size: 22px; position: relative; padding-bottom: 10px; margin-bottom: 20px; }
+.theme-scandi .cv-section-title::after { content: ''; position: absolute; bottom: 0; right: 0; width: 40px; height: 3px; background: #bdc3c7; border-radius: 3px; }
+.theme-scandi[dir="ltr"] .cv-section-title::after { right: auto; left: 0; }
+.theme-scandi .cv-content, .theme-scandi td { color: #666666 !important; }
