@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="themes.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         body { background: #eaeff1; padding: 0; font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; margin: 0; }
@@ -23,9 +22,6 @@
 
         @media (max-width: 767px) { .cv-paper { zoom: 0.42; } }
         @media (min-width: 768px) { .cv-paper { zoom: 0.75; } }
-        
-        /* ⚠️ كلاس مؤقت يُستخدم قبل التقاط الصورة للحصول على دقة كاملة */
-        .cv-paper.no-zoom { zoom: 1 !important; transform: none !important; margin: 0 !important; box-shadow: none !important; }
 
         .cv-contact span { word-break: break-all; }
         .cv-header { display: flex; align-items: center; border-bottom: 2px solid #2c3e50; padding: 20mm 20mm 20px 20mm; margin-bottom: 20px; width: 100%; box-sizing: border-box;}
@@ -43,12 +39,31 @@
         
         .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' transform='rotate(-45)'><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='24' font-family='Arial' font-weight='bold' fill='rgba(0,0,0,0.06)'>نسخة غير مدفوعة</text></svg>"); background-repeat: repeat; display: none; }
 
+        /* ⚠️ جراحة الطباعة والـ PDF ⚠️ */
         @media print { 
-            .no-print { display: none !important; } 
-            body { background: white !important; margin: 0; padding: 0; }
+            @page { size: A4; margin: 0; } /* إلغاء التواريخ والروابط وهوامش المتصفح */
+            
+            body { background: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             #cv-viewer-app { background: white; padding: 0; }
-            .preview-wrapper { background: transparent !important; padding: 0 !important; box-shadow: none !important;}
-            .cv-paper { zoom: 1 !important; transform: none !important; margin: 0 !important; box-shadow: none !important; border-radius: 0; width: 210mm !important; min-height: 297mm !important; }
+            .no-print { display: none !important; } 
+            
+            .preview-wrapper { background: transparent !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important;}
+            
+            /* إجبار الورقة على طول وعرض A4 بالضبط بدون أي تسريب لصفحة إضافية */
+            .cv-paper { 
+                zoom: 1 !important; 
+                transform: none !important; 
+                margin: 0 !important; 
+                padding-bottom: 0 !important; /* تصفير الحشوة السفلية */
+                box-shadow: none !important; 
+                border-radius: 0; 
+                width: 210mm !important; 
+                height: 297mm !important; 
+                max-height: 297mm !important; 
+                overflow: hidden !important; 
+                page-break-after: avoid; 
+                page-break-before: avoid; 
+            }
         }
     </style>
 </head>
@@ -57,7 +72,7 @@
     <div id="cv-viewer-app">
         <div id="status-msg"><h2 style="color:#2c3e50;">جاري جلب السيرة الذاتية... ⏳</h2></div>
         <div id="cv-container">
-            <div style="text-align:center; padding: 20px;" class="no-print" id="printSection">
+            <div style="text-align:center; padding: 20px; display: none;" class="no-print" id="printSection">
                 <button onclick="window.print()" style="background:#27ae60; color:white; padding:12px 25px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; font-size:16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ طباعة أو حفظ PDF</button>
             </div>
 
@@ -88,55 +103,17 @@
     <script>
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSEEpu5FyJggjZHV33y9Ja-KaAQYRTi_k3gR92ghlAoD_m_dFv8JLTbFtwh6sZBwo/exec';
 
-        // ⚠️ الاستماع للأوامر القادمة من البيلدر
         window.addEventListener('message', function(event) {
             const data = event.data;
             if (!data) return;
-            
-            if (data.type === 'LIVE_PREVIEW') {
-                applyDataToCV(data.payload);
-            } 
-            else if (data.type === 'EXPORT') {
-                if (data.format === 'pdf') {
-                    window.print(); // تفعيل واجهة الطباعة للـ PDF
-                } else if (data.format === 'image') {
-                    exportAsImage(); // تفعيل دالة الصورة
-                }
-            }
+            if (data.type === 'LIVE_PREVIEW') { applyDataToCV(data.payload); } 
+            else if (data.type === 'EXPORT' && data.format === 'pdf') { window.print(); }
         });
-
-        // ⚠️ دالة التقاط الصورة
-        function exportAsImage() {
-            const paper = document.getElementById('cvTemplate');
-            
-            // إلغاء الزووم مؤقتاً للحصول على دقة A4 الأصلية (عالية الوضوح)
-            paper.classList.add('no-zoom');
-
-            html2canvas(paper, {
-                scale: 2, // دقة مضاعفة للصورة
-                useCORS: true,
-                backgroundColor: '#ffffff'
-            }).then(canvas => {
-                // إرجاع الزووم بعد التقاط الصورة
-                paper.classList.remove('no-zoom');
-
-                // إنشاء رابط التحميل وتنزيل الصورة
-                const link = document.createElement('a');
-                link.download = 'My_CV_CVB.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            }).catch(err => {
-                console.error("حدث خطأ أثناء إنشاء الصورة", err);
-                paper.classList.remove('no-zoom');
-            });
-        }
 
         function loadPublicCV() {
             const urlParams = new URLSearchParams(window.location.search);
-            
             if (urlParams.get('preview') === 'true') {
                 document.body.classList.add('is-preview');
-                document.getElementById('printSection').style.display = 'none';
                 document.getElementById('status-msg').style.display = 'none';
                 document.getElementById('cv-container').style.display = 'block';
                 return; 
@@ -150,24 +127,23 @@
             .then(data => {
                 if (data.status === "success") {
                     const parsedData = JSON.parse(data.cvData);
-                    parsedData.userImageBase64 = data.image; 
                     const activeLangData = parsedData.activeLang === 'en' ? parsedData.en : parsedData.ar;
-                    
                     const payload = {
                         theme: parsedData.selectedTheme || 'theme-default',
                         isEnglish: parsedData.activeLang === 'en',
                         status: "Active", 
                         data: {
-                            name: activeLangData.name, title: activeLangData.title,
-                            email: parsedData.email, phone: parsedData.phone,
-                            bio: activeLangData.bio, edu: activeLangData.edu,
-                            skills: activeLangData.skills, langs: activeLangData.langs,
+                            name: activeLangData.name, title: activeLangData.title, email: parsedData.email, phone: parsedData.phone,
+                            bio: activeLangData.bio, edu: activeLangData.edu, skills: activeLangData.skills, langs: activeLangData.langs,
                             image: data.image ? "data:image/jpeg;base64," + data.image : ""
                         }
                     };
                     applyDataToCV(payload);
                     document.getElementById('status-msg').style.display = 'none';
                     document.getElementById('cv-container').style.display = 'block';
+                    
+                    // إذا كان الرابط VIP وفاتحه بشكل مباشر، يظهر له زر الطباعة الخاص به
+                    document.getElementById('printSection').style.display = 'block';
                 } 
                 else if (data.status === "inactive") { document.getElementById('status-msg').innerHTML = "<h2>🔒 السيرة غير متاحة حالياً.</h2>"; } 
                 else { document.getElementById('status-msg').innerHTML = "<h2 style='color:#e74c3c;'>❌ لم يتم العثور على السيرة.</h2>"; }
@@ -178,12 +154,10 @@
             const paper = document.getElementById('cvTemplate');
             paper.className = 'cv-paper ' + payload.theme;
             paper.setAttribute('dir', payload.isEnglish ? 'ltr' : 'rtl');
-            
             document.getElementById('lblBio').innerText = payload.isEnglish ? 'Professional Summary' : 'الملخص الشخصي';
             document.getElementById('lblEdu').innerText = payload.isEnglish ? 'Education' : 'التعليم والشهادات';
             document.getElementById('lblSkills').innerText = payload.isEnglish ? 'Skills' : 'المهارات';
             document.getElementById('lblLangs').innerText = payload.isEnglish ? 'Languages' : 'اللغات';
-
             document.getElementById('cvName').innerText = payload.data.name || '';
             document.getElementById('cvTitle').innerText = payload.data.title || '';
             document.getElementById('cvBio').innerText = payload.data.bio || '';
@@ -208,12 +182,7 @@
             renderList(payload.data.langs, 'cvLangs', payload.theme, payload.isEnglish);
 
             const imgEl = document.getElementById('cvPhoto');
-            if(payload.data.image) {
-                imgEl.src = payload.data.image;
-                imgEl.style.display = 'block';
-            } else {
-                imgEl.style.display = 'none';
-            }
+            if(payload.data.image) { imgEl.src = payload.data.image; imgEl.style.display = 'block'; } else { imgEl.style.display = 'none'; }
         }
 
         function renderList(linesString, containerId, theme, isEnglish) {
@@ -223,11 +192,8 @@
             const bulletColor = theme === 'theme-minimal' ? '#16a085' : '#3498db';
             const align = isEnglish ? 'left' : 'right';
             const dir = isEnglish ? 'ltr' : 'rtl';
-            
             let html = `<table width="100%" dir="${dir}" style="border-collapse: collapse; margin: 0; padding: 0; font-size: 14px; color: #444; line-height: 1.6;">`;
-            lines.forEach(line => {
-                html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align}; word-break: break-word;">${line}</td></tr>`;
-            });
+            lines.forEach(line => { html += `<tr><td style="width: 15px; color: ${bulletColor}; vertical-align: top; text-align: ${align}; padding-top: 2px;">■</td><td style="vertical-align: top; text-align: ${align}; word-break: break-word;">${line}</td></tr>`; });
             html += '</table>';
             container.innerHTML = html;
         }
