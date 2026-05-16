@@ -360,31 +360,71 @@
         fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "save", email: email, fullName: document.getElementById('inputName').value, cvData: savedData, image: rawBase64, receipt: "" }) });
     }
 
+   // ⚠️ 1. دالة التبديل (تحفظ البيانات قبل أن تقلب اللغة)
     function toggleLayout() {
+        // حفظ الداتا الحالية باللغة الحالية قبل المسح
+        const oldLang = isEnglish ? 'en' : 'ar';
+        if (!savedData[oldLang]) savedData[oldLang] = {};
+        savedData[oldLang].name = document.getElementById('inputName').value;
+        savedData[oldLang].title = document.getElementById('inputTitle').value;
+        savedData[oldLang].bio = document.getElementById('inputBio').value;
+        savedData[oldLang].edu = document.getElementById('inputEdu').value;
+        savedData[oldLang].skills = document.getElementById('inputSkills').value;
+        savedData[oldLang].langs = document.getElementById('inputLangs').value;
+
+        // التبديل للغة الجديدة
         isEnglish = !isEnglish;
-        const currentLang = isEnglish ? 'en' : 'ar';
-        document.getElementById('inputName').value = savedData[currentLang].name || '';
-        document.getElementById('inputTitle').value = savedData[currentLang].title || '';
-        document.getElementById('inputBio').value = savedData[currentLang].bio || '';
-        document.getElementById('inputEdu').value = savedData[currentLang].edu || '';
-        document.getElementById('inputSkills').value = savedData[currentLang].skills || '';
-        document.getElementById('inputLangs').value = savedData[currentLang].langs || '';
+        const newLang = isEnglish ? 'en' : 'ar';
+        if (!savedData[newLang]) savedData[newLang] = {};
+
+        // عرض الداتا المحفوظة للغة الجديدة
+        document.getElementById('inputName').value = savedData[newLang].name || '';
+        document.getElementById('inputTitle').value = savedData[newLang].title || '';
+        document.getElementById('inputBio').value = savedData[newLang].bio || '';
+        document.getElementById('inputEdu').value = savedData[newLang].edu || '';
+        document.getElementById('inputSkills').value = savedData[newLang].skills || '';
+        document.getElementById('inputLangs').value = savedData[newLang].langs || '';
+        
         liveUpdateIframe();
     }
 
+    // ⚠️ 2. دالة الترجمة (ترسل اللغات للسيرفر وتعرض النتيجة فوراً)
     async function autoTranslate() {
         const btn = event.currentTarget;
-        const payloadData = { action: "translate", texts: { name: document.getElementById('inputName').value, title: document.getElementById('inputTitle').value, bio: document.getElementById('inputBio').value, edu: document.getElementById('inputEdu').value, skills: document.getElementById('inputSkills').value, langs: document.getElementById('inputLangs').value } };
+        const sourceLang = isEnglish ? 'en' : 'ar';
+        const targetLang = isEnglish ? 'ar' : 'en';
+
+        const payloadData = { 
+            action: "translate", 
+            sourceLang: sourceLang,
+            targetLang: targetLang,
+            texts: { 
+                name: document.getElementById('inputName').value, 
+                title: document.getElementById('inputTitle').value, 
+                bio: document.getElementById('inputBio').value, 
+                edu: document.getElementById('inputEdu').value, 
+                skills: document.getElementById('inputSkills').value, 
+                langs: document.getElementById('inputLangs').value 
+            } 
+        };
+        
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
         try {
             const response = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payloadData) });
             const result = await response.json();
-            if(result.status === "success") {
-                savedData.en = result.translated;
-                if(!isEnglish) toggleLayout(); else { toggleLayout(); toggleLayout(); } 
-                showToast("✅ تمت الترجمة!");
+            
+            if(result.status === "success" && result.translated) {
+                // حفظ الترجمة في مسار اللغة الهدف
+                savedData[targetLang] = result.translated;
+                // تبديل الشاشة فوراً لعرض الترجمة
+                toggleLayout(); 
+                showToast("✅ تمت الترجمة بنجاح!");
+            } else {
+                showToast("⚠️ لم يتم استلام الترجمة.", true);
             }
-        } catch (e) { showToast("❌ خطأ بالترجمة.", true); }
+        } catch (e) { 
+            showToast("❌ فشل الاتصال بالمترجم.", true); 
+        }
         btn.innerHTML = '<i class="fas fa-magic"></i> ترجمة';
     }
 
