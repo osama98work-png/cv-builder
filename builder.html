@@ -122,14 +122,14 @@
                 <button class="btn" style="background:#f39c12; color:white;" onclick="autoTranslate()"><i class="fas fa-magic"></i> ترجمة</button>
             </div>
             <div class="form-group"><label for="inputPhoto">الصورة الشخصية</label><input type="file" id="inputPhoto" accept="image/*" onchange="previewPhoto(event)"></div>
-            <div class="form-group"><label for="inputName">الاسم الكامل</label><input type="text" id="inputName" oninput="liveUpdateIframe()"></div>
-            <div class="form-group"><label for="inputTitle">المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="liveUpdateIframe()"></div>
+            <div class="form-group"><label for="inputName">الاسم الكامل</label><input type="text" id="inputName" oninput="liveUpdateIframeDebounced()"></div>
+            <div class="form-group"><label for="inputTitle">المسمى الوظيفي</label><input type="text" id="inputTitle" oninput="liveUpdateIframeDebounced()"></div>
             <div class="form-group"><label for="inputEmail">البريد الإلكتروني (مغلق)</label><input type="email" id="inputEmail" readonly style="background-color: rgba(238,238,238,0.5);"></div>
-            <div class="form-group"><label for="inputPhone">رقم الهاتف</label><input type="text" id="inputPhone" oninput="liveUpdateIframe()"></div>
-            <div class="form-group"><label for="inputBio">الملخص المهني</label><textarea id="inputBio" rows="3" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label for="inputEdu">التعليم</label><textarea id="inputEdu" rows="4" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label for="inputSkills">المهارات</label><textarea id="inputSkills" rows="4" oninput="liveUpdateIframe()"></textarea></div>
-            <div class="form-group"><label for="inputLangs">اللغات</label><textarea id="inputLangs" rows="3" oninput="liveUpdateIframe()"></textarea></div>
+            <div class="form-group"><label for="inputPhone">رقم الهاتف</label><input type="text" id="inputPhone" oninput="liveUpdateIframeDebounced()"></div>
+            <div class="form-group"><label for="inputBio">الملخص المهني</label><textarea id="inputBio" rows="3" oninput="liveUpdateIframeDebounced()"></textarea></div>
+            <div class="form-group"><label for="inputEdu">التعليم</label><textarea id="inputEdu" rows="4" oninput="liveUpdateIframeDebounced()"></textarea></div>
+            <div class="form-group"><label for="inputSkills">المهارات</label><textarea id="inputSkills" rows="4" oninput="liveUpdateIframeDebounced()"></textarea></div>
+            <div class="form-group"><label for="inputLangs">اللغات</label><textarea id="inputLangs" rows="3" oninput="liveUpdateIframeDebounced()"></textarea></div>
             <div class="nav-buttons"><button class="btn btn-primary" onclick="goToStep('step-themes')">التالي: اختيار القالب <i class="fas fa-arrow-left"></i></button></div>
         </div>
 
@@ -290,6 +290,14 @@
                 }
             }
         }, '*');
+    }
+  // ⚠️ دالة الـ Debounce السحرية لتخفيف الضغط على المعالج وتخفيض الـ INP
+    let debounceTimer;
+    function liveUpdateIframeDebounced() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            liveUpdateIframe();
+        }, 300); // تحديث المعاينة بعد توقف المستخدم عن الكتابة بـ 300 ملي ثانية
     }
 
     async function handleGoogleLogin(response) {
